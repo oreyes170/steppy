@@ -137,3 +137,10 @@ test('mergeBackup on a fresh device takes the backup settings', () => {
   assert.equal(m.settings.onboarded, true);
   assert.equal(Object.keys(m.days).length, 1);
 });
+
+test('version number matches the offline cache name', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { APP_VERSION } = await import('../version.js');
+  assert.match(APP_VERSION, /^\d+\.\d+\.\d+$/);
+  assert.ok(readFileSync(new URL('../sw.js', import.meta.url), 'utf8').includes(`'steppy-${APP_VERSION}'`));
+});

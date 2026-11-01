@@ -1,6 +1,7 @@
 import * as L from './logic.js';
 import * as fx from './fx.js';
 import * as Drive from './drive.js';
+import { APP_VERSION } from './version.js';
 
 // ---------------------------------------------------------------------------
 // State & persistence
@@ -1064,6 +1065,7 @@ async function handleGoogleReturn(r) {
 // Boot
 // ---------------------------------------------------------------------------
 
+$('#app-version').textContent = `v${APP_VERSION}`;
 render();
 (async () => {
   const ret = Drive.enabled() ? Drive.fromRedirect() : null;

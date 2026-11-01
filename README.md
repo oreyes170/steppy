@@ -62,4 +62,6 @@ Without a client ID the Google features are hidden, and Steppy falls back to man
 | `styles.css` | All styling, light and dark |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and home-screen install |
 
+The version shown at the top of the app lives in `version.js`. Bump it, and the cache name in `sw.js`, with each release.
+
 Tuning knobs (points per skip day, milestones, coach thresholds) are constants at the top of `logic.js`.

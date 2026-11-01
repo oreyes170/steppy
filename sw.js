@@ -1,5 +1,5 @@
 // Offline support: cache the app shell, serve it cache-first, refresh in the background.
-const CACHE = 'steppy-v4';
+const CACHE = 'steppy-1.4.0'; // keep in sync with version.js
 const ASSETS = [
   './',
   'index.html',
@@ -9,6 +9,7 @@ const ASSETS = [
   'fx.js',
   'drive.js',
   'config.js',
+  'version.js',
   'manifest.webmanifest',
   'icons/favicon-64.png',
   'icons/icon-maskable-512.png',
