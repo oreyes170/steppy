@@ -20,6 +20,19 @@ A cheerful, no-pressure step goal tracker, like StepBet without the money.
 
 All data stays on the device (`localStorage`). There's no account and no server.
 
+## Holiday themes and monthly welcome
+
+- **Themes** switch on by date when Settings → Theme is on **Auto** (the default). Out of season, it uses the Classic look:
+  - 🎃 Halloween: Oct 1 – Nov 5
+  - 🦃 Thanksgiving: Nov 6 – Thanksgiving Day
+  - 🎄 Christmas: day after Thanksgiving – Dec 31
+
+  Each theme has its own colours (light and dark), confetti colours, falling or floating decorations, and big-goal emoji. She can also pick Classic or the holiday that's in season. A holiday theme is hidden outside its dates.
+- **Preview any theme early** by adding `?theme=christmas` (or `halloween`, `thanksgiving`, `classic`) to the address. The preview isn't saved.
+- **Welcome to <Month>:** the first time she opens Steppy in a new month, she gets "Welcome to November!" with *rabbit rabbit* in small letters and a recap of last month.
+
+The date rules are in `themes.js` (unit tested).
+
 ## Run locally
 
 ```sh
@@ -59,6 +72,7 @@ Without a client ID the Google features are hidden, and Steppy falls back to man
 | `app.js` | State, rendering, logging and the celebration sequence |
 | `fx.js` | Confetti, fireworks, emoji rain, banners, flying tickets |
 | `drive.js`, `config.js` | Google sign-in and Drive backup |
+| `themes.js` | Holiday themes and their date windows |
 | `styles.css` | All styling, light and dark |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and home-screen install |
 

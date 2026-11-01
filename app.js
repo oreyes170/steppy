@@ -2,6 +2,7 @@ import * as L from './logic.js';
 import * as fx from './fx.js';
 import * as Drive from './drive.js';
 import { APP_VERSION } from './version.js';
+import * as Themes from './themes.js';
 
 // ---------------------------------------------------------------------------
 // State & persistence
@@ -11,7 +12,7 @@ const STORE_KEY = 'steppy:v1';
 
 const defaultState = () => ({
   version: 1,
-  settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false },
+  settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false, theme: 'auto' },
   days: {}, // { 'YYYY-MM-DD': { status: 'regular'|'big'|'missed'|'skip', steps?: number } }
   meta: {
     startedOn: null,
@@ -20,6 +21,7 @@ const defaultState = () => ({
     celebrated: null,
     lastBackupOn: null,
     backupSnoozedUntil: null,
+    lastMonthSeen: null, // 'YYYY-MM' — for the "Welcome to <Month>" greeting
     changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
     google: { connected: false, email: '', fileId: null, lastSyncAt: 0, needsReconnect: false, snoozedUntil: null },
   },
@@ -137,6 +139,7 @@ function snapshot() {
 // ---------------------------------------------------------------------------
 
 function render() {
+  applyTheme();
   renderHeader();
   renderToday();
   renderCatchup();
@@ -151,7 +154,102 @@ function renderHeader() {
   const h = new Date().getHours();
   const part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
   const name = state.settings.name.trim();
-  $('#greeting').textContent = name ? `${part}, ${name}!` : `${part}!`;
+  const deco = theme.greetingEmoji ? ` ${theme.greetingEmoji}` : '';
+  $('#greeting').textContent = (name ? `${part}, ${name}!` : `${part}!`) + deco;
+}
+
+// ---------------------------------------------------------------------------
+// Holiday themes
+// ---------------------------------------------------------------------------
+
+// ?theme=christmas previews a theme on any date (handy for checking them early).
+const previewTheme = new URLSearchParams(location.search).get('theme');
+let theme = Themes.byId('classic');
+let ambientFor = null;
+
+function applyTheme() {
+  const t = previewTheme && Themes.THEMES.some((x) => x.id === previewTheme)
+    ? Themes.byId(previewTheme)
+    : Themes.activeTheme(state.settings.theme, new Date());
+  theme = t;
+  document.documentElement.dataset.theme = t.id;
+  $('#theme-color')?.setAttribute('content', t.themeColor);
+  fx.setPalette(t.confetti);
+  if (ambientFor !== t.id) renderAmbient(t);
+}
+
+function renderAmbient(t) {
+  ambientFor = t.id;
+  const el = $('#ambient');
+  if (!el) return;
+  const a = t.ambient;
+  if (!a) {
+    el.innerHTML = '';
+    return;
+  }
+  let html = '';
+  for (let i = 0; i < a.count; i++) {
+    const e = a.emojis[i % a.emojis.length];
+    const size = 14 + Math.random() * 18;
+    const dur = a.motion === 'fall' ? 12 + Math.random() * 14 : 22 + Math.random() * 18;
+    const style = [
+      `left:${(Math.random() * 100).toFixed(1)}vw`,
+      `font-size:${size.toFixed(0)}px`,
+      `--d:${dur.toFixed(1)}s`,
+      `--delay:${(-Math.random() * dur).toFixed(1)}s`,
+      `--sway:${(10 + Math.random() * 40).toFixed(0)}px`,
+      `--top:${(5 + Math.random() * 85).toFixed(0)}vh`,
+      `--o:${(0.25 + Math.random() * 0.4).toFixed(2)}`,
+    ].join(';');
+    html += `<span class="amb ${a.motion}" style="${style}">${e}</span>`;
+  }
+  el.innerHTML = html;
+}
+
+function themePickerHtml() {
+  const now = new Date();
+  const seasonal = Themes.seasonalTheme(now);
+  const pref = state.settings.theme || 'auto';
+  const current = Themes.activeTheme(pref, now);
+  const isOn = (id) => (id === 'auto' ? pref === 'auto' || current.id !== pref : pref === id && current.id === id);
+  const chip = (id, emoji, name, sub) =>
+    `<button class="theme-chip ${isOn(id) ? 'on' : ''}" data-theme-pick="${id}" type="button"><span>${emoji}</span><span>${name}${sub ? `<small>${sub}</small>` : ''}</span></button>`;
+  return `
+    <h3>Theme</h3>
+    <div class="theme-picker">
+      ${chip('auto', seasonal ? seasonal.emoji : '✨', 'Auto', seasonal ? `${seasonal.name} now` : 'Holidays when in season')}
+      ${Themes.availableThemes(now).map((t) => chip(t.id, t.emoji, t.name, '')).join('')}
+    </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// New month welcome ("rabbit rabbit")
+// ---------------------------------------------------------------------------
+
+function maybeWelcomeMonth() {
+  if (!state.settings.onboarded || !$('#modal').hidden) return;
+  const now = new Date();
+  const ym = todayKey().slice(0, 7);
+  if (state.meta.lastMonthSeen === ym) return;
+  state.meta.lastMonthSeen = ym;
+  save({ dirty: false });
+  const month = now.toLocaleDateString(undefined, { month: 'long' });
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const sum = L.monthSummary(state.days, prev.getFullYear(), prev.getMonth());
+  const prevName = prev.toLocaleDateString(undefined, { month: 'long' });
+  const recap = sum.goal
+    ? `<p class="recap">In ${prevName} you hit your goal on <b>${sum.goal}</b> day${sum.goal === 1 ? '' : 's'}${
+        sum.big ? `, including <b>${sum.big}</b> big one${sum.big === 1 ? '' : 's'} 🌟` : ''
+      }. Let’s make ${month} great!</p>`
+    : `<p class="recap">A fresh month, a fresh start. Let’s make it a great one!</p>`;
+  showModal({
+    emoji: '🐇',
+    title: `Welcome to ${month}!`,
+    html: `<p class="rabbit">rabbit rabbit</p>${recap}`,
+    cta: 'Hop to it! 🐾',
+    fx: () => fx.confetti({ count: 110 }),
+  });
+  $('#modal .modal-emoji')?.classList.add('hop');
 }
 
 function quickButtons(key) {
@@ -450,8 +548,8 @@ async function setDay(key, status, steps) {
   if (status === 'big' && improved) {
     fx.vibrate([30, 40, 30, 40, 80]);
     fx.cannons();
-    fx.emojiRain(['🌟', '🚀', '👟', '✨', '🎉', '💖']);
-    fx.banner('BIG GOAL!', pick(MSG.big));
+    fx.emojiRain(theme.rain);
+    fx.banner('BIG GOAL!', theme.bigSub || pick(MSG.big));
     await wait(1600);
   } else if (status === 'regular' && improved) {
     fx.vibrate(40);
@@ -602,6 +700,8 @@ function openSettings() {
       <label>🌟 Big goal (steps)<input name="bigGoal" type="number" inputmode="numeric" min="1000" step="500" value="${bigGoal}" required /></label>
       <button class="btn primary" type="submit">Save</button>
     </form>
+    <hr />
+    ${themePickerHtml()}
     <hr />
     <h3>Backup</h3>
     ${Drive.enabled() ? googleSettingsHtml() : ''}
@@ -812,8 +912,9 @@ function finishOnboarding(form) {
   const bigGoal = Math.round(Number(data.get('bigGoal')));
   if (!(regularGoal >= 500)) return toast('Daily goal should be at least 500 steps.');
   if (!(bigGoal > regularGoal)) return toast('Big goal should be bigger than the daily goal 🙂');
-  state.settings = { name: String(data.get('name') || '').trim(), regularGoal, bigGoal, onboarded: true };
+  state.settings = { ...state.settings, name: String(data.get('name') || '').trim(), regularGoal, bigGoal, onboarded: true };
   state.meta.startedOn = todayKey();
+  state.meta.lastMonthSeen = todayKey().slice(0, 7); // no "welcome to <month>" right after signing up
   state.meta.goalsChangedOn = todayKey();
   save();
   closeModal();
@@ -898,6 +999,14 @@ document.addEventListener('click', (e) => {
     toast('No problem — I’ll check back in a week 💕');
     return;
   }
+  if (t.dataset.themePick) {
+    state.settings.theme = t.dataset.themePick;
+    save();
+    render();
+    openSettings();
+    fx.confetti({ count: 60 });
+    return;
+  }
   if (t.id === 'prev-month') {
     view = view.m === 0 ? { y: view.y - 1, m: 11 } : { y: view.y, m: view.m - 1 };
     return renderCalendar();
@@ -947,7 +1056,9 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return;
   render();
-  if (!maybeRenewGoogle()) syncNow();
+  if (maybeRenewGoogle()) return;
+  syncNow();
+  maybeWelcomeMonth();
 });
 addEventListener('online', () => syncNow());
 
@@ -1072,6 +1183,7 @@ render();
   if (ret) await handleGoogleReturn(ret);
   else if (maybeRenewGoogle()) return;
   if (!state.settings.onboarded) setTimeout(onboard, 250);
+  else setTimeout(maybeWelcomeMonth, 500);
   syncNow();
 })();
 

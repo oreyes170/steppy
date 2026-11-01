@@ -144,3 +144,35 @@ test('version number matches the offline cache name', async () => {
   assert.match(APP_VERSION, /^\d+\.\d+\.\d+$/);
   assert.ok(readFileSync(new URL('../sw.js', import.meta.url), 'utf8').includes(`'steppy-${APP_VERSION}'`));
 });
+
+test('thanksgiving is the 4th Thursday of November', async () => {
+  const T = await import('../themes.js');
+  assert.equal(T.thanksgivingDay(2026), 26);
+  assert.equal(T.thanksgivingDay(2025), 27);
+  assert.equal(T.thanksgivingDay(2024), 28);
+  assert.equal(T.thanksgivingDay(2029), 22);
+});
+
+test('holiday themes appear only in their windows', async () => {
+  const T = await import('../themes.js');
+  const ids = (y, m, d) => T.availableThemes(new Date(y, m - 1, d)).map((t) => t.id).join(',');
+  assert.equal(ids(2026, 9, 30), 'classic');
+  assert.equal(ids(2026, 10, 1), 'classic,halloween');
+  assert.equal(ids(2026, 11, 5), 'classic,halloween');
+  assert.equal(ids(2026, 11, 6), 'classic,thanksgiving'); // thanksgiving hidden until Nov 6
+  assert.equal(ids(2026, 11, 26), 'classic,thanksgiving'); // Thanksgiving Day
+  assert.equal(ids(2026, 11, 27), 'classic,christmas'); // christmas starts the day after
+  assert.equal(ids(2026, 12, 31), 'classic,christmas');
+  assert.equal(ids(2027, 1, 1), 'classic');
+  assert.equal(ids(2025, 11, 27), 'classic,thanksgiving'); // 2025's Thanksgiving is the 27th
+  assert.equal(ids(2025, 11, 28), 'classic,christmas');
+});
+
+test('activeTheme: auto follows the season; out-of-season picks fall back', async () => {
+  const T = await import('../themes.js');
+  const nov1 = new Date(2026, 10, 1);
+  assert.equal(T.activeTheme('auto', nov1).id, 'halloween');
+  assert.equal(T.activeTheme('classic', nov1).id, 'classic');
+  assert.equal(T.activeTheme('christmas', nov1).id, 'halloween');
+  assert.equal(T.activeTheme('auto', new Date(2026, 1, 1)).id, 'classic');
+});

@@ -2,6 +2,12 @@
 
 const COLORS = ['#ff6f91', '#ffc75f', '#4ecdc4', '#a78bfa', '#ff9671', '#7dd3fc', '#f9f871'];
 
+let palette = COLORS;
+/** Holiday themes swap the confetti colours. Pass null for the default. */
+export function setPalette(colors) {
+  palette = colors && colors.length ? colors : COLORS;
+}
+
 const canvas = document.getElementById('fx');
 const ctx = canvas.getContext('2d');
 let particles = [];
@@ -24,7 +30,7 @@ export function confetti({
   y = innerHeight * 0.4,
   spread = 0.9,
   power = 1,
-  colors = COLORS,
+  colors = palette,
 } = {}) {
   if (reducedMotion()) return;
   for (let i = 0; i < count; i++) {
