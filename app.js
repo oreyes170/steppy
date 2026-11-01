@@ -11,6 +11,54 @@ import * as Gumballs from './gumballs.js';
 
 const STORE_KEY = 'steppy:v1';
 
+// ---------------------------------------------------------------------------
+// Cheat code: save the goals as 1683 / 3289680 in Settings to unlock everything;
+// save any other numbers to turn it off. It's a layer on top of her real data that
+// lives only on this device: it never changes her collection, theme or goals, and is
+// never backed up to Google or a backup file.
+// ---------------------------------------------------------------------------
+const CHEAT = { regularGoal: 1683, bigGoal: 3289680 };
+const CHEAT_KEY = 'steppy:cheat';
+const CHEAT_THEME_KEY = 'steppy:cheat-theme';
+const Cheat = {
+  on() {
+    try {
+      return localStorage.getItem(CHEAT_KEY) === '1';
+    } catch {
+      return false;
+    }
+  },
+  set(on) {
+    try {
+      if (on) localStorage.setItem(CHEAT_KEY, '1');
+      else {
+        localStorage.removeItem(CHEAT_KEY);
+        localStorage.removeItem(CHEAT_THEME_KEY);
+      }
+    } catch {
+      /* ignore */
+    }
+  },
+  theme() {
+    try {
+      return localStorage.getItem(CHEAT_THEME_KEY);
+    } catch {
+      return null;
+    }
+  },
+  setTheme(id) {
+    try {
+      localStorage.setItem(CHEAT_THEME_KEY, id);
+    } catch {
+      /* ignore */
+    }
+  },
+};
+
+/** Themes she owns (all of them while the cheat is on). */
+const ownedIds = () => (Cheat.on() ? Gumballs.GUMBALLS.map((g) => g.id) : state.meta.gumballs.owned);
+const machineUnlocked = () => Cheat.on() || state.meta.gumballs.unlocked;
+
 const defaultState = () => ({
   version: 1,
   settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false, theme: 'classic' },
@@ -27,7 +75,6 @@ const defaultState = () => ({
     lastMonthSeen: null, // 'YYYY-MM' — for the "Welcome to <Month>" greeting
     changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
     gumballs: { unlocked: false, introSeen: false, owned: [], spent: 0 }, // the Theme Machine
-    allUnlocked: false, // set by the cheat code: every theme, any day
     google: { connected: false, email: '', fileId: null, lastSyncAt: 0, needsReconnect: false, snoozedUntil: null },
   },
 });
@@ -60,6 +107,17 @@ function normalize(s) {
 
 /** One-off upgrades for data saved by older versions. */
 function migrate(s) {
+  // v1.8.3 wrote the cheat code into her real data (and could sync it). Undo that: the
+  // cheat now lives only on the device (see Cheat below), so move it there.
+  if (s.meta.allUnlocked) {
+    delete s.meta.allUnlocked;
+    s.meta.gumballs = { ...s.meta.gumballs, owned: [] };
+    try {
+      localStorage.setItem(CHEAT_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+  }
   // v1.6: 'auto' switched themes by date. Now her pick wins, so lock in what she was seeing.
   if (s.settings.theme === 'auto' || !s.settings.theme) {
     const now = new Date();
@@ -307,8 +365,10 @@ function renderAmbient(t) {
 
 /** The theme she's wearing. With the cheat on, holiday themes work any day. */
 function currentTheme(date) {
-  const pick = Themes.ALL_THEMES.find((t) => t.id === state.settings.theme);
-  if (state.meta.allUnlocked && pick) return pick;
+  if (Cheat.on()) {
+    const pick = Themes.ALL_THEMES.find((t) => t.id === (Cheat.theme() || state.settings.theme));
+    if (pick) return pick;
+  }
   return Themes.activeTheme(state.settings.theme, date, state.meta.themeBeforeHoliday);
 }
 
@@ -321,7 +381,7 @@ function themePickerHtml() {
   return `
     <h3>Theme</h3>
     <div class="theme-picker">
-      ${(state.meta.allUnlocked ? Themes.THEMES : Themes.availableThemes(now)).map((t) => chip(t.id, t.emoji, t.name, t.holiday && !state.meta.allUnlocked ? 'Limited time' : '')).join('')}
+      ${(Cheat.on() ? Themes.THEMES : Themes.availableThemes(now)).map((t) => chip(t.id, t.emoji, t.name, t.holiday && !Cheat.on() ? 'Limited time' : '')).join('')}
     </div>
     ${collectionHtml(current)}`;
 }
@@ -332,16 +392,7 @@ function themePickerHtml() {
 
 function checkMachineUnlock() {
   const gb = state.meta.gumballs;
-  if (state.meta.allUnlocked) {
-    const missing = Gumballs.GUMBALLS.map((g) => g.id).filter((id) => !gb.owned.includes(id));
-    if (missing.length || !gb.unlocked) {
-      gb.owned = [...gb.owned, ...missing];
-      gb.unlocked = gb.introSeen = true;
-      save();
-    }
-    return;
-  }
-  if (gb.unlocked) return;
+  if (gb.unlocked || Cheat.on()) return;
   if (snapshot().skips.available >= Gumballs.UNLOCK_AT) {
     gb.unlocked = true;
     save();
@@ -351,7 +402,7 @@ function checkMachineUnlock() {
 function renderMachineCard() {
   const el = $('#machine-card');
   const gb = state.meta.gumballs;
-  if (!gb.unlocked || gb.introSeen) {
+  if (!gb.unlocked || gb.introSeen || Cheat.on()) {
     el.innerHTML = '';
     return;
   }
@@ -370,7 +421,7 @@ function renderMachineCard() {
 
 /** The gumball machine drawing. Gumball colours are the themes still inside it. */
 function machineSvg() {
-  const owned = state.meta.gumballs.owned;
+  const owned = ownedIds();
   const left = Gumballs.GUMBALL_THEMES.filter((t) => !owned.includes(t.id)).map((t) => t.ball);
   const colors = left.length ? left : ['#f3d9e2', '#e6dcf7', '#d9efe9'];
   const spots = [
@@ -405,14 +456,14 @@ function machineSvg() {
 
 function openMachine() {
   const gb = state.meta.gumballs;
-  if (!gb.unlocked) return;
-  if (!gb.introSeen) {
+  if (!machineUnlocked()) return;
+  if (!gb.introSeen && !Cheat.on()) {
     gb.introSeen = true;
     save({ dirty: false });
     renderMachineCard();
   }
   const { available } = snapshot().skips;
-  const owned = gb.owned;
+  const owned = ownedIds();
   const left = Gumballs.pool(owned).length;
   // Picking a collection (2 tickets) only appears once she's discovered more than one.
   const found = Gumballs.revealedSets(owned);
@@ -452,6 +503,7 @@ async function doSpin(setId) {
   const gb = state.meta.gumballs;
   const cost = setId ? Gumballs.SET_SPIN_COST : Gumballs.SPIN_COST;
   if (snapshot().skips.available < cost) return toast('Not enough skip tickets yet. Keep stepping! 👟');
+  if (Cheat.on()) return toast('Cheat mode is on, so you already have everything! 🔓');
   const id = Gumballs.spin(gb.owned, setId);
   if (!id) return toast('Nothing left in there, you’ve got them all! 🏆');
   const setOf = Gumballs.GUMBALLS.find((g) => g.id === id).set;
@@ -506,8 +558,8 @@ async function doSpin(setId) {
 
 function collectionHtml(current) {
   const gb = state.meta.gumballs;
-  if (!gb.unlocked) return '';
-  const owned = gb.owned;
+  if (!machineUnlocked()) return '';
+  const owned = ownedIds();
   const sets = Gumballs.revealedSets(owned);
   const tile = (t) =>
     `<button class="ball-tile ${current.id === t.id ? 'on' : ''}" data-theme-pick="${t.id}" type="button"><span class="ball" style="background:${t.ball}">${t.emoji}</span><span class="nm">${esc(t.name)}</span></button>`;
@@ -598,6 +650,10 @@ function maybeAnnounceHoliday() {
 
 /** Pick a theme. Remembers her non-holiday pick so an expired holiday can hand it back. */
 function chooseTheme(id) {
+  if (Cheat.on()) {
+    Cheat.setTheme(id); // cheat-mode picks never touch her real theme
+    return render();
+  }
   if (!Themes.isHoliday(id)) state.meta.themeBeforeHoliday = id;
   else if (!Themes.isHoliday(state.settings.theme)) state.meta.themeBeforeHoliday = state.settings.theme;
   state.settings.theme = id;
@@ -702,8 +758,8 @@ function renderStats() {
       <div class="stat-num">${best}</div>
       <div class="stat-label">best streak</div>
     </div>
-    <div class="stat card skips ${state.meta.gumballs.unlocked ? 'tappable' : ''}" id="stat-skips" ${state.meta.gumballs.unlocked ? 'data-open-machine role="button" tabindex="0" aria-label="Open the Theme Machine"' : ''}>
-      ${state.meta.gumballs.unlocked ? '<span class="stat-badge" aria-hidden="true">🍬</span>' : ''}
+    <div class="stat card skips ${machineUnlocked() ? 'tappable' : ''}" id="stat-skips" ${machineUnlocked() ? 'data-open-machine role="button" tabindex="0" aria-label="Open the Theme Machine"' : ''}>
+      ${machineUnlocked() ? '<span class="stat-badge" aria-hidden="true">🍬</span>' : ''}
       <div class="stat-emoji">🎟️</div>
       <div class="stat-num">${skips.available}</div>
       <div class="stat-label">skip day${skips.available === 1 ? '' : 's'}</div>
@@ -1130,13 +1186,16 @@ function openDaySheet(key) {
 }
 
 function openSettings() {
-  const { name, regularGoal, bigGoal } = state.settings;
+  const { name } = state.settings;
+  const cheat = Cheat.on();
+  const { regularGoal, bigGoal } = cheat ? CHEAT : state.settings;
   openSheet(`
     <h2>Settings</h2>
     <form class="settings-form" data-settings-form>
       <label>Your name<input name="name" type="text" maxlength="30" value="${esc(name)}" placeholder="So we can cheer for you" /></label>
       <label>👟 Daily goal (steps)<input name="regularGoal" type="number" inputmode="numeric" min="1" step="1" value="${regularGoal}" required /></label>
       <label>🌟 Big goal (steps)<input name="bigGoal" type="number" inputmode="numeric" min="1" step="1" value="${bigGoal}" required /></label>
+      ${cheat ? '<p class="small cheat-note">🔓 Cheat mode is on, on this phone only. Save any other goals to turn it off.</p>' : ''}
       <button class="btn primary" type="submit">Save</button>
     </form>
     <hr />
@@ -1176,14 +1235,8 @@ function googleSettingsHtml() {
     </div>`;
 }
 
-// Cheat code: save these as the goals in Settings to unlock everything.
-// The goals themselves are left unchanged.
-const CHEAT = { regularGoal: 1683, bigGoal: 3289680 };
-
 function unlockEverything() {
-  state.meta.allUnlocked = true;
-  checkMachineUnlock();
-  save();
+  if (!Cheat.on()) Cheat.set(true);
   closeSheet();
   render();
   fx.vibrate([50, 40, 50, 40, 150]);
@@ -1201,9 +1254,19 @@ function saveSettings(form) {
   const data = new FormData(form);
   const regularGoal = Math.round(Number(data.get('regularGoal')));
   const bigGoal = Math.round(Number(data.get('bigGoal')));
-  if (regularGoal === CHEAT.regularGoal && bigGoal === CHEAT.bigGoal) return unlockEverything();
+  if (regularGoal === CHEAT.regularGoal && bigGoal === CHEAT.bigGoal) {
+    if (Cheat.on()) {
+      state.settings.name = String(data.get('name') || '').trim();
+      save();
+      closeSheet();
+      return render();
+    }
+    return unlockEverything();
+  }
   if (!(regularGoal >= 1)) return toast('Enter a daily goal 👟');
   if (!(bigGoal > regularGoal)) return toast('Big goal should be bigger than the daily goal 🙂');
+  const wasCheating = Cheat.on();
+  if (wasCheating) Cheat.set(false);
   const changed = regularGoal !== state.settings.regularGoal || bigGoal !== state.settings.bigGoal;
   state.settings.name = String(data.get('name') || '').trim();
   state.settings.regularGoal = regularGoal;
@@ -1215,7 +1278,7 @@ function saveSettings(form) {
   save();
   closeSheet();
   render();
-  toast('Saved! ✅');
+  toast(wasCheating ? 'Cheat mode off. Everything’s back to normal ✅' : 'Saved! ✅');
 }
 
 async function exportBackup() {

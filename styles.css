@@ -1113,6 +1113,13 @@ html[data-theme='christmas'] {
 
 
 /* ================= Theme Machine ================= */
+.cheat-note {
+  background: var(--skip-soft);
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-weight: 700;
+}
+
 .modal-emoji:empty { display: none; }
 
 .stat.tappable { cursor: pointer; position: relative; }
