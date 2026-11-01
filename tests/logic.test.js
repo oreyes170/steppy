@@ -229,3 +229,17 @@ test('every gumball theme gets a full, readable palette', async () => {
     assert.equal(T.activeTheme(t.id, new Date(2026, 5, 1)).id, t.id, 'gumball themes never expire');
   }
 });
+
+test('restoring a backup never loses Theme Machine progress', () => {
+  const remote = { settings: {}, days: { '2026-11-01': { status: 'big' } }, meta: { gumballs: { unlocked: true, introSeen: true, owned: ['ts-red', 'ts-1989'], spent: 2 }, holidaysAnnounced: ['halloween-2026'] } };
+  // a new phone where she already logged a day before restoring
+  const local = { settings: { onboarded: true }, days: { '2026-11-03': { status: 'regular' } }, meta: { gumballs: { unlocked: false, introSeen: false, owned: [], spent: 0 } } };
+  const m = L.mergeBackup(local, remote);
+  assert.deepEqual(m.meta.gumballs, { unlocked: true, introSeen: true, owned: ['ts-red', 'ts-1989'], spent: 2 });
+  assert.deepEqual(m.meta.holidaysAnnounced, ['halloween-2026']);
+  assert.equal(Object.keys(m.days).length, 2);
+  // both sides won different themes: keep all of them
+  const both = L.mergeGumballs({ owned: ['ts-lover'], spent: 1 }, { owned: ['ts-red'], spent: 1, unlocked: true });
+  assert.deepEqual(both.owned.sort(), ['ts-lover', 'ts-red']);
+  assert.equal(both.unlocked, true);
+});

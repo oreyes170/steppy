@@ -252,7 +252,23 @@ export function mergeBackup(local, remote) {
   return {
     ...pick,
     settings: { ...(local?.settings || {}), ...(fresh ? remote?.settings || {} : {}), onboarded: true },
-    meta: { ...(local?.meta || {}), ...(fresh ? remote?.meta || {} : {}), startedOn: starts[0] || null },
+    meta: {
+      ...(local?.meta || {}),
+      ...(fresh ? remote?.meta || {} : {}),
+      startedOn: starts[0] || null,
+      gumballs: mergeGumballs(local?.meta?.gumballs, remote?.meta?.gumballs),
+      holidaysAnnounced: [...new Set([...(remote?.meta?.holidaysAnnounced || []), ...(local?.meta?.holidaysAnnounced || [])])],
+    },
     days: { ...remoteDays, ...localDays },
+  };
+}
+
+/** Theme Machine progress from two places: keep every theme from both, never refund tickets. */
+export function mergeGumballs(a = {}, b = {}) {
+  return {
+    unlocked: !!(a.unlocked || b.unlocked),
+    introSeen: !!(a.introSeen || b.introSeen),
+    owned: [...new Set([...(b.owned || []), ...(a.owned || [])])],
+    spent: Math.max(a.spent || 0, b.spent || 0),
   };
 }
