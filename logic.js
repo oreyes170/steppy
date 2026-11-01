@@ -124,8 +124,9 @@ function median(nums) {
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
-const round500 = (n) => Math.round(n / 500) * 500;
-const floor500 = (n) => Math.floor(n / 500) * 500;
+/** The goal coach suggests goals in steps of 100 (e.g. 7,300). */
+const round100 = (n) => Math.round(n / 100) * 100;
+const floor100 = (n) => Math.floor(n / 100) * 100;
 
 // ---------- goal coach ----------
 
@@ -159,8 +160,9 @@ export function suggestGoals({ days, settings, meta = {} }, todayKey) {
   const stats = { days: n, regHits, bigHits };
 
   const finish = (kind, regularGoal, bigGoal, title, message) => {
-    regularGoal = Math.max(1000, regularGoal);
-    bigGoal = Math.max(regularGoal + 1000, bigGoal);
+    // Only goals the coach is changing get rounded; her own exact numbers stay as they are.
+    if (regularGoal !== reg) regularGoal = Math.max(1000, round100(regularGoal));
+    if (bigGoal !== big || bigGoal < regularGoal + 1000) bigGoal = Math.max(regularGoal + 1000, round100(bigGoal));
     if (regularGoal === reg && bigGoal === big) return null;
     return { kind, regularGoal, bigGoal, title, message, stats };
   };
@@ -193,7 +195,7 @@ export function suggestGoals({ days, settings, meta = {} }, todayKey) {
   // Struggling → make the goal friendlier. No shame, just momentum.
   if (regRate < 0.5) {
     let newReg = reg - 1000;
-    if (med && med < reg) newReg = Math.max(reg - 2000, Math.min(reg - 500, floor500(med)));
+    if (med && med < reg) newReg = Math.max(reg - 2000, Math.min(reg - 500, floor100(med)));
     const newBig = bigRate === 0 ? Math.max(newReg + 2000, big - 1000) : big;
     return finish(
       'lower',
@@ -206,7 +208,7 @@ export function suggestGoals({ days, settings, meta = {} }, todayKey) {
 
   // Doing fine on regular, but the big goal never happens → make it reachable.
   if (bigRate === 0 && n >= 10 && regRate >= 0.7) {
-    const target = med ? round500(Math.max(med * 1.2, reg + 1500)) : big - 1000;
+    const target = med ? round100(Math.max(med * 1.2, reg + 1500)) : big - 1000;
     return finish(
       'lower-big',
       reg,

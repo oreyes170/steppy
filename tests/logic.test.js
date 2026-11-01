@@ -75,7 +75,7 @@ test('coach suggests lowering when she is struggling', () => {
 test('coach uses real step counts when lowering', () => {
   const steps = [5000, 5200, 4800, 7100, 5100, 4900, 5300];
   const s = L.suggestGoals({ days: days('mmmrmmm', TODAY, steps), settings }, TODAY);
-  assert.equal(s.regularGoal, 5000);
+  assert.equal(s.regularGoal, 5100); // median step count, to the nearest 100
 });
 
 test('coach suggests raising when she is consistent', () => {
@@ -175,4 +175,13 @@ test('activeTheme: auto follows the season; out-of-season picks fall back', asyn
   assert.equal(T.activeTheme('classic', nov1).id, 'classic');
   assert.equal(T.activeTheme('christmas', nov1).id, 'halloween');
   assert.equal(T.activeTheme('auto', new Date(2026, 1, 1)).id, 'classic');
+});
+
+test('coach suggestions land on steps of 100, even for odd goals', () => {
+  const s = L.suggestGoals({ days: days('rrrrrrrrrr'), settings: { regularGoal: 6789, bigGoal: 12345 } }, TODAY);
+  assert.equal(s.regularGoal, 7300);
+  assert.equal(s.bigGoal, 12345); // untouched goals keep her exact number
+  const b = L.suggestGoals({ days: days('bbbbbbbb'), settings: { regularGoal: 6789, bigGoal: 12345 } }, TODAY);
+  assert.equal(b.bigGoal, 13300);
+  assert.equal(b.regularGoal, 7300);
 });
