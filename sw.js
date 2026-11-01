@@ -1,5 +1,6 @@
-// Offline support: cache the app shell, serve it cache-first, refresh in the background.
-const CACHE = 'steppy-1.4.0'; // keep in sync with version.js
+// Offline support. Online: always load the newest files from the network (so updates
+// show up right away). Offline or very slow network: fall back to the saved copy.
+const CACHE = 'steppy-1.4.1'; // keep in sync with version.js
 const ASSETS = [
   './',
   'index.html',
@@ -17,9 +18,16 @@ const ASSETS = [
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
 ];
+const NETWORK_TIMEOUT_MS = 4000;
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // cache: 'reload' skips the browser's HTTP cache so we never save stale files.
+  e.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -32,16 +40,24 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
-  e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((cached) => {
-      const network = fetch(e.request)
-        .then((res) => {
-          if (res.ok) caches.open(CACHE).then((c) => c.put(e.request, res.clone()));
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    }),
-  );
+  const req = e.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  e.respondWith(networkFirst(req));
 });
+
+async function networkFirst(req) {
+  const cache = await caches.open(CACHE);
+  const network = fetch(req, { cache: 'no-cache' }).then((res) => {
+    if (res.ok) cache.put(req, res.clone());
+    return res;
+  });
+  const timeout = new Promise((resolve) => setTimeout(resolve, NETWORK_TIMEOUT_MS));
+  try {
+    const res = await Promise.race([network, timeout]);
+    if (res) return res;
+  } catch {
+    /* offline */
+  }
+  const cached = await cache.match(req, { ignoreSearch: true });
+  return cached || network;
+}
