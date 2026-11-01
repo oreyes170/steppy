@@ -99,16 +99,19 @@ h1 {
   background-clip: text;
   color: transparent;
 }
-.logo-feet {
-  -webkit-text-fill-color: initial;
-  color: initial;
-  display: inline-block;
-  animation: walk 2.4s ease-in-out infinite;
+h1 .logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  vertical-align: -6px;
+  margin-right: 10px;
+  box-shadow: 0 3px 10px rgba(38, 124, 139, 0.35);
+  animation: hop 2.6s ease-in-out infinite;
 }
-@keyframes walk {
-  0%, 100% { transform: translateX(0) rotate(0); }
-  25% { transform: translateX(3px) rotate(-6deg); }
-  75% { transform: translateX(-3px) rotate(6deg); }
+@keyframes hop {
+  0%, 70%, 100% { transform: translateY(0) rotate(0); }
+  80% { transform: translateY(-5px) rotate(-6deg); }
+  90% { transform: translateY(0) rotate(3deg); }
 }
 
 .icon-btn {
