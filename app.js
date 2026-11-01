@@ -174,7 +174,7 @@ function applyTheme() {
   theme = t;
   document.documentElement.dataset.theme = t.id;
   $('#theme-color')?.setAttribute('content', t.themeColor);
-  fx.setPalette(t.confetti);
+  fx.setPalette(t.confetti, t.confettiEmoji);
   if (ambientFor !== t.id) renderAmbient(t);
 }
 
@@ -1072,7 +1072,7 @@ document.addEventListener('click', (e) => {
     save();
     render();
     openSettings();
-    fx.confetti({ count: 60 });
+    fx.confetti({ count: 90 });
     return;
   }
   if (t.id === 'prev-month') {

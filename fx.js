@@ -3,10 +3,13 @@
 const COLORS = ['#ff6f91', '#ffc75f', '#4ecdc4', '#a78bfa', '#ff9671', '#7dd3fc', '#f9f871'];
 
 let palette = COLORS;
-/** Holiday themes swap the confetti colours. Pass null for the default. */
-export function setPalette(colors) {
+let paletteEmojis = [];
+/** Holiday themes swap the confetti colours and mix in their emoji. Pass null for the defaults. */
+export function setPalette(colors, emojis) {
   palette = colors && colors.length ? colors : COLORS;
+  paletteEmojis = emojis && emojis.length ? emojis : [];
 }
+const EMOJI_SHARE = 0.17; // about 1 in 6 confetti pieces is a theme emoji
 
 const canvas = document.getElementById('fx');
 const ctx = canvas.getContext('2d');
@@ -31,9 +34,11 @@ export function confetti({
   spread = 0.9,
   power = 1,
   colors = palette,
+  emojis = paletteEmojis,
 } = {}) {
   if (reducedMotion()) return;
   for (let i = 0; i < count; i++) {
+    const emoji = emojis.length && Math.random() < EMOJI_SHARE ? emojis[Math.floor(Math.random() * emojis.length)] : null;
     const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * spread;
     const speed = (7 + Math.random() * 9) * power;
     particles.push({
@@ -48,8 +53,15 @@ export function confetti({
       color: colors[i % colors.length],
       life: 0,
       max: 140 + Math.random() * 70,
-      shape: Math.random() < 0.3 ? 'circle' : 'rect',
+      shape: emoji ? 'emoji' : Math.random() < 0.3 ? 'circle' : 'rect',
+      emoji,
+      size: 18 + Math.random() * 12,
     });
+    if (emoji) {
+      const p = particles[particles.length - 1];
+      p.vr *= 0.4; // emoji tumble a bit more gently
+      p.max += 30;
+    }
   }
   if (!running) {
     running = true;
@@ -73,7 +85,12 @@ function tick() {
     ctx.translate(p.x, p.y);
     ctx.rotate(p.rot);
     ctx.fillStyle = p.color;
-    if (p.shape === 'circle') {
+    if (p.shape === 'emoji') {
+      ctx.font = `${p.size}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.emoji, 0, 0);
+    } else if (p.shape === 'circle') {
       ctx.beginPath();
       ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
       ctx.fill();
