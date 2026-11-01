@@ -1,5 +1,6 @@
 import * as L from './logic.js';
 import * as fx from './fx.js';
+import * as Drive from './drive.js';
 
 // ---------------------------------------------------------------------------
 // State & persistence
@@ -18,6 +19,8 @@ const defaultState = () => ({
     celebrated: null,
     lastBackupOn: null,
     backupSnoozedUntil: null,
+    changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
+    google: { connected: false, email: '', fileId: null, lastSyncAt: 0, needsReconnect: false, snoozedUntil: null },
   },
 });
 
@@ -37,17 +40,19 @@ function normalize(s) {
     ...d,
     ...s,
     settings: { ...d.settings, ...(s.settings || {}) },
-    meta: { ...d.meta, ...(s.meta || {}) },
+    meta: { ...d.meta, ...(s.meta || {}), google: { ...d.meta.google, ...(s.meta?.google || {}) } },
     days: s.days && typeof s.days === 'object' ? s.days : {},
   };
 }
 
-function save() {
+function save({ dirty = true } = {}) {
+  if (dirty) state.meta.changedAt = Date.now();
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(state));
   } catch {
     toast('Couldn’t save — is storage full or in private mode?');
   }
+  if (dirty) scheduleSync();
 }
 
 let state = load();
@@ -251,6 +256,37 @@ function backupDue() {
 
 function renderBackupReminder() {
   const el = $('#backup');
+  renderSyncStatus();
+  if (Drive.enabled()) {
+    const g = state.meta.google;
+    const snoozed = g.snoozedUntil && todayKey() < g.snoozedUntil;
+    if (!state.settings.onboarded || snoozed || (g.connected && !g.needsReconnect)) {
+      el.innerHTML = '';
+      return;
+    }
+    el.innerHTML = g.needsReconnect
+      ? `
+      <div class="card backup-card">
+        <p class="eyebrow">Google backup</p>
+        <h3>Tap to reconnect ☁️</h3>
+        <p class="muted small">Google asked to confirm it’s you. Your days are safe on this phone. Reconnect so they keep backing up.</p>
+        <div class="row">
+          <button class="btn primary" data-google-connect>Reconnect</button>
+          <button class="btn ghost" data-snooze-google>Later</button>
+        </div>
+      </div>`
+      : `
+      <div class="card backup-card">
+        <p class="eyebrow">Keep your streak safe</p>
+        <h3>Back up to Google ☁️</h3>
+        <p class="muted small">Sign in once and every day you log is saved to Google Drive automatically. New phone? Everything comes right back.</p>
+        <div class="row">
+          <button class="btn primary" data-google-connect>Sign in with Google</button>
+          <button class="btn ghost" data-snooze-google>Later</button>
+        </div>
+      </div>`;
+    return;
+  }
   if (!backupDue()) {
     el.innerHTML = '';
     return;
@@ -266,6 +302,29 @@ function renderBackupReminder() {
         <button class="btn ghost" data-snooze-backup>Later</button>
       </div>
     </div>`;
+}
+
+function agoText(ms) {
+  const mins = Math.round((Date.now() - ms) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs} hr${hrs === 1 ? '' : 's'} ago`;
+  return new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function syncStatusText() {
+  const g = state.meta.google;
+  if (!Drive.enabled() || !g.connected) return '';
+  if (syncing) return '☁️ Saving to Google…';
+  if (g.needsReconnect) return '☁️ Google backup paused — tap Reconnect above';
+  if (g.lastSyncAt >= state.meta.changedAt) return `☁️ Backed up to Google · ${agoText(g.lastSyncAt)}`;
+  return '☁️ Saves to Google next time you open Steppy';
+}
+
+function renderSyncStatus() {
+  const el = $('#sync-status');
+  if (el) el.textContent = syncStatusText();
 }
 
 function lastBackupText() {
@@ -544,14 +603,37 @@ function openSettings() {
     </form>
     <hr />
     <h3>Backup</h3>
-    <p class="muted small">Your days are saved only on this phone. Deleting the Steppy icon from your home screen erases them, so back up now and then. Choose <b>Save to Files</b> (iCloud Drive) or send the file to someone you trust.</p>
-    <p class="small"><b>${lastBackupText()}</b></p>
+    ${Drive.enabled() ? googleSettingsHtml() : ''}
+    ${Drive.enabled() ? '<details class="file-backup"><summary>Backup file (optional)</summary>' : ''}
+    <p class="muted small">${
+      Drive.enabled()
+        ? 'You can also save a copy as a file (Save to Files, or text it to someone).'
+        : 'Your days are saved only on this phone. Deleting the Steppy icon from your home screen erases them, so back up now and then. Choose <b>Save to Files</b> (iCloud Drive) or send the file to someone you trust.'
+    }</p>
+    ${Drive.enabled() ? '' : `<p class="small"><b>${lastBackupText()}</b></p>`}
     <div class="row">
-      <button class="btn ghost" data-export>Back up</button>
-      <label class="btn ghost file-btn">Restore<input type="file" accept=".json,application/json,text/plain" data-import hidden /></label>
+      <button class="btn ghost" data-export>Save file</button>
+      <label class="btn ghost file-btn">Restore file<input type="file" accept=".json,application/json,text/plain" data-import hidden /></label>
     </div>
+    ${Drive.enabled() ? '</details>' : ''}
     <button class="link-btn danger center-block" data-reset>Reset everything</button>
   `);
+}
+
+function googleSettingsHtml() {
+  const g = state.meta.google;
+  if (!g.connected) {
+    return `
+      <p class="muted small">Sign in with Google once and Steppy saves your days to Google Drive automatically.</p>
+      <button class="btn primary wide" data-google-connect>Sign in with Google</button>`;
+  }
+  return `
+    <p class="small">☁️ Backing up automatically${g.email ? ` to <b>${esc(g.email)}</b>` : ''}.</p>
+    <p class="muted small">${g.lastSyncAt ? `Last saved ${agoText(g.lastSyncAt)}.` : 'Not saved yet.'}</p>
+    <div class="row">
+      <button class="btn ghost" data-google-sync>Back up now</button>
+      <button class="btn ghost" data-google-disconnect>Sign out</button>
+    </div>`;
 }
 
 function saveSettings(form) {
@@ -578,7 +660,7 @@ async function exportBackup() {
   const prev = state.meta.lastBackupOn;
   state.meta.lastBackupOn = todayKey();
   const filename = `steppy-backup-${todayKey()}.json`;
-  const json = JSON.stringify(state, null, 2);
+  const json = JSON.stringify(backupPayload(), null, 2);
   const file = new File([json], filename, { type: 'application/json' });
   try {
     // On phones this opens the share sheet: Save to Files (iCloud Drive), Messages, Mail, AirDrop…
@@ -611,7 +693,9 @@ async function importBackup(file) {
     if (!data || typeof data.days !== 'object' || !data.settings) throw new Error('bad file');
     const hasData = Object.keys(state.days).length > 0;
     if (hasData && !confirm('Replace what’s on this phone with this backup?')) return;
+    const google = state.meta.google;
     state = normalize(data);
+    state.meta.google = google;
     state.settings.onboarded = true;
     save();
     closeSheet();
@@ -710,9 +794,14 @@ function onboard() {
         <p class="muted small">Not sure? Start easy — the goal coach will suggest changes as you go.</p>
         <button class="btn primary wide" type="submit">Let’s go! 🎉</button>
       </form>
-      <p class="muted small restore-hint">Used Steppy before?
+      ${
+        Drive.enabled()
+          ? `<p class="muted small restore-hint">Used Steppy before?
+        <button class="link-btn" type="button" data-google-restore>Restore with Google</button></p>`
+          : `<p class="muted small restore-hint">Used Steppy before?
         <label class="link-btn file-btn">Restore from a backup<input type="file" accept=".json,application/json,text/plain" data-import hidden /></label>
-      </p>`,
+      </p>`
+      }`,
   });
 }
 
@@ -750,6 +839,28 @@ document.addEventListener('click', (e) => {
   if ('openSettings' in t.dataset || t.id === 'settings-btn') return openSettings();
   if ('closeModal' in t.dataset) return closeModal();
   if ('export' in t.dataset) return exportBackup();
+  if ('googleConnect' in t.dataset) return Drive.signIn({ after: 'connect', hint: state.meta.google.email });
+  if ('googleRestore' in t.dataset) return Drive.signIn({ after: 'restore' });
+  if ('googleSync' in t.dataset) {
+    state.meta.changedAt = Date.now();
+    save({ dirty: false });
+    if (!Drive.token()) return Drive.signIn({ after: 'sync', hint: state.meta.google.email });
+    return syncNow({ announce: true });
+  }
+  if ('googleDisconnect' in t.dataset) {
+    if (!confirm('Stop backing up to Google? Your days stay on this phone.')) return;
+    Drive.forgetToken();
+    state.meta.google = { ...defaultState().meta.google };
+    save({ dirty: false });
+    closeSheet();
+    render();
+    return toast('Signed out of Google.');
+  }
+  if ('snoozeGoogle' in t.dataset) {
+    state.meta.google.snoozedUntil = L.addDays(todayKey(), 7);
+    save({ dirty: false });
+    return render();
+  }
   if ('snoozeBackup' in t.dataset) {
     state.meta.backupSnoozedUntil = L.addDays(todayKey(), 3);
     save();
@@ -759,6 +870,7 @@ document.addEventListener('click', (e) => {
   if ('reset' in t.dataset) {
     if (confirm('Erase all your days and settings? This can’t be undone.') && confirm('Really sure? 🥺')) {
       localStorage.removeItem(STORE_KEY);
+      Drive.forgetToken(); // never let an empty phone overwrite the Google backup
       state = defaultState();
       closeSheet();
       render();
@@ -832,15 +944,134 @@ document.addEventListener('keydown', (e) => {
 
 // Re-render when coming back to the app (the date may have changed overnight).
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') render();
+  if (document.visibilityState !== 'visible') return;
+  render();
+  if (!maybeRenewGoogle()) syncNow();
 });
+addEventListener('online', () => syncNow());
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Google Drive sync
+// ---------------------------------------------------------------------------
+
+let syncTimer = null;
+let syncing = false;
+
+/** What goes into a backup (sign-in details stay on the device). */
+function backupPayload() {
+  const { google, ...meta } = state.meta;
+  return { ...state, meta, app: 'steppy', exportedAt: new Date().toISOString() };
+}
+
+function scheduleSync(delay = 1500) {
+  if (!Drive.enabled() || !state.meta.google?.connected) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncNow(), delay);
+  renderSyncStatus();
+}
+
+async function syncNow({ announce = false } = {}) {
+  const g = state.meta.google;
+  if (syncing || !Drive.enabled() || !g.connected || !navigator.onLine) return;
+  if (!Drive.token()) return renderSyncStatus(); // renewed next time the app opens
+  if (g.lastSyncAt >= state.meta.changedAt) return renderSyncStatus();
+  if (Object.keys(state.days).length === 0) return; // never overwrite a backup with an empty phone
+  syncing = true;
+  renderSyncStatus();
+  const startedAt = Date.now();
+  try {
+    g.fileId = await Drive.upload(backupPayload(), g.fileId);
+    g.lastSyncAt = startedAt;
+    save({ dirty: false });
+    if (announce) toast('Backed up to Google ☁️');
+  } catch (e) {
+    if (announce) toast(e.code === 'auth' ? 'Google sign-in expired — reopen Steppy to reconnect.' : 'Couldn’t reach Google. Will try again later.');
+  } finally {
+    syncing = false;
+    renderSyncStatus();
+  }
+  if (state.meta.changedAt > g.lastSyncAt && g.lastSyncAt === startedAt) scheduleSync(); // changes made mid-upload
+}
+
+/** Quietly get a fresh Google token (leaves the page briefly). Returns true if it navigated away. */
+function maybeRenewGoogle() {
+  const g = state.meta.google;
+  if (!Drive.enabled() || !g.connected || g.needsReconnect || Drive.token() || !navigator.onLine) return false;
+  if (Date.now() - Drive.lastSilentAttempt() < 5 * 60 * 1000) return false; // avoid loops
+  Drive.silentRenew(g.email);
+  return true;
+}
+
+async function handleGoogleReturn(r) {
+  const g = state.meta.google;
+  if (r.error) {
+    if (r.silent) {
+      g.needsReconnect = true;
+      save({ dirty: false });
+      render();
+    } else if (r.error !== 'access_denied') {
+      toast('Google sign-in didn’t work. Please try again.');
+    }
+    return;
+  }
+  if (r.after === 'sync') {
+    g.needsReconnect = false;
+    save({ dirty: false });
+    return syncNow({ announce: !r.silent });
+  }
+  // 'connect' or 'restore': combine this phone with whatever is already in Drive.
+  try {
+    renderSyncStatus();
+    const [me, remote] = await Promise.all([Drive.whoAmI().catch(() => ({})), Drive.download()]);
+    const before = Object.keys(state.days).length;
+    const wasOnboarded = state.settings.onboarded;
+    const google = { ...g, connected: true, needsReconnect: false, email: me.emailAddress || g.email, fileId: remote?.id || g.fileId };
+    if (remote?.data?.days) {
+      const merged = normalize(L.mergeBackup(state, remote.data));
+      merged.meta.google = google;
+      state = merged;
+    } else {
+      state.meta.google = google;
+      if (r.after === 'restore' && !wasOnboarded) {
+        save({ dirty: false });
+        toast('No Steppy backup in that Google account yet — let’s start fresh! 👟', { duration: 5000 });
+        return;
+      }
+    }
+    state.meta.changedAt = Date.now();
+    save({ dirty: false });
+    closeModal();
+    render();
+    const restored = Object.keys(state.days).length - before;
+    if (restored > 0) {
+      fx.confetti({ count: 100 });
+      toast(`Welcome back! ${restored} day${restored === 1 ? '' : 's'} restored from Google 🎉`, { duration: 4500 });
+    } else {
+      fx.confetti({ count: 60, colors: ['#4ecdc4', '#7dd3fc', '#a78bfa', '#ffffff'] });
+      toast('All set! Steppy now backs up to Google automatically ☁️', { duration: 4500 });
+    }
+    await syncNow();
+  } catch {
+    toast('Couldn’t reach Google Drive. Please try again in a bit.');
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------
 
 render();
-if (!state.settings.onboarded) setTimeout(onboard, 250);
+(async () => {
+  const ret = Drive.enabled() ? Drive.fromRedirect() : null;
+  if (ret) await handleGoogleReturn(ret);
+  else if (maybeRenewGoogle()) return;
+  if (!state.settings.onboarded) setTimeout(onboard, 250);
+  syncNow();
+})();
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

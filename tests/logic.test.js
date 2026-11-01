@@ -118,3 +118,22 @@ test('month summary', () => {
   const d = { '2026-11-01': { status: 'big' }, '2026-11-02': { status: 'regular' }, '2026-10-31': { status: 'big' } };
   assert.deepEqual(L.monthSummary(d, 2026, 10), { goal: 2, big: 1 });
 });
+
+test('mergeBackup keeps every day and prefers this device on conflicts', () => {
+  const local = { settings: { name: 'A', regularGoal: 8000, onboarded: true }, days: { '2026-11-02': { status: 'big' } }, meta: { startedOn: '2026-11-02' } };
+  const remote = { settings: { name: 'B', regularGoal: 6000 }, days: { '2026-11-01': { status: 'regular' }, '2026-11-02': { status: 'missed' } }, meta: { startedOn: '2026-10-01' } };
+  const m = L.mergeBackup(local, remote);
+  assert.deepEqual(m.days, { '2026-11-01': { status: 'regular' }, '2026-11-02': { status: 'big' } });
+  assert.equal(m.settings.name, 'A');
+  assert.equal(m.meta.startedOn, '2026-10-01');
+});
+
+test('mergeBackup on a fresh device takes the backup settings', () => {
+  const local = { settings: { name: '', regularGoal: 7000, onboarded: false }, days: {}, meta: {} };
+  const remote = { settings: { name: 'Sam', regularGoal: 6500, bigGoal: 9000, onboarded: true }, days: { '2026-11-01': { status: 'big' } }, meta: { startedOn: '2026-10-20' } };
+  const m = L.mergeBackup(local, remote);
+  assert.equal(m.settings.name, 'Sam');
+  assert.equal(m.settings.regularGoal, 6500);
+  assert.equal(m.settings.onboarded, true);
+  assert.equal(Object.keys(m.days).length, 1);
+});

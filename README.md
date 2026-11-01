@@ -38,12 +38,18 @@ No build step. It's plain HTML/CSS/JS modules.
 
 It then opens full-screen like a normal app and works offline.
 
-### Keeping her data safe
+### Keeping her data safe (Google Drive backup)
 
-Data lives only on the phone. On iPhone, a home-screen web app has its **own** storage, separate from Safari. **Deleting the home-screen icon deletes the data**, and a new phone starts empty.
+Data lives on the phone, and on iPhone a home-screen app has its **own** storage: deleting the icon deletes the data. To protect it, Steppy backs up to Google Drive automatically:
 
-- Steppy shows a **backup reminder** once a week after a few days are logged. **Back up** opens the share sheet: pick **Save to Files** (iCloud Drive), or text the file to someone.
-- To restore on a new phone or after re-adding the icon, tap **Restore from a backup** on the welcome screen (or **Settings → Restore**) and pick the file.
+- **She signs in with Google once.** After that, every change is saved to `steppy-backup.json` in that Google Drive. Steppy can only see files it created itself (`drive.file` scope).
+- Google sign-ins last about an hour. When she opens the app and the sign-in has expired, Steppy quietly renews it with a quick hop to Google and back, so there's nothing to tap. If Google ever wants her to confirm it's her, a "Tap to reconnect" card appears; her days are safe on the phone in the meantime.
+- **New phone or re-added icon:** tap **Restore with Google** on the welcome screen.
+- Connecting merges the phone and Drive. Nothing is dropped, and if both have the same day, the phone wins. An empty phone never overwrites the backup.
+
+**Setup (one time):** put the OAuth client ID in `config.js`; the Web client the Rotation app uses works. In Google Cloud Console → Credentials → that client, add `https://oreyes170.github.io/steppy/` to **Authorised redirect URIs**. If the consent screen is in *Testing* mode, add her Google account under **Test users**.
+
+Without a client ID the Google features are hidden, and Steppy falls back to manual backup files with a weekly reminder.
 
 ## Code map
 
@@ -52,6 +58,7 @@ Data lives only on the phone. On iPhone, a home-screen web app has its **own** s
 | `logic.js` | Pure logic: dates, streaks, skip-day economy, goal coach (unit tested) |
 | `app.js` | State, rendering, logging and the celebration sequence |
 | `fx.js` | Confetti, fireworks, emoji rain, banners, flying tickets |
+| `drive.js`, `config.js` | Google sign-in and Drive backup |
 | `styles.css` | All styling, light and dark |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and home-screen install |
 

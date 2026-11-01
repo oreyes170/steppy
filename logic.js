@@ -232,3 +232,24 @@ export function monthSummary(days, year, month) {
   }
   return { goal, big };
 }
+
+// ---------- backup merge ----------
+
+/**
+ * Combine what's on this device with a backup. Nothing is dropped: days from both are
+ * kept, and where both have the same day, this device wins. If this device is fresh
+ * (no days logged yet), the backup's settings and goals are used.
+ */
+export function mergeBackup(local, remote) {
+  const localDays = local?.days || {};
+  const remoteDays = remote?.days || {};
+  const fresh = Object.keys(localDays).length === 0;
+  const pick = fresh ? remote : local;
+  const starts = [local?.meta?.startedOn, remote?.meta?.startedOn].filter(Boolean).sort();
+  return {
+    ...pick,
+    settings: { ...(local?.settings || {}), ...(fresh ? remote?.settings || {} : {}), onboarded: true },
+    meta: { ...(local?.meta || {}), ...(fresh ? remote?.meta || {} : {}), startedOn: starts[0] || null },
+    days: { ...remoteDays, ...localDays },
+  };
+}
