@@ -635,6 +635,7 @@ function popCell(key) {
 function openSheet(html) {
   const sheet = $('#sheet');
   sheet.innerHTML = `<div class="sheet-handle"></div>${html}`;
+  sheetGen++;
   sheet.hidden = false;
   $('#backdrop').hidden = false;
   requestAnimationFrame(() => {
@@ -643,16 +644,83 @@ function openSheet(html) {
   });
 }
 
+let sheetGen = 0; // guards against a closing sheet's delayed hide hiding a newly opened one
+
 function closeSheet() {
   const sheet = $('#sheet');
   if (sheet.hidden) return;
   sheet.classList.remove('open');
   $('#backdrop').classList.remove('open');
+  const gen = ++sheetGen;
   setTimeout(() => {
+    if (gen !== sheetGen) return;
     sheet.hidden = true;
     if ($('#modal').hidden) $('#backdrop').hidden = true;
   }, 250);
 }
+
+// Swipe the sheet down to close it (like a native iPhone sheet). It only starts when
+// the sheet is scrolled to the top, so scrolling inside a long sheet still works.
+(function enableSheetSwipe() {
+  const sheet = $('#sheet');
+  const backdrop = $('#backdrop');
+  let startY = 0;
+  let lastY = 0;
+  let lastT = 0;
+  let velocity = 0;
+  let dragging = false;
+  let tracking = false;
+
+  sheet.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1 || sheet.scrollTop > 0) return;
+    tracking = true;
+    dragging = false;
+    startY = lastY = e.touches[0].clientY;
+    lastT = e.timeStamp;
+    velocity = 0;
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', (e) => {
+    if (!tracking) return;
+    const y = e.touches[0].clientY;
+    const dy = y - startY;
+    if (!dragging) {
+      if (dy < -4 || sheet.scrollTop > 0) {
+        tracking = false; // swiping up: let the sheet scroll normally
+        return;
+      }
+      if (dy < 8) return;
+      dragging = true;
+      sheet.style.transition = 'none';
+      backdrop.style.transition = 'none';
+      document.activeElement?.blur?.(); // tuck the keyboard away
+    }
+    e.preventDefault();
+    const dt = Math.max(1, e.timeStamp - lastT);
+    velocity = (y - lastY) / dt; // px per ms
+    lastY = y;
+    lastT = e.timeStamp;
+    const offset = Math.max(0, dy);
+    sheet.style.transform = `translateY(${offset}px)`;
+    backdrop.style.opacity = String(Math.max(0, 1 - offset / (sheet.offsetHeight || 1)));
+  }, { passive: false });
+
+  const end = () => {
+    if (!tracking) return;
+    tracking = false;
+    if (!dragging) return;
+    dragging = false;
+    const offset = lastY - startY;
+    const shouldClose = offset > sheet.offsetHeight * 0.3 || velocity > 0.6;
+    sheet.style.transition = '';
+    backdrop.style.transition = '';
+    sheet.style.transform = '';
+    backdrop.style.opacity = '';
+    if (shouldClose) closeSheet();
+  };
+  sheet.addEventListener('touchend', end);
+  sheet.addEventListener('touchcancel', end);
+})();
 
 function openDaySheet(key) {
   const d = state.days[key];

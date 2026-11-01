@@ -655,6 +655,16 @@ h1 .logo-icon {
   background: var(--line);
   border-radius: 99px;
   margin: 0 auto 14px;
+  position: relative;
+}
+.sheet-handle::after {
+  /* bigger invisible grab area */
+  content: '';
+  position: absolute;
+  inset: -14px -60px;
+}
+.sheet {
+  overscroll-behavior: contain;
 }
 .sheet h2 {
   font-size: 22px;
