@@ -42,8 +42,8 @@
 
 * {
   box-sizing: border-box;
-  /* no double-tap-to-zoom (taps also respond instantly); pinch zoom still works */
-  touch-action: manipulation;
+  /* scrolling only: no double-tap or pinch zoom (taps also respond instantly) */
+  touch-action: pan-x pan-y;
 }
 
 html {

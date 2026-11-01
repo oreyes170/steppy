@@ -1592,6 +1592,19 @@ document.addEventListener('keydown', (e) => {
   else closeSheet();
 });
 
+// No zooming. iPhone Safari ignores the viewport's user-scalable=no, so cancel pinch
+// gestures directly (Safari's gesture events, plus any two-finger touch move).
+for (const type of ['gesturestart', 'gesturechange', 'gestureend']) {
+  document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+}
+document.addEventListener(
+  'touchmove',
+  (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  },
+  { passive: false },
+);
+
 // Re-render when coming back to the app (the date may have changed overnight).
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return;
