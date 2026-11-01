@@ -25,6 +25,7 @@ export const THEMES = [
   },
   {
     id: 'halloween',
+    headerIcon: 'icons/header-halloween.png',
     name: 'Halloween',
     emoji: '🎃',
     // Oct 1 – Nov 5 (Thanksgiving takes over on Nov 6)
@@ -39,6 +40,7 @@ export const THEMES = [
   },
   {
     id: 'thanksgiving',
+    headerIcon: 'icons/header-thanksgiving.png',
     name: 'Thanksgiving',
     emoji: '🦃',
     // Nov 6 – Thanksgiving Day
@@ -53,6 +55,7 @@ export const THEMES = [
   },
   {
     id: 'christmas',
+    headerIcon: 'icons/header-christmas.png',
     name: 'Christmas',
     emoji: '🎄',
     // Day after Thanksgiving – Dec 31

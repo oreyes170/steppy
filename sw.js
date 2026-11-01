@@ -1,6 +1,6 @@
 // Offline support. Online: always load the newest files from the network (so updates
 // show up right away). Offline or very slow network: fall back to the saved copy.
-const CACHE = 'steppy-1.6.5'; // keep in sync with version.js
+const CACHE = 'steppy-1.6.6'; // keep in sync with version.js
 const ASSETS = [
   './',
   'index.html',
@@ -18,6 +18,9 @@ const ASSETS = [
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
+  'icons/header-halloween.png',
+  'icons/header-thanksgiving.png',
+  'icons/header-christmas.png',
 ];
 const NETWORK_TIMEOUT_MS = 4000;
 

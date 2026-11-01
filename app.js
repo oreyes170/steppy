@@ -174,6 +174,9 @@ function applyTheme() {
   theme = t;
   document.documentElement.dataset.theme = t.id;
   $('#theme-color')?.setAttribute('content', t.themeColor);
+  const logo = $('#logo-icon');
+  const logoSrc = t.headerIcon || 'icons/icon-192.png';
+  if (logo && logo.getAttribute('src') !== logoSrc) logo.setAttribute('src', logoSrc);
   fx.setPalette(t.confetti, t.confettiEmoji);
   if (ambientFor !== t.id) renderAmbient(t);
 }

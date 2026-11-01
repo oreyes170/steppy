@@ -119,13 +119,7 @@ h1 .logo-icon {
   border-radius: 11px;
   vertical-align: -6px;
   margin-right: 10px;
-  box-shadow: 0 3px 10px rgba(38, 124, 139, 0.35);
-  animation: hop 2.6s ease-in-out infinite;
-}
-@keyframes hop {
-  0%, 70%, 100% { transform: translateY(0) rotate(0); }
-  80% { transform: translateY(-5px) rotate(-6deg); }
-  90% { transform: translateY(0) rotate(3deg); }
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
 }
 
 .icon-btn {
