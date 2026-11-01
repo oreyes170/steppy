@@ -257,6 +257,7 @@ export function mergeBackup(local, remote) {
       ...(fresh ? remote?.meta || {} : {}),
       startedOn: starts[0] || null,
       gumballs: mergeGumballs(local?.meta?.gumballs, remote?.meta?.gumballs),
+      allUnlocked: !!(local?.meta?.allUnlocked || remote?.meta?.allUnlocked),
       holidaysAnnounced: [...new Set([...(remote?.meta?.holidaysAnnounced || []), ...(local?.meta?.holidaysAnnounced || [])])],
     },
     days: { ...remoteDays, ...localDays },

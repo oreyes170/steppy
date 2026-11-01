@@ -27,6 +27,7 @@ const defaultState = () => ({
     lastMonthSeen: null, // 'YYYY-MM' — for the "Welcome to <Month>" greeting
     changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
     gumballs: { unlocked: false, introSeen: false, owned: [], spent: 0 }, // the Theme Machine
+    allUnlocked: false, // set by the cheat code: every theme, any day
     google: { connected: false, email: '', fileId: null, lastSyncAt: 0, needsReconnect: false, snoozedUntil: null },
   },
 });
@@ -250,7 +251,7 @@ function hsvToRgb(h, s, v) {
 function applyTheme() {
   const t = previewTheme && Themes.ALL_THEMES.some((x) => x.id === previewTheme)
     ? Themes.byId(previewTheme)
-    : Themes.activeTheme(state.settings.theme, new Date(), state.meta.themeBeforeHoliday);
+    : currentTheme(new Date());
   theme = t;
   const root = document.documentElement;
   root.dataset.theme = t.gumball ? 'gumball' : t.id;
@@ -304,16 +305,23 @@ function renderAmbient(t) {
   el.innerHTML = html;
 }
 
+/** The theme she's wearing. With the cheat on, holiday themes work any day. */
+function currentTheme(date) {
+  const pick = Themes.ALL_THEMES.find((t) => t.id === state.settings.theme);
+  if (state.meta.allUnlocked && pick) return pick;
+  return Themes.activeTheme(state.settings.theme, date, state.meta.themeBeforeHoliday);
+}
+
 function themePickerHtml() {
   const now = new Date();
-  const current = Themes.activeTheme(state.settings.theme, now, state.meta.themeBeforeHoliday);
+  const current = currentTheme(now);
   const isOn = (id) => current.id === id;
   const chip = (id, emoji, name, sub) =>
     `<button class="theme-chip ${isOn(id) ? 'on' : ''}" data-theme-pick="${id}" type="button"><span>${emoji}</span><span>${name}${sub ? `<small>${sub}</small>` : ''}</span></button>`;
   return `
     <h3>Theme</h3>
     <div class="theme-picker">
-      ${Themes.availableThemes(now).map((t) => chip(t.id, t.emoji, t.name, t.holiday ? 'Limited time' : '')).join('')}
+      ${(state.meta.allUnlocked ? Themes.THEMES : Themes.availableThemes(now)).map((t) => chip(t.id, t.emoji, t.name, t.holiday && !state.meta.allUnlocked ? 'Limited time' : '')).join('')}
     </div>
     ${collectionHtml(current)}`;
 }
@@ -324,6 +332,15 @@ function themePickerHtml() {
 
 function checkMachineUnlock() {
   const gb = state.meta.gumballs;
+  if (state.meta.allUnlocked) {
+    const missing = Gumballs.GUMBALLS.map((g) => g.id).filter((id) => !gb.owned.includes(id));
+    if (missing.length || !gb.unlocked) {
+      gb.owned = [...gb.owned, ...missing];
+      gb.unlocked = gb.introSeen = true;
+      save();
+    }
+    return;
+  }
   if (gb.unlocked) return;
   if (snapshot().skips.available >= Gumballs.UNLOCK_AT) {
     gb.unlocked = true;
@@ -1159,10 +1176,32 @@ function googleSettingsHtml() {
     </div>`;
 }
 
+// Cheat code: save these as the goals in Settings to unlock everything.
+// The goals themselves are left unchanged.
+const CHEAT = { regularGoal: 1683, bigGoal: 3289680 };
+
+function unlockEverything() {
+  state.meta.allUnlocked = true;
+  checkMachineUnlock();
+  save();
+  closeSheet();
+  render();
+  fx.vibrate([50, 40, 50, 40, 150]);
+  fx.fireworks(8);
+  showModal({
+    emoji: '🔓',
+    title: 'Cheat code accepted!',
+    body: `Every theme is unlocked: all ${Gumballs.GUMBALLS.length} gumballs, plus every holiday theme any day of the year. Pick one in Settings ⚙️`,
+    cta: 'Let’s see them! 🍬',
+    big: true,
+  });
+}
+
 function saveSettings(form) {
   const data = new FormData(form);
   const regularGoal = Math.round(Number(data.get('regularGoal')));
   const bigGoal = Math.round(Number(data.get('bigGoal')));
+  if (regularGoal === CHEAT.regularGoal && bigGoal === CHEAT.bigGoal) return unlockEverything();
   if (!(regularGoal >= 1)) return toast('Enter a daily goal 👟');
   if (!(bigGoal > regularGoal)) return toast('Big goal should be bigger than the daily goal 🙂');
   const changed = regularGoal !== state.settings.regularGoal || bigGoal !== state.settings.bigGoal;
