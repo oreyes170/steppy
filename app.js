@@ -696,7 +696,7 @@ function openSettings() {
     <h2>Settings</h2>
     <form class="settings-form" data-settings-form>
       <label>Your name<input name="name" type="text" maxlength="30" value="${esc(name)}" placeholder="So we can cheer for you" /></label>
-      <label>👟 Daily goal (steps)<input name="regularGoal" type="number" inputmode="numeric" min="500" step="500" value="${regularGoal}" required /></label>
+      <label>👟 Daily goal (steps)<input name="regularGoal" type="number" inputmode="numeric" min="1" step="1" value="${regularGoal}" required /></label>
       <label>🌟 Big goal (steps)<input name="bigGoal" type="number" inputmode="numeric" min="1" step="1" value="${bigGoal}" required /></label>
       <button class="btn primary" type="submit">Save</button>
     </form>
@@ -741,7 +741,7 @@ function saveSettings(form) {
   const data = new FormData(form);
   const regularGoal = Math.round(Number(data.get('regularGoal')));
   const bigGoal = Math.round(Number(data.get('bigGoal')));
-  if (!(regularGoal >= 500)) return toast('Daily goal should be at least 500 steps.');
+  if (!(regularGoal >= 1)) return toast('Enter a daily goal 👟');
   if (!(bigGoal > regularGoal)) return toast('Big goal should be bigger than the daily goal 🙂');
   const changed = regularGoal !== state.settings.regularGoal || bigGoal !== state.settings.bigGoal;
   state.settings.name = String(data.get('name') || '').trim();
@@ -889,7 +889,7 @@ function onboard() {
       <form class="settings-form" data-onboard-form>
         <label>What should we call you?<input name="name" type="text" maxlength="30" placeholder="Your name" /></label>
         <div class="row two">
-          <label>👟 Daily goal<input name="regularGoal" type="number" inputmode="numeric" min="500" step="500" value="${state.settings.regularGoal}" required /></label>
+          <label>👟 Daily goal<input name="regularGoal" type="number" inputmode="numeric" min="1" step="1" value="${state.settings.regularGoal}" required /></label>
           <label>🌟 Big goal<input name="bigGoal" type="number" inputmode="numeric" min="1" step="1" value="${state.settings.bigGoal}" required /></label>
         </div>
         <p class="muted small">Not sure? Start easy — the goal coach will suggest changes as you go.</p>
@@ -910,7 +910,7 @@ function finishOnboarding(form) {
   const data = new FormData(form);
   const regularGoal = Math.round(Number(data.get('regularGoal')));
   const bigGoal = Math.round(Number(data.get('bigGoal')));
-  if (!(regularGoal >= 500)) return toast('Daily goal should be at least 500 steps.');
+  if (!(regularGoal >= 1)) return toast('Enter a daily goal 👟');
   if (!(bigGoal > regularGoal)) return toast('Big goal should be bigger than the daily goal 🙂');
   state.settings = { ...state.settings, name: String(data.get('name') || '').trim(), regularGoal, bigGoal, onboarded: true };
   state.meta.startedOn = todayKey();
