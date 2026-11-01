@@ -7,4 +7,4 @@
 // In that OAuth client, make sure these are listed:
 //   Authorised JavaScript origins:  https://oreyes170.github.io
 //   Authorised redirect URIs:       https://oreyes170.github.io/steppy/
-export const GOOGLE_CLIENT_ID = '';
+export const GOOGLE_CLIENT_ID = '319349884400-u7e3cmp9ipuvtrdkp79n9fse3spm685c.apps.googleusercontent.com';
