@@ -397,7 +397,9 @@ function openMachine() {
   const { available } = snapshot().skips;
   const owned = gb.owned;
   const left = Gumballs.pool(owned).length;
-  const sets = Gumballs.revealedSets(owned).filter((s) => Gumballs.pool(owned, s.id).length);
+  // Picking a collection (2 tickets) only appears once she's discovered more than one.
+  const found = Gumballs.revealedSets(owned);
+  const sets = found.length >= 2 ? found.filter((st) => Gumballs.pool(owned, st.id).length) : [];
   const spinBtn = (cost, label, setId = '') => {
     const can = available >= cost && left > 0;
     return `<button class="btn ${setId ? 'ghost set-spin' : 'primary spin-btn'}" data-spin="${setId || 'any'}" ${can ? '' : 'disabled'}>${label} · ${cost} 🎟️</button>`;

@@ -36,7 +36,7 @@ The date rules are in `themes.js` (unit tested).
 ## The Theme Machine 🍬
 
 - **Unlocks** the first time she has **3 skip tickets** (the skip days), then stays unlocked. A "New unlocked!" card appears on the home screen, and tapping the 🎟️ counter opens the machine.
-- **1 ticket**: a random new theme from any collection. **2 tickets**: a random new theme from a collection she's already discovered. No repeats. Tickets spent here come off her skip days.
+- **1 ticket**: a random new theme from any collection. **2 tickets**: a random new theme from a collection she's already discovered (this option only appears once she's discovered at least two collections). No repeats. Tickets spent here come off her skip days.
 - **Collections stay secret** until she wins something from them. Then the set appears in Settings with `?` spots for the rest. A "🔒 More collections are hiding…" note shows while undiscovered sets remain.
 - The first collection is **🎤 Taylor Swift eras** (12 themes).
 - **Adding themes**: add an entry to `GUMBALLS` in `gumballs.js` (and a new set to `SETS` if needed). Each theme needs an id, name, gumball emoji, four colours (`bg`, `primary`, `accent`, `ink`, plus `dark: true` for dark themes), 3–5 emoji, a cheer line and a one-line pitch. The rest of the palette and the header icon tint are worked out from those. Preview it with `?theme=<id>`.
