@@ -403,6 +403,29 @@ h1 .logo-icon {
   flex: 1;
 }
 
+/* ---------- backup ---------- */
+.backup-card {
+  border: 2px solid var(--regular);
+}
+.backup-card h3 {
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+.backup-card .row {
+  margin-top: 12px;
+}
+.backup-card .row .btn {
+  flex: 1;
+}
+.restore-hint {
+  margin-top: 14px;
+  margin-bottom: 0 !important;
+}
+.restore-hint .link-btn {
+  display: inline;
+  cursor: pointer;
+}
+
 /* ---------- calendar ---------- */
 .cal-head {
   display: flex;

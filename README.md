@@ -38,7 +38,12 @@ No build step. It's plain HTML/CSS/JS modules.
 
 It then opens full-screen like a normal app and works offline.
 
-> Data lives on the phone's browser storage, so export a backup from Settings now and then.
+### Keeping her data safe
+
+Data lives only on the phone. On iPhone, a home-screen web app has its **own** storage, separate from Safari. **Deleting the home-screen icon deletes the data**, and a new phone starts empty.
+
+- Steppy shows a **backup reminder** once a week after a few days are logged. **Back up** opens the share sheet: pick **Save to Files** (iCloud Drive), or text the file to someone.
+- To restore on a new phone or after re-adding the icon, tap **Restore from a backup** on the welcome screen (or **Settings → Restore**) and pick the file.
 
 ## Code map
 

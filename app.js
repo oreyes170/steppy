@@ -11,7 +11,14 @@ const defaultState = () => ({
   version: 1,
   settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false },
   days: {}, // { 'YYYY-MM-DD': { status: 'regular'|'big'|'missed'|'skip', steps?: number } }
-  meta: { startedOn: null, goalsChangedOn: null, suggestionSnoozedUntil: null, celebrated: null },
+  meta: {
+    startedOn: null,
+    goalsChangedOn: null,
+    suggestionSnoozedUntil: null,
+    celebrated: null,
+    lastBackupOn: null,
+    backupSnoozedUntil: null,
+  },
 });
 
 function load() {
@@ -129,6 +136,7 @@ function render() {
   renderCatchup();
   renderStats();
   renderSuggestion();
+  renderBackupReminder();
   renderCalendar();
   renderGoals();
 }
@@ -229,6 +237,44 @@ function renderStats() {
       </div>
       <div class="stat-hint">${skips.pointsPerSkip - skips.progress} pts to next</div>
     </div>`;
+}
+
+const BACKUP_EVERY_DAYS = 7;
+
+function backupDue() {
+  const t = todayKey();
+  const { lastBackupOn, backupSnoozedUntil } = state.meta;
+  if (Object.keys(state.days).length < 3) return false;
+  if (backupSnoozedUntil && t < backupSnoozedUntil) return false;
+  return !lastBackupOn || L.addDays(lastBackupOn, BACKUP_EVERY_DAYS) <= t;
+}
+
+function renderBackupReminder() {
+  const el = $('#backup');
+  if (!backupDue()) {
+    el.innerHTML = '';
+    return;
+  }
+  const n = Object.keys(state.days).length;
+  el.innerHTML = `
+    <div class="card backup-card">
+      <p class="eyebrow">Keep your progress safe</p>
+      <h3>Time for a quick backup 💾</h3>
+      <p class="muted small">You’ve logged ${n} days! Save a backup to iCloud Drive (Save to Files) or text it to someone, so a new phone or a deleted icon never loses your streak.</p>
+      <div class="row">
+        <button class="btn primary" data-export>Back up now</button>
+        <button class="btn ghost" data-snooze-backup>Later</button>
+      </div>
+    </div>`;
+}
+
+function lastBackupText() {
+  const d = state.meta.lastBackupOn;
+  if (!d) return 'You haven’t made a backup yet.';
+  const t = todayKey();
+  if (d === t) return 'Last backup: today ✅';
+  if (d === L.addDays(t, -1)) return 'Last backup: yesterday';
+  return `Last backup: ${prettyDate(d, { month: 'short', day: 'numeric' })}`;
 }
 
 function renderSuggestion() {
@@ -498,10 +544,11 @@ function openSettings() {
     </form>
     <hr />
     <h3>Backup</h3>
-    <p class="muted small">Your data lives on this device. Export a backup now and then so nothing gets lost.</p>
+    <p class="muted small">Your days are saved only on this phone. Deleting the Steppy icon from your home screen erases them, so back up now and then. Choose <b>Save to Files</b> (iCloud Drive) or send the file to someone you trust.</p>
+    <p class="small"><b>${lastBackupText()}</b></p>
     <div class="row">
-      <button class="btn ghost" data-export>Export backup</button>
-      <label class="btn ghost file-btn">Import backup<input type="file" accept="application/json,.json" data-import hidden /></label>
+      <button class="btn ghost" data-export>Back up</button>
+      <label class="btn ghost file-btn">Restore<input type="file" accept=".json,application/json,text/plain" data-import hidden /></label>
     </div>
     <button class="link-btn danger center-block" data-reset>Reset everything</button>
   `);
@@ -527,27 +574,52 @@ function saveSettings(form) {
   toast('Saved! ✅');
 }
 
-function exportBackup() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `steppy-backup-${todayKey()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+async function exportBackup() {
+  const prev = state.meta.lastBackupOn;
+  state.meta.lastBackupOn = todayKey();
+  const filename = `steppy-backup-${todayKey()}.json`;
+  const json = JSON.stringify(state, null, 2);
+  const file = new File([json], filename, { type: 'application/json' });
+  try {
+    // On phones this opens the share sheet: Save to Files (iCloud Drive), Messages, Mail, AirDrop…
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Steppy backup' });
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(file);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+  } catch (err) {
+    state.meta.lastBackupOn = prev; // share sheet was cancelled
+    if (err?.name !== 'AbortError') toast('Couldn’t create the backup. Please try again.');
+    return;
+  }
+  state.meta.backupSnoozedUntil = null;
+  save();
+  render();
+  if (!$('#sheet').hidden) openSettings();
+  toast('Backup saved! Your streak is safe 💾');
 }
 
 async function importBackup(file) {
   try {
     const data = JSON.parse(await file.text());
     if (!data || typeof data.days !== 'object' || !data.settings) throw new Error('bad file');
-    if (!confirm('Replace your current data with this backup?')) return;
+    const hasData = Object.keys(state.days).length > 0;
+    if (hasData && !confirm('Replace what’s on this phone with this backup?')) return;
     state = normalize(data);
+    state.settings.onboarded = true;
     save();
     closeSheet();
+    closeModal();
     render();
-    toast('Backup restored! 🎉');
+    const n = Object.keys(state.days).length;
+    fx.confetti({ count: 90 });
+    toast(`Welcome back! ${n} day${n === 1 ? '' : 's'} restored 🎉`);
   } catch {
     toast('That doesn’t look like a Steppy backup file.');
   }
@@ -637,7 +709,10 @@ function onboard() {
         </div>
         <p class="muted small">Not sure? Start easy — the goal coach will suggest changes as you go.</p>
         <button class="btn primary wide" type="submit">Let’s go! 🎉</button>
-      </form>`,
+      </form>
+      <p class="muted small restore-hint">Used Steppy before?
+        <label class="link-btn file-btn">Restore from a backup<input type="file" accept=".json,application/json,text/plain" data-import hidden /></label>
+      </p>`,
   });
 }
 
@@ -675,6 +750,12 @@ document.addEventListener('click', (e) => {
   if ('openSettings' in t.dataset || t.id === 'settings-btn') return openSettings();
   if ('closeModal' in t.dataset) return closeModal();
   if ('export' in t.dataset) return exportBackup();
+  if ('snoozeBackup' in t.dataset) {
+    state.meta.backupSnoozedUntil = L.addDays(todayKey(), 3);
+    save();
+    render();
+    return;
+  }
   if ('reset' in t.dataset) {
     if (confirm('Erase all your days and settings? This can’t be undone.') && confirm('Really sure? 🥺')) {
       localStorage.removeItem(STORE_KEY);

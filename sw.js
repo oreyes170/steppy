@@ -1,5 +1,5 @@
 // Offline support: cache the app shell, serve it cache-first, refresh in the background.
-const CACHE = 'steppy-v2';
+const CACHE = 'steppy-v3';
 const ASSETS = [
   './',
   'index.html',
