@@ -697,7 +697,7 @@ function openSettings() {
     <form class="settings-form" data-settings-form>
       <label>Your name<input name="name" type="text" maxlength="30" value="${esc(name)}" placeholder="So we can cheer for you" /></label>
       <label>👟 Daily goal (steps)<input name="regularGoal" type="number" inputmode="numeric" min="500" step="500" value="${regularGoal}" required /></label>
-      <label>🌟 Big goal (steps)<input name="bigGoal" type="number" inputmode="numeric" min="1000" step="500" value="${bigGoal}" required /></label>
+      <label>🌟 Big goal (steps)<input name="bigGoal" type="number" inputmode="numeric" min="1" step="1" value="${bigGoal}" required /></label>
       <button class="btn primary" type="submit">Save</button>
     </form>
     <hr />
@@ -890,7 +890,7 @@ function onboard() {
         <label>What should we call you?<input name="name" type="text" maxlength="30" placeholder="Your name" /></label>
         <div class="row two">
           <label>👟 Daily goal<input name="regularGoal" type="number" inputmode="numeric" min="500" step="500" value="${state.settings.regularGoal}" required /></label>
-          <label>🌟 Big goal<input name="bigGoal" type="number" inputmode="numeric" min="1000" step="500" value="${state.settings.bigGoal}" required /></label>
+          <label>🌟 Big goal<input name="bigGoal" type="number" inputmode="numeric" min="1" step="1" value="${state.settings.bigGoal}" required /></label>
         </div>
         <p class="muted small">Not sure? Start easy — the goal coach will suggest changes as you go.</p>
         <button class="btn primary wide" type="submit">Let’s go! 🎉</button>
