@@ -1605,9 +1605,31 @@ document.addEventListener(
   { passive: false },
 );
 
+// iPhone keeps a home-screen app paused in memory, so it may never reload on its own.
+// Whenever Steppy comes back on screen, ask the website which version is live and
+// refresh if it's newer (at most once per version, so it can never loop).
+async function checkForUpdate() {
+  if (location.protocol === 'file:' || !navigator.onLine) return false;
+  if (spinning || !$('#sheet').hidden) return false; // don't interrupt her mid-action
+  try {
+    const res = await fetch(`version.js?check=${Date.now()}`, { cache: 'no-store' });
+    const live = (await res.text()).match(/APP_VERSION = '([^']+)'/)?.[1];
+    if (!live || live === APP_VERSION) return false;
+    const key = 'steppy:reloaded-for';
+    if (sessionStorage.getItem(key) === live) return false;
+    sessionStorage.setItem(key, live);
+    await navigator.serviceWorker?.getRegistration().then((r) => r?.update()).catch(() => {});
+    location.reload();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Re-render when coming back to the app (the date may have changed overnight).
-document.addEventListener('visibilitychange', () => {
+document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState !== 'visible') return;
+  if (await checkForUpdate()) return;
   render();
   if (maybeRenewGoogle()) return;
   syncNow();
@@ -1738,6 +1760,7 @@ render();
   if (!state.settings.onboarded) setTimeout(onboard, 250);
   else setTimeout(runAnnouncements, 500);
   syncNow();
+  setTimeout(checkForUpdate, 3000); // in case a slow connection served an older saved copy
 })();
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
