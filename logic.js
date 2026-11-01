@@ -93,7 +93,7 @@ export function nextMilestone(streak) {
 
 // ---------- skip days ----------
 
-export function skipInfo(days) {
+export function skipInfo(days, spent = 0) {
   let points = 0;
   let used = 0;
   for (const v of Object.values(days)) {
@@ -104,7 +104,8 @@ export function skipInfo(days) {
   return {
     earned,
     used,
-    available: Math.max(0, earned - used),
+    spent,
+    available: Math.max(0, earned - used - spent),
     progress: points % POINTS_PER_SKIP,
     pointsPerSkip: POINTS_PER_SKIP,
   };

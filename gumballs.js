@@ -1,0 +1,214 @@
+// The Theme Machine: themes she wins from a gumball machine with skip tickets.
+//
+// ─── Adding a theme ────────────────────────────────────────────────────────────
+// Add an entry to GUMBALLS below. Only these fields are needed:
+//   id         unique, lowercase, no spaces (never change it once she might own it)
+//   set        which collection it belongs to (an id from SETS; add a new set there)
+//   name       shown in the app
+//   emoji      the emoji inside the gumball
+//   colors     { bg, primary, accent, ink }: page background, main colour, second
+//              colour, and text colour. Set `dark: true` for a dark theme.
+//   emojis     3–5 emoji for confetti, big-goal rain and background decorations
+//   cheer      short line under "BIG GOAL!"
+//   pitch      one sentence describing it (shown when she wins it)
+// Everything else (cards, borders, buttons, status colours, the header icon tint)
+// is worked out from those colours.
+// ──────────────────────────────────────────────────────────────────────────────
+
+export const SPIN_COST = 1; // a random theme from any collection
+export const SET_SPIN_COST = 2; // a random theme from a collection she picks
+export const UNLOCK_AT = 3; // the machine appears the first time she has this many tickets
+
+export const SETS = [{ id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' }];
+
+export const GUMBALLS = [
+  {
+    id: 'ts-debut', set: 'taylor', name: 'Debut', revealName: 'The Debut era', emoji: '🦋',
+    colors: { bg: '#e8f5f0', primary: '#2f9e8f', accent: '#e9b949', ink: '#1f3b35' },
+    emojis: ['🦋', '🎸', '💚', '🌼'], cheer: 'Butterflies! 🦋',
+    pitch: 'Teal and sunshine gold, with butterflies and guitars.',
+  },
+  {
+    id: 'ts-fearless', set: 'taylor', name: 'Fearless', revealName: 'The Fearless era', emoji: '✨',
+    colors: { bg: '#fbf4de', primary: '#b8901a', accent: '#e9c46a', ink: '#3d3214' },
+    emojis: ['✨', '👑', '💛', '🎻'], cheer: 'Fearless! ✨',
+    pitch: 'All gold and sparkle, with crowns and fiddles.',
+  },
+  {
+    id: 'ts-speaknow', set: 'taylor', name: 'Speak Now', revealName: 'The Speak Now era', emoji: '🏰',
+    colors: { bg: '#f3eafa', primary: '#7b3fa0', accent: '#d08be8', ink: '#2e1840' },
+    emojis: ['💜', '🏰', '🎆', '👗'], cheer: 'Fireworks! 🎆',
+    pitch: 'Royal purple, castles, ball gowns and fireworks.',
+  },
+  {
+    id: 'ts-red', set: 'taylor', name: 'Red', revealName: 'The Red era', emoji: '🧣',
+    colors: { bg: '#fcecec', primary: '#b3122e', accent: '#e8735f', ink: '#3a0b13' },
+    emojis: ['❤️', '🧣', '🍁', '🍂'], cheer: 'Red-hot! ❤️',
+    pitch: 'Deep reds, cozy scarves and falling maple leaves.',
+  },
+  {
+    id: 'ts-1989', set: 'taylor', name: '1989', revealName: 'The 1989 era', emoji: '🕊️',
+    colors: { bg: '#ebf5fc', primary: '#3f95cf', accent: '#e8c58a', ink: '#163247' },
+    emojis: ['🕊️', '📸', '🌊', '✨'], cheer: 'Picture perfect! 📸',
+    pitch: 'Sky blue and sand, with polaroids, waves and birds.',
+  },
+  {
+    id: 'ts-reputation', set: 'taylor', name: 'Reputation', revealName: 'The Reputation era', emoji: '🐍',
+    colors: { bg: '#111111', primary: '#cfcfcf', accent: '#7a7a7a', ink: '#f2f2f2' }, dark: true,
+    emojis: ['🐍', '🖤', '⛓️', '🌑'], cheer: 'Legendary! 🐍',
+    pitch: 'Black and silver, with snakes and chains. Very dramatic.',
+  },
+  {
+    id: 'ts-lover', set: 'taylor', name: 'Lover', revealName: 'The Lover era', emoji: '💖',
+    colors: { bg: '#fdecf4', primary: '#e8619f', accent: '#6cc3ea', ink: '#4a1d33' },
+    emojis: ['💖', '🌈', '🦋', '💌'], cheer: 'So much love! 💖',
+    pitch: 'Cotton-candy pink and blue, hearts and rainbows.',
+  },
+  {
+    id: 'ts-folklore', set: 'taylor', name: 'Folklore', revealName: 'The Folklore era', emoji: '🌲',
+    colors: { bg: '#efefed', primary: '#6d6d68', accent: '#9aa392', ink: '#2b2b28' },
+    emojis: ['🌲', '🤍', '🌫️', '🍃'], cheer: 'Woodland wonder! 🌲',
+    pitch: 'Soft greys and misty forest greens.',
+  },
+  {
+    id: 'ts-evermore', set: 'taylor', name: 'Evermore', revealName: 'The Evermore era', emoji: '🍂',
+    colors: { bg: '#f6ede1', primary: '#a8571f', accent: '#6b4a2b', ink: '#3a2414' },
+    emojis: ['🍂', '🧥', '🌾', '🕯️'], cheer: 'Cozy season! 🍂',
+    pitch: 'Burnt orange and brown, flannel, candles and wheat.',
+  },
+  {
+    id: 'ts-midnights', set: 'taylor', name: 'Midnights', revealName: 'The Midnights era', emoji: '🌙',
+    colors: { bg: '#121833', primary: '#a397f5', accent: '#e6c068', ink: '#ece8ff' }, dark: true,
+    emojis: ['🌙', '⭐', '🕰️', '💎'], cheer: 'Midnight magic! 🌙',
+    pitch: 'Midnight blue and lavender, with moons, stars and clocks.',
+  },
+  {
+    id: 'ts-ttpd', set: 'taylor', name: 'The Tortured Poets Department', revealName: 'The Tortured Poets Department era', emoji: '✒️',
+    colors: { bg: '#f5f1e9', primary: '#5e564e', accent: '#b8ab97', ink: '#2f2b27' },
+    emojis: ['🤍', '✒️', '📜', '🕊️'], cheer: 'Poetic! ✒️',
+    pitch: 'Parchment and ink, with quills and scrolls.',
+  },
+  {
+    id: 'ts-showgirl', set: 'taylor', name: 'The Life of a Showgirl', revealName: 'The Life of a Showgirl era', emoji: '🪩',
+    colors: { bg: '#fff3e8', primary: '#ec6417', accent: '#3fc4a2', ink: '#3d1d08' },
+    emojis: ['💃', '🪩', '✨', '🧡'], cheer: 'Showstopper! 🪩',
+    pitch: 'Bright orange and mint, glitter and disco balls.',
+  },
+];
+
+// ---------- colour helpers ----------
+
+const hex = (h) => {
+  const n = parseInt(h.replace('#', ''), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+};
+const toHex = (rgb) => '#' + rgb.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
+/** Blend a toward b by t (0..1). */
+export const mix = (a, b, t) => toHex(hex(a).map((v, i) => v + (hex(b)[i] - v) * t));
+const luminance = (h) => {
+  const [r, g, b] = hex(h).map((v) => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+/** Full set of CSS colour variables, worked out from a theme's four colours. */
+export function cssVars({ colors: c, dark }) {
+  const status = { regular: '#4ecdc4', big: '#ffb627', skip: '#a78bfa' };
+  const tint = (col) => mix(col, c.primary, 0.2);
+  const v = dark
+    ? {
+        bg: c.bg,
+        'bg-2': mix(c.bg, c.primary, 0.14),
+        card: mix(c.bg, '#ffffff', 0.07),
+        text: c.ink,
+        muted: mix(c.ink, c.bg, 0.4),
+        line: mix(c.bg, '#ffffff', 0.14),
+        'regular-soft': mix(c.bg, status.regular, 0.25),
+        'big-soft': mix(c.bg, status.big, 0.25),
+        'skip-soft': mix(c.bg, status.skip, 0.25),
+        missed: mix(c.bg, '#ffffff', 0.3),
+        'missed-soft': mix(c.bg, '#ffffff', 0.1),
+        shadow: '0 6px 22px rgba(0, 0, 0, 0.45)',
+      }
+    : {
+        bg: c.bg,
+        'bg-2': mix(c.bg, c.primary, 0.1),
+        card: mix('#ffffff', c.bg, 0.25),
+        text: c.ink,
+        muted: mix(c.ink, c.bg, 0.45),
+        line: mix(c.bg, c.primary, 0.18),
+        'regular-soft': mix(c.bg, tint(status.regular), 0.22),
+        'big-soft': mix(c.bg, tint(status.big), 0.25),
+        'skip-soft': mix(c.bg, tint(status.skip), 0.2),
+        missed: mix(c.bg, c.ink, 0.25),
+        'missed-soft': mix(c.bg, c.ink, 0.07),
+        shadow: `0 6px 22px ${mix(c.bg, c.primary, 0.5)}33, 0 1px 3px rgba(0, 0, 0, 0.06)`,
+      };
+  return {
+    ...v,
+    primary: c.primary,
+    'primary-2': c.accent,
+    'primary-ink': luminance(c.primary) > 0.45 ? '#1b1b1b' : '#ffffff',
+    regular: tint(status.regular),
+    big: tint(status.big),
+    skip: tint(status.skip),
+  };
+}
+
+/** Turn a gumball definition into a full theme object (same shape as themes.js). */
+export function buildTheme(g) {
+  const c = g.colors;
+  return {
+    id: g.id,
+    name: g.name,
+    revealName: g.revealName || g.name,
+    emoji: g.emoji,
+    set: g.set,
+    gumball: true,
+    available: () => true,
+    dark: !!g.dark,
+    vars: cssVars(g),
+    themeColor: c.bg,
+    ball: c.primary,
+    iconTint: g.dark ? mix(c.primary, c.bg, 0.55) : mix(c.primary, '#000000', 0.25),
+    confetti: [c.primary, c.accent, mix(c.primary, '#ffffff', 0.45), mix(c.accent, '#ffffff', 0.4), mix(c.primary, c.ink, 0.4)],
+    confettiEmoji: g.emojis,
+    rain: g.emojis,
+    ambient: { emojis: g.emojis, motion: 'float', count: 9 },
+    greetingEmoji: g.emoji,
+    bigSub: g.cheer,
+    pitch: g.pitch,
+  };
+}
+
+export const GUMBALL_THEMES = GUMBALLS.map(buildTheme);
+
+// ---------- machine rules ----------
+
+export const setById = (id) => SETS.find((s) => s.id === id);
+
+/** Collections she has discovered (owns at least one theme from). */
+export function revealedSets(owned) {
+  return SETS.filter((s) => GUMBALLS.some((g) => g.set === s.id && owned.includes(g.id)));
+}
+
+export function setProgress(setId, owned) {
+  const inSet = GUMBALLS.filter((g) => g.set === setId);
+  return { owned: inSet.filter((g) => owned.includes(g.id)).length, total: inSet.length };
+}
+
+export const hiddenSetsRemain = (owned) => revealedSets(owned).length < SETS.length;
+
+/** Themes she can still win (optionally from one collection). */
+export function pool(owned, setId = null) {
+  return GUMBALLS.filter((g) => !owned.includes(g.id) && (!setId || g.set === setId));
+}
+
+/** Pick the next gumball. Never a repeat. Returns a gumball id, or null if none are left. */
+export function spin(owned, setId = null, rand = Math.random) {
+  const p = pool(owned, setId);
+  if (!p.length) return null;
+  return p[Math.floor(rand() * p.length)].id;
+}

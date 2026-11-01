@@ -1,3 +1,5 @@
+import { GUMBALL_THEMES } from './gumballs.js';
+
 // Holiday themes. Each one is only available inside its date window; "auto" (the
 // default) picks whichever holiday is in season, otherwise the classic look.
 // Pure and DOM-free so the date rules are unit tested.
@@ -77,7 +79,10 @@ export const THEMES = [
   },
 ];
 
-export const byId = (id) => THEMES.find((t) => t.id === id) || THEMES[0];
+/** Every theme: classic, holidays and Theme Machine gumballs. */
+export const ALL_THEMES = [...THEMES, ...GUMBALL_THEMES];
+
+export const byId = (id) => ALL_THEMES.find((t) => t.id === id) || THEMES[0];
 
 /** Themes she can pick on this date (classic is always there). */
 export function availableThemes(date) {
@@ -97,7 +102,7 @@ export const isHoliday = (id) => !!THEMES.find((t) => t.id === id)?.holiday;
  */
 export function activeTheme(pref, date, fallback = 'classic') {
   for (const id of [pref, fallback]) {
-    const t = THEMES.find((x) => x.id === id);
+    const t = ALL_THEMES.find((x) => x.id === id);
     if (t && t.available(date)) return t;
   }
   return byId('classic');

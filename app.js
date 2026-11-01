@@ -3,6 +3,7 @@ import * as fx from './fx.js';
 import * as Drive from './drive.js';
 import { APP_VERSION } from './version.js';
 import * as Themes from './themes.js';
+import * as Gumballs from './gumballs.js';
 
 // ---------------------------------------------------------------------------
 // State & persistence
@@ -25,6 +26,7 @@ const defaultState = () => ({
     holidaysAnnounced: [], // e.g. 'thanksgiving-2026' — each holiday pops up once a year
     lastMonthSeen: null, // 'YYYY-MM' — for the "Welcome to <Month>" greeting
     changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
+    gumballs: { unlocked: false, introSeen: false, owned: [], spent: 0 }, // the Theme Machine
     google: { connected: false, email: '', fileId: null, lastSyncAt: 0, needsReconnect: false, snoozedUntil: null },
   },
 });
@@ -45,7 +47,12 @@ function normalize(s) {
     ...d,
     ...s,
     settings: { ...d.settings, ...(s.settings || {}) },
-    meta: { ...d.meta, ...(s.meta || {}), google: { ...d.meta.google, ...(s.meta?.google || {}) } },
+    meta: {
+      ...d.meta,
+      ...(s.meta || {}),
+      google: { ...d.meta.google, ...(s.meta?.google || {}) },
+      gumballs: { ...d.meta.gumballs, ...(s.meta?.gumballs || {}) },
+    },
     days: s.days && typeof s.days === 'object' ? s.days : {},
   });
 }
@@ -145,7 +152,7 @@ function snapshot() {
   return {
     streak: L.currentStreak(state.days, t),
     best: L.bestStreak(state.days),
-    skips: L.skipInfo(state.days),
+    skips: L.skipInfo(state.days, state.meta.gumballs.spent),
   };
 }
 
@@ -159,7 +166,9 @@ function render() {
   renderToday();
   renderCatchup();
   renderStats();
+  checkMachineUnlock();
   renderSuggestion();
+  renderMachineCard();
   renderBackupReminder();
   renderCalendar();
   renderGoals();
@@ -181,17 +190,88 @@ function renderHeader() {
 const previewTheme = new URLSearchParams(location.search).get('theme');
 let theme = Themes.byId('classic');
 let ambientFor = null;
+let appliedVars = [];
+
+// Recolour the teal background of the sneaker icon for gumball themes (done once per colour).
+const iconCache = {};
+async function tintedIcon(color) {
+  if (iconCache[color]) return iconCache[color];
+  try {
+    const img = new Image();
+    img.src = 'icons/icon-192.png';
+    await img.decode();
+    const c = document.createElement('canvas');
+    c.width = c.height = 192;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0, 192, 192);
+    const d = x.getImageData(0, 0, 192, 192);
+    const p = d.data;
+    const [bh, bs, bv] = rgbToHsv(38, 124, 139); // the icon's teal background
+    const n = parseInt(color.slice(1), 16);
+    const [th, ts, tv] = rgbToHsv((n >> 16) & 255, (n >> 8) & 255, n & 255);
+    for (let i = 0; i < p.length; i += 4) {
+      const [h, s, v] = rgbToHsv(p[i], p[i + 1], p[i + 2]);
+      if (Math.abs(h - bh) > 0.07 || s < 0.25) continue;
+      const w = Math.max(0, Math.min(1, (0.615 - v) / 0.04)); // leave the bright sneaker alone
+      if (!w) continue;
+      const [r, g, b] = hsvToRgb(th, Math.min(1, s * (ts / bs)), Math.min(1, v * (tv / bv)));
+      p[i] += (r - p[i]) * w;
+      p[i + 1] += (g - p[i + 1]) * w;
+      p[i + 2] += (b - p[i + 2]) * w;
+    }
+    x.putImageData(d, 0, 0);
+    return (iconCache[color] = c.toDataURL());
+  } catch {
+    return null;
+  }
+}
+
+function rgbToHsv(r, g, b) {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b);
+  const dd = max - Math.min(r, g, b);
+  let h = 0;
+  if (dd) h = max === r ? ((g - b) / dd + 6) % 6 : max === g ? (b - r) / dd + 2 : (r - g) / dd + 4;
+  return [h / 6, max ? dd / max : 0, max];
+}
+
+function hsvToRgb(h, s, v) {
+  const i = Math.floor(h * 6);
+  const f = h * 6 - i;
+  const q = v * (1 - f * s);
+  const t = v * (1 - (1 - f) * s);
+  const p = v * (1 - s);
+  const [r, g, b] = [[v, t, p], [q, v, p], [p, v, t], [p, q, v], [t, p, v], [v, p, q]][i % 6];
+  return [r * 255, g * 255, b * 255];
+}
 
 function applyTheme() {
-  const t = previewTheme && Themes.THEMES.some((x) => x.id === previewTheme)
+  const t = previewTheme && Themes.ALL_THEMES.some((x) => x.id === previewTheme)
     ? Themes.byId(previewTheme)
     : Themes.activeTheme(state.settings.theme, new Date(), state.meta.themeBeforeHoliday);
   theme = t;
-  document.documentElement.dataset.theme = t.id;
+  const root = document.documentElement;
+  root.dataset.theme = t.gumball ? 'gumball' : t.id;
+  // Gumball themes set their colours directly; other themes use the CSS in styles.css.
+  for (const k of appliedVars) root.style.removeProperty(`--${k}`);
+  appliedVars = [];
+  if (t.vars) {
+    for (const [k, v] of Object.entries(t.vars)) root.style.setProperty(`--${k}`, v);
+    appliedVars = Object.keys(t.vars);
+    root.style.colorScheme = t.dark ? 'dark' : 'light';
+  } else root.style.removeProperty('color-scheme');
   $('#theme-color')?.setAttribute('content', t.themeColor);
   const logo = $('#logo-icon');
-  const logoSrc = t.headerIcon || 'icons/icon-192.png';
-  if (logo && logo.getAttribute('src') !== logoSrc) logo.setAttribute('src', logoSrc);
+  if (t.iconTint) {
+    tintedIcon(t.iconTint).then((url) => {
+      if (theme === t && logo && url) logo.setAttribute('src', url);
+    });
+  } else {
+    const logoSrc = t.headerIcon || 'icons/icon-192.png';
+    if (logo && logo.getAttribute('src') !== logoSrc) logo.setAttribute('src', logoSrc);
+  }
   fx.setPalette(t.confetti, t.confettiEmoji);
   if (ambientFor !== t.id) renderAmbient(t);
 }
@@ -234,8 +314,207 @@ function themePickerHtml() {
     <h3>Theme</h3>
     <div class="theme-picker">
       ${Themes.availableThemes(now).map((t) => chip(t.id, t.emoji, t.name, t.holiday ? 'Limited time' : '')).join('')}
+    </div>
+    ${collectionHtml(current)}`;
+}
+
+// ---------------------------------------------------------------------------
+// The Theme Machine (gumballs bought with skip tickets)
+// ---------------------------------------------------------------------------
+
+function checkMachineUnlock() {
+  const gb = state.meta.gumballs;
+  if (gb.unlocked) return;
+  if (snapshot().skips.available >= Gumballs.UNLOCK_AT) {
+    gb.unlocked = true;
+    save();
+  }
+}
+
+function renderMachineCard() {
+  const el = $('#machine-card');
+  const gb = state.meta.gumballs;
+  if (!gb.unlocked || gb.introSeen) {
+    el.innerHTML = '';
+    return;
+  }
+  const n = snapshot().skips.available;
+  el.innerHTML = `
+    <div class="card unlock-card">
+      <div class="unlock-text">
+        <p class="eyebrow">✨ New unlocked!</p>
+        <h3>The Theme Machine</h3>
+        <p class="small muted">You’ve saved up ${n} skip tickets! Trade 1 for a gumball, and every gumball is a brand-new theme to collect. 🍬</p>
+        <button class="btn primary" data-open-machine>Take me there 🍬</button>
+      </div>
+      <div class="unlock-art">${machineSvg()}</div>
     </div>`;
 }
+
+/** The gumball machine drawing. Gumball colours are the themes still inside it. */
+function machineSvg() {
+  const owned = state.meta.gumballs.owned;
+  const left = Gumballs.GUMBALL_THEMES.filter((t) => !owned.includes(t.id)).map((t) => t.ball);
+  const colors = left.length ? left : ['#f3d9e2', '#e6dcf7', '#d9efe9'];
+  const spots = [
+    [70, 130, 17], [105, 138, 17], [140, 132, 17], [168, 116, 15], [52, 104, 15], [86, 104, 17], [121, 106, 17],
+    [155, 88, 16], [66, 76, 15], [100, 72, 16], [134, 66, 15], [92, 42, 14], [124, 38, 13], [60, 50, 12], [158, 58, 12],
+  ];
+  const count = Math.min(spots.length, Math.max(4, left.length + 3));
+  const balls = spots
+    .slice(0, count)
+    .map(
+      ([x, y, r], i) =>
+        `<circle cx="${x}" cy="${y}" r="${r}" fill="${colors[i % colors.length]}"/><circle cx="${x - r / 3}" cy="${y - r / 3}" r="${r / 4}" fill="#fff" opacity=".45"/>`,
+    )
+    .join('');
+  return `
+    <svg class="machine" viewBox="0 0 220 300" aria-hidden="true">
+      <g class="globe">
+        <circle cx="110" cy="100" r="88" fill="#eef8ff" stroke="#cfe3ef" stroke-width="4"/>
+        ${balls}
+        <path d="M48 52 A88 88 0 0 1 120 14" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+      </g>
+      <rect x="86" y="2" width="48" height="16" rx="8" fill="var(--primary)"/>
+      <rect x="62" y="180" width="96" height="16" rx="6" fill="var(--primary)" opacity=".85"/>
+      <path d="M40 196 H180 L170 290 H50 Z" fill="var(--primary)"/>
+      <path d="M40 196 H180 L178 214 H42 Z" fill="#fff" opacity=".18"/>
+      <g class="knob"><circle cx="110" cy="236" r="21" fill="#fff"/><rect x="106" y="220" width="8" height="32" rx="4" fill="#d9c3cc"/></g>
+      <path d="M92 262 h36 v22 h-36 z" fill="#000" opacity=".25"/>
+      <rect x="96" y="266" width="28" height="14" rx="4" fill="#000" opacity=".45"/>
+      <rect x="44" y="286" width="132" height="10" rx="5" fill="var(--primary)" opacity=".85"/>
+    </svg>`;
+}
+
+function openMachine() {
+  const gb = state.meta.gumballs;
+  if (!gb.unlocked) return;
+  if (!gb.introSeen) {
+    gb.introSeen = true;
+    save({ dirty: false });
+    renderMachineCard();
+  }
+  const { available } = snapshot().skips;
+  const owned = gb.owned;
+  const left = Gumballs.pool(owned).length;
+  const sets = Gumballs.revealedSets(owned).filter((s) => Gumballs.pool(owned, s.id).length);
+  const spinBtn = (cost, label, setId = '') => {
+    const can = available >= cost && left > 0;
+    return `<button class="btn ${setId ? 'ghost set-spin' : 'primary spin-btn'}" data-spin="${setId || 'any'}" ${can ? '' : 'disabled'}>${label} · ${cost} 🎟️</button>`;
+  };
+  const warn =
+    left && available === Gumballs.SPIN_COST
+      ? '<p class="small muted center">This uses your last skip ticket, so your streak won’t have a backup for a bit.</p>'
+      : left && available < Gumballs.SPIN_COST
+        ? '<p class="small muted center">You need a skip ticket to spin. Keep stepping! 👟</p>'
+        : '';
+  openSheet(`
+    <div class="center">
+      <p class="eyebrow">Theme Machine</p>
+      <h2>${left ? 'Spin for a new theme! 🍬' : 'You collected them all! 🏆'}</h2>
+      <div class="ticket-pill">🎟️ ${available} skip ticket${available === 1 ? '' : 's'}</div>
+    </div>
+    <div class="machine-wrap" id="machine-wrap">${machineSvg()}</div>
+    ${left ? spinBtn(Gumballs.SPIN_COST, 'Turn the knob') : '<p class="center muted">New gumballs get added over time. Check back soon! ✨</p>'}
+    ${warn}
+    ${
+      sets.length
+        ? `<p class="small muted machine-sub">Or pick a collection:</p>
+           <div class="set-spins">${sets.map((st) => spinBtn(Gumballs.SET_SPIN_COST, `${st.emoji} ${st.name}`, st.id)).join('')}</div>`
+        : ''
+    }
+    <p class="small muted center machine-count"><b>${owned.length} theme${owned.length === 1 ? '' : 's'}</b> collected · no repeats${left ? ' · what’s next? 👀' : ''}</p>
+  `);
+}
+
+let spinning = false;
+async function doSpin(setId) {
+  if (spinning) return;
+  const gb = state.meta.gumballs;
+  const cost = setId ? Gumballs.SET_SPIN_COST : Gumballs.SPIN_COST;
+  if (snapshot().skips.available < cost) return toast('Not enough skip tickets yet. Keep stepping! 👟');
+  const id = Gumballs.spin(gb.owned, setId);
+  if (!id) return toast('Nothing left in there, you’ve got them all! 🏆');
+  const setOf = Gumballs.GUMBALLS.find((g) => g.id === id).set;
+  const newSet = !Gumballs.revealedSets(gb.owned).some((st) => st.id === setOf);
+  spinning = true;
+  gb.owned = [...gb.owned, id];
+  gb.spent += cost;
+  save();
+  renderStats();
+  const t = Themes.byId(id);
+
+  // knob turns, globe wobbles, a gumball rolls out
+  const wrap = $('#machine-wrap');
+  fx.vibrate([20, 60, 20, 60, 40]);
+  wrap?.classList.add('spinning');
+  await wait(fx.reducedMotion() ? 0 : 1100);
+  if (wrap) {
+    const drop = document.createElement('div');
+    drop.className = 'gumball-drop';
+    drop.style.background = t.ball;
+    wrap.appendChild(drop);
+  }
+  await wait(fx.reducedMotion() ? 0 : 1000);
+  closeSheet();
+  await wait(260);
+  spinning = false;
+
+  const set = Gumballs.setById(t.set);
+  await showModal({
+    emoji: '',
+    title: `${t.revealName}!`,
+    html: `
+      <div class="reveal-ball" style="background:${t.ball}">${t.emoji}</div>
+      ${newSet ? `<p class="new-set">New collection discovered: <b>${set.emoji} ${set.name}</b>!</p>` : ''}
+      <p>${t.pitch}</p>
+      <div class="reveal-swatches">${t.confetti
+        .slice(0, 4)
+        .map((c) => `<i style="background:${c}"></i>`)
+        .join('')}<span>${t.confettiEmoji.join(' ')}</span></div>
+      <div class="row modal-row">
+        <button class="btn primary" data-try-theme="${t.id}" style="background:linear-gradient(135deg, ${t.vars.primary}, ${t.vars['primary-2']});color:${t.vars['primary-ink']}">Wear it now ✨</button>
+        <button class="btn ghost" data-close-modal>Save for later</button>
+      </div>`,
+    cta: null,
+    fx: () => {
+      fx.confetti({ count: 140, colors: t.confetti, emojis: t.confettiEmoji });
+      fx.vibrate([40, 30, 80]);
+    },
+  });
+  if (Themes.byId(state.settings.theme).id !== t.id) toast(`${t.name} is in your collection 🍬`);
+}
+
+function collectionHtml(current) {
+  const gb = state.meta.gumballs;
+  if (!gb.unlocked) return '';
+  const owned = gb.owned;
+  const sets = Gumballs.revealedSets(owned);
+  const tile = (t) =>
+    `<button class="ball-tile ${current.id === t.id ? 'on' : ''}" data-theme-pick="${t.id}" type="button"><span class="ball" style="background:${t.ball}">${t.emoji}</span><span class="nm">${esc(t.name)}</span></button>`;
+  const locked = '<div class="ball-tile locked"><span class="ball">?</span><span class="nm">???</span></div>';
+  const body = sets.length
+    ? sets
+        .map((st) => {
+          const pr = Gumballs.setProgress(st.id, owned);
+          const tiles = Gumballs.GUMBALL_THEMES.filter((t) => t.set === st.id)
+            .map((t) => (owned.includes(t.id) ? tile(t) : locked))
+            .join('');
+          return `<p class="set-title"><span>${st.emoji} ${st.name}</span><span>${pr.owned} / ${pr.total}</span></p><div class="ball-grid">${tiles}</div>`;
+        })
+        .join('')
+    : `<div class="collection-empty">
+        <div class="mini">${machineSvg()}</div>
+        <b>No gumballs yet!</b>
+        <p class="small muted">Every gumball is a surprise theme. Who knows what’s inside? 👀</p>
+      </div>`;
+  return `
+    <h3 class="collection-head"><span>Gumball collection</span>${owned.length ? `<span class="small muted">${owned.length} found</span>` : ''}</h3>
+    ${body}
+    ${sets.length && Gumballs.hiddenSetsRemain(owned) ? '<div class="hidden-sets">🔒 More collections are hiding in the machine…</div>' : ''}
+    <button class="btn ${owned.length ? 'ghost' : 'primary'} wide" data-open-machine type="button">🍬 ${owned.length ? 'Visit the Theme Machine' : `Spin the Theme Machine · ${Gumballs.SPIN_COST} 🎟️`}</button>`;
+}
+
 
 // ---------------------------------------------------------------------------
 // New month welcome ("rabbit rabbit")
@@ -404,7 +683,8 @@ function renderStats() {
       <div class="stat-num">${best}</div>
       <div class="stat-label">best streak</div>
     </div>
-    <div class="stat card skips" id="stat-skips">
+    <div class="stat card skips ${state.meta.gumballs.unlocked ? 'tappable' : ''}" id="stat-skips" ${state.meta.gumballs.unlocked ? 'data-open-machine role="button" tabindex="0" aria-label="Open the Theme Machine"' : ''}>
+      ${state.meta.gumballs.unlocked ? '<span class="stat-badge" aria-hidden="true">🍬</span>' : ''}
       <div class="stat-emoji">🎟️</div>
       <div class="stat-num">${skips.available}</div>
       <div class="stat-label">skip day${skips.available === 1 ? '' : 's'}</div>
@@ -1077,8 +1357,13 @@ function finishOnboarding(form) {
 // ---------------------------------------------------------------------------
 
 document.addEventListener('click', (e) => {
-  const t = e.target.closest('button, [data-day], label.file-btn');
+  const t = e.target.closest('button, [data-day], label.file-btn, [data-open-machine]');
   if (!t) return;
+  if ('openMachine' in t.dataset) {
+    if (!$('#modal').hidden) closeModal();
+    return openMachine();
+  }
+  if (t.dataset.spin) return doSpin(t.dataset.spin === 'any' ? null : t.dataset.spin);
 
   if (t.dataset.log) return setDay(t.dataset.key, t.dataset.log, readStepsInput(t.dataset.key));
   if (t.dataset.day) return openDaySheet(t.dataset.day);

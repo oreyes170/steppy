@@ -44,7 +44,7 @@ test('milestones', () => {
 });
 
 test('skip days: starter skip, big days count double, used skips subtract', () => {
-  assert.deepEqual(L.skipInfo({}), { earned: 1, used: 0, available: 1, progress: 0, pointsPerSkip: 10 });
+  assert.deepEqual(L.skipInfo({}), { earned: 1, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
   const s = L.skipInfo(days('rrrrrrrrbb')); // 8 + 4 = 12 points
   assert.equal(s.earned, 2);
   assert.equal(s.progress, 2);
@@ -187,4 +187,45 @@ test('coach suggestions land on steps of 100, even for odd goals', () => {
   const b = L.suggestGoals({ days: days('bbbbbbbb'), settings: { regularGoal: 6789, bigGoal: 12345 } }, TODAY);
   assert.equal(b.bigGoal, 13300);
   assert.equal(b.regularGoal, 7300);
+});
+
+test('skip tickets spent in the Theme Machine come off what is available', () => {
+  const d = days('rrrrrrrrrr'); // 10 points → 1 earned + 1 starter = 2
+  assert.equal(L.skipInfo(d).available, 2);
+  assert.equal(L.skipInfo(d, 1).available, 1);
+  assert.equal(L.skipInfo(d, 5).available, 0);
+});
+
+test('gumball machine: no repeats, set spins stay in the set, sets hidden until found', async () => {
+  const G = await import('../gumballs.js');
+  const all = G.GUMBALLS.map((g) => g.id);
+  assert.equal(new Set(all).size, all.length, 'ids are unique');
+  let owned = [];
+  for (let i = 0; i < all.length; i++) {
+    const id = G.spin(owned, null, () => 0.5);
+    assert.ok(id && !owned.includes(id));
+    owned.push(id);
+  }
+  assert.equal(G.spin(owned), null, 'nothing left once she owns everything');
+  assert.deepEqual(G.revealedSets([]), []);
+  assert.deepEqual(G.revealedSets(['ts-1989']).map((s) => s.id), ['taylor']);
+  assert.deepEqual(G.setProgress('taylor', ['ts-1989', 'ts-red']), { owned: 2, total: 12 });
+  for (let i = 0; i < 20; i++) {
+    const id = G.spin(['ts-red'], 'taylor');
+    assert.equal(G.GUMBALLS.find((g) => g.id === id).set, 'taylor');
+    assert.notEqual(id, 'ts-red');
+  }
+  assert.equal(G.SPIN_COST, 1);
+  assert.equal(G.SET_SPIN_COST, 2);
+});
+
+test('every gumball theme gets a full, readable palette', async () => {
+  const G = await import('../gumballs.js');
+  const T = await import('../themes.js');
+  for (const t of G.GUMBALL_THEMES) {
+    for (const k of ['bg', 'bg-2', 'card', 'text', 'muted', 'line', 'primary', 'primary-2', 'primary-ink', 'regular', 'big', 'skip'])
+      assert.ok(t.vars[k], `${t.id} has --${k}`);
+    assert.equal(T.byId(t.id).id, t.id);
+    assert.equal(T.activeTheme(t.id, new Date(2026, 5, 1)).id, t.id, 'gumball themes never expire');
+  }
 });
