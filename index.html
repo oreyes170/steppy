@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ff6f91" />
+    <meta name="description" content="A cheerful, no-pressure step goal tracker." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Steppy" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Steppy</title>
+  </head>
+  <body>
+    <main class="app">
+      <header class="top">
+        <div>
+          <p class="greeting" id="greeting">Hello!</p>
+          <h1>Steppy <span class="logo-feet" aria-hidden="true">👣</span></h1>
+        </div>
+        <button class="icon-btn" id="settings-btn" aria-label="Settings">⚙️</button>
+      </header>
+
+      <section id="today" class="card today-card" aria-live="polite"></section>
+      <section id="catchup"></section>
+      <section id="stats" class="stats"></section>
+      <section id="suggestion"></section>
+
+      <section class="card calendar-card">
+        <div class="cal-head">
+          <button class="icon-btn small" id="prev-month" aria-label="Previous month">‹</button>
+          <h2 id="month-label"></h2>
+          <button class="icon-btn small" id="next-month" aria-label="Next month">›</button>
+        </div>
+        <div class="weekdays" aria-hidden="true">
+          <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <p class="month-summary" id="month-summary"></p>
+        <div class="legend">
+          <span><i class="dot regular"></i>Goal</span>
+          <span><i class="dot big"></i>Big goal</span>
+          <span><i class="dot skip"></i>Skip day</span>
+          <span><i class="dot missed"></i>Rest</span>
+        </div>
+      </section>
+
+      <section id="goals" class="card goals-card"></section>
+
+      <p class="footer-note">Tap any past day on the calendar to log or change it. 💕</p>
+    </main>
+
+    <div id="backdrop" class="backdrop" hidden></div>
+    <div id="sheet" class="sheet" role="dialog" aria-modal="true" hidden></div>
+    <div id="modal" class="modal" role="dialog" aria-modal="true" hidden></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <canvas id="fx" class="fx" aria-hidden="true"></canvas>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

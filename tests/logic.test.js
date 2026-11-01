@@ -1,0 +1,120 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import * as L from '../logic.js';
+
+const TODAY = '2026-11-10';
+
+/** Build a days map from a string, oldest → newest, ending on `end`. r=regular b=big m=missed s=skip .=unlogged */
+function days(pattern, end = TODAY, steps = null) {
+  const out = {};
+  const chars = [...pattern];
+  chars.forEach((c, i) => {
+    const k = L.addDays(end, i - (chars.length - 1));
+    const status = { r: 'regular', b: 'big', m: 'missed', s: 'skip' }[c];
+    if (status) out[k] = steps ? { status, steps: steps[i] } : { status };
+  });
+  return out;
+}
+
+test('date helpers handle month and year boundaries', () => {
+  assert.equal(L.addDays('2026-12-31', 1), '2027-01-01');
+  assert.equal(L.addDays('2026-03-01', -1), '2026-02-28');
+  assert.equal(L.dateKey(L.parseKey('2026-07-04')), '2026-07-04');
+});
+
+test('current streak counts goal and skip days, ignores unlogged today', () => {
+  assert.equal(L.currentStreak(days('rrbsr'), TODAY), 5);
+  assert.equal(L.currentStreak(days('rrbr.'), TODAY), 4); // today not logged yet
+  assert.equal(L.currentStreak(days('rmrr'), TODAY), 2);
+  assert.equal(L.currentStreak(days('rrrm'), TODAY), 0);
+  assert.equal(L.currentStreak(days('rr..'), TODAY), 0); // gap yesterday breaks it
+  assert.equal(L.currentStreak({}, TODAY), 0);
+});
+
+test('best streak finds the longest run anywhere', () => {
+  assert.equal(L.bestStreak(days('rrrrmrr.r')), 4);
+  assert.equal(L.bestStreak({}), 0);
+});
+
+test('milestones', () => {
+  assert.equal(L.crossedMilestone(2, 3), 3);
+  assert.equal(L.crossedMilestone(3, 4), null);
+  assert.equal(L.crossedMilestone(6, 14), 14);
+  assert.equal(L.nextMilestone(7), 14);
+});
+
+test('skip days: starter skip, big days count double, used skips subtract', () => {
+  assert.deepEqual(L.skipInfo({}), { earned: 1, used: 0, available: 1, progress: 0, pointsPerSkip: 10 });
+  const s = L.skipInfo(days('rrrrrrrrbb')); // 8 + 4 = 12 points
+  assert.equal(s.earned, 2);
+  assert.equal(s.progress, 2);
+  const used = L.skipInfo(days('ssr'));
+  assert.equal(used.available, 0);
+});
+
+test('classifySteps', () => {
+  const g = { regularGoal: 7000, bigGoal: 10000 };
+  assert.equal(L.classifySteps(12000, g), 'big');
+  assert.equal(L.classifySteps(7000, g), 'regular');
+  assert.equal(L.classifySteps(6999, g), 'missed');
+});
+
+const settings = { regularGoal: 7000, bigGoal: 10000 };
+
+test('coach stays quiet with too little data', () => {
+  assert.equal(L.suggestGoals({ days: days('mmmmm'), settings }, TODAY), null);
+});
+
+test('coach suggests lowering when she is struggling', () => {
+  const s = L.suggestGoals({ days: days('mmmrmmmrmm'), settings }, TODAY);
+  assert.equal(s.kind, 'lower');
+  assert.equal(s.regularGoal, 6000);
+  assert.ok(s.bigGoal >= s.regularGoal + 1000);
+});
+
+test('coach uses real step counts when lowering', () => {
+  const steps = [5000, 5200, 4800, 7100, 5100, 4900, 5300];
+  const s = L.suggestGoals({ days: days('mmmrmmm', TODAY, steps), settings }, TODAY);
+  assert.equal(s.regularGoal, 5000);
+});
+
+test('coach suggests raising when she is consistent', () => {
+  const s = L.suggestGoals({ days: days('rrrrrrrrrr'), settings }, TODAY);
+  assert.equal(s.kind, 'raise');
+  assert.equal(s.regularGoal, 7500);
+  assert.equal(s.bigGoal, 10000);
+});
+
+test('coach levels up both goals when big goal is routine', () => {
+  const s = L.suggestGoals({ days: days('bbbbbrbb'), settings }, TODAY);
+  assert.equal(s.kind, 'raise');
+  assert.equal(s.bigGoal, 11000);
+  assert.equal(s.regularGoal, 7500);
+});
+
+test('coach makes the big goal reachable if it never happens', () => {
+  const s = L.suggestGoals({ days: days('rrrmrrrrmrrr'), settings }, TODAY);
+  assert.equal(s.kind, 'lower-big');
+  assert.equal(s.regularGoal, 7000);
+  assert.equal(s.bigGoal, 9000);
+});
+
+test('coach is quiet in the comfortable middle', () => {
+  assert.equal(L.suggestGoals({ days: days('rrmrbrmrrm'), settings }, TODAY), null);
+});
+
+test('coach respects snooze and only counts days since last goal change', () => {
+  const d = days('mmmmmmmmmm');
+  assert.equal(L.suggestGoals({ days: d, settings, meta: { suggestionSnoozedUntil: '2026-11-12' } }, TODAY), null);
+  assert.equal(L.suggestGoals({ days: d, settings, meta: { goalsChangedOn: '2026-11-07' } }, TODAY), null);
+  assert.ok(L.suggestGoals({ days: d, settings, meta: { goalsChangedOn: '2026-11-01' } }, TODAY));
+});
+
+test('coach ignores skip days', () => {
+  assert.equal(L.suggestGoals({ days: days('ssssssmm'), settings }, TODAY), null);
+});
+
+test('month summary', () => {
+  const d = { '2026-11-01': { status: 'big' }, '2026-11-02': { status: 'regular' }, '2026-10-31': { status: 'big' } };
+  assert.deepEqual(L.monthSummary(d, 2026, 10), { goal: 2, big: 1 });
+});
