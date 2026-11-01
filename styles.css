@@ -1078,6 +1078,17 @@ html[data-theme='christmas'] {
   background: var(--bg-2);
 }
 
+/* holiday announcement */
+.modal-row {
+  margin-top: 4px;
+}
+.modal-row .btn {
+  flex: 1;
+}
+.modal-card .modal-foot {
+  margin: 12px 0 0 !important;
+}
+
 /* new month welcome */
 .rabbit {
   font-size: 13px !important;

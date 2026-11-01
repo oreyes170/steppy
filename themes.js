@@ -37,6 +37,8 @@ export const THEMES = [
     ambient: { emojis: ['🦇', '👻', '🦇', '🕸️', '🎃'], motion: 'float', count: 10 },
     greetingEmoji: '🎃',
     bigSub: 'Spooktacular! 🎃',
+    holiday: true,
+    pitch: 'Spooky purple and orange, floating bats and ghosts, and pumpkins on big goal days.',
   },
   {
     id: 'thanksgiving',
@@ -52,6 +54,8 @@ export const THEMES = [
     ambient: { emojis: ['🍂', '🍁', '🍂', '🍁'], motion: 'fall', count: 14 },
     greetingEmoji: '🍂',
     bigSub: 'Gobble gobble! 🦃',
+    holiday: true,
+    pitch: 'Warm harvest colors, falling leaves, and gobble-gobble big goal days.',
   },
   {
     id: 'christmas',
@@ -68,6 +72,8 @@ export const THEMES = [
     ambient: { emojis: ['❄️', '❄', '❅', '❆'], motion: 'fall', count: 22 },
     greetingEmoji: '🎄',
     bigSub: 'Ho ho ho! 🎅',
+    holiday: true,
+    pitch: 'Red, green and gold, falling snow, and ho-ho-ho big goal days.',
   },
 ];
 
@@ -83,14 +89,19 @@ export function seasonalTheme(date) {
   return THEMES.find((t) => t.id !== 'classic' && t.available(date)) || null;
 }
 
+export const isHoliday = (id) => !!THEMES.find((t) => t.id === id)?.holiday;
+
 /**
- * Which theme to show. `pref` is 'auto' or a theme id. A holiday she picked that has
- * gone out of season falls back to auto.
+ * Which theme to show. Her pick always wins. If her pick is a holiday that has gone
+ * out of season, she goes back to `fallback` (the theme she wore before the holiday).
  */
-export function activeTheme(pref, date) {
-  if (pref && pref !== 'auto') {
-    const t = byId(pref);
-    if (t.id === pref && t.available(date)) return t;
+export function activeTheme(pref, date, fallback = 'classic') {
+  for (const id of [pref, fallback]) {
+    const t = THEMES.find((x) => x.id === id);
+    if (t && t.available(date)) return t;
   }
-  return seasonalTheme(date) || byId('classic');
+  return byId('classic');
 }
+
+/** Key for "this holiday, this year" — each holiday is announced once a year. */
+export const seasonKey = (t, date) => `${t.id}-${date.getFullYear()}`;

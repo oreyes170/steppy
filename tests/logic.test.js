@@ -168,13 +168,16 @@ test('holiday themes appear only in their windows', async () => {
   assert.equal(ids(2025, 11, 28), 'classic,christmas');
 });
 
-test('activeTheme: auto follows the season; out-of-season picks fall back', async () => {
+test('activeTheme: her pick wins; an expired holiday falls back to her previous theme', async () => {
   const T = await import('../themes.js');
   const nov1 = new Date(2026, 10, 1);
-  assert.equal(T.activeTheme('auto', nov1).id, 'halloween');
-  assert.equal(T.activeTheme('classic', nov1).id, 'classic');
-  assert.equal(T.activeTheme('christmas', nov1).id, 'halloween');
-  assert.equal(T.activeTheme('auto', new Date(2026, 1, 1)).id, 'classic');
+  assert.equal(T.activeTheme('classic', nov1).id, 'classic'); // no auto-switching to Halloween
+  assert.equal(T.activeTheme('halloween', nov1).id, 'halloween');
+  assert.equal(T.activeTheme('halloween', new Date(2026, 10, 6), 'classic').id, 'classic'); // season over
+  assert.equal(T.activeTheme('christmas', nov1).id, 'classic'); // not unlocked yet
+  assert.equal(T.isHoliday('thanksgiving'), true);
+  assert.equal(T.isHoliday('classic'), false);
+  assert.equal(T.seasonKey(T.byId('christmas'), new Date(2026, 11, 1)), 'christmas-2026');
 });
 
 test('coach suggestions land on steps of 100, even for odd goals', () => {

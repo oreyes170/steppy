@@ -22,12 +22,12 @@ All data stays on the device (`localStorage`). There's no account and no server.
 
 ## Holiday themes and monthly welcome
 
-- **Themes** switch on by date when Settings → Theme is on **Auto** (the default). Out of season, it uses the Classic look:
+- **Holiday themes** unlock by date:
   - 🎃 Halloween: Oct 1 – Nov 5
   - 🦃 Thanksgiving: Nov 6 – Thanksgiving Day
   - 🎄 Christmas: day after Thanksgiving – Dec 31
 
-  Each theme has its own colours (light and dark), confetti colours, falling or floating decorations, and big-goal emoji. She can also pick Classic or the holiday that's in season. A holiday theme is hidden outside its dates.
+  **Her pick always wins.** The first time she opens Steppy after a holiday unlocks, a popup says "New theme: Thanksgiving!" with **Try it!** or **Not now** (once per holiday per year). When a holiday she's wearing ends, she goes back to the theme she wore before it. Each theme has its own colours (light and dark), confetti colours and emoji, background decorations, header icon and big-goal emoji.
 - **Preview any theme early** by adding `?theme=christmas` (or `halloween`, `thanksgiving`, `classic`) to the address. The preview isn't saved.
 - **Welcome to <Month>:** the first time she opens Steppy in a new month, she gets "Welcome to November!" with *rabbit rabbit* in small letters and a recap of last month.
 

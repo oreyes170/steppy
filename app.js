@@ -12,7 +12,7 @@ const STORE_KEY = 'steppy:v1';
 
 const defaultState = () => ({
   version: 1,
-  settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false, theme: 'auto' },
+  settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false, theme: 'classic' },
   days: {}, // { 'YYYY-MM-DD': { status: 'regular'|'big'|'missed'|'skip', steps?: number } }
   meta: {
     startedOn: null,
@@ -21,6 +21,8 @@ const defaultState = () => ({
     celebrated: null,
     lastBackupOn: null,
     backupSnoozedUntil: null,
+    themeBeforeHoliday: 'classic', // where she goes back to when a holiday theme ends
+    holidaysAnnounced: [], // e.g. 'thanksgiving-2026' — each holiday pops up once a year
     lastMonthSeen: null, // 'YYYY-MM' — for the "Welcome to <Month>" greeting
     changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
     google: { connected: false, email: '', fileId: null, lastSyncAt: 0, needsReconnect: false, snoozedUntil: null },
@@ -39,13 +41,26 @@ function load() {
 
 function normalize(s) {
   const d = defaultState();
-  return {
+  return migrate({
     ...d,
     ...s,
     settings: { ...d.settings, ...(s.settings || {}) },
     meta: { ...d.meta, ...(s.meta || {}), google: { ...d.meta.google, ...(s.meta?.google || {}) } },
     days: s.days && typeof s.days === 'object' ? s.days : {},
-  };
+  });
+}
+
+/** One-off upgrades for data saved by older versions. */
+function migrate(s) {
+  // v1.6: 'auto' switched themes by date. Now her pick wins, so lock in what she was seeing.
+  if (s.settings.theme === 'auto' || !s.settings.theme) {
+    const now = new Date();
+    const seasonal = Themes.seasonalTheme(now);
+    s.settings.theme = seasonal ? seasonal.id : 'classic';
+    s.meta.themeBeforeHoliday = 'classic';
+    if (seasonal) s.meta.holidaysAnnounced = [...(s.meta.holidaysAnnounced || []), Themes.seasonKey(seasonal, now)];
+  }
+  return s;
 }
 
 function save({ dirty = true } = {}) {
@@ -170,7 +185,7 @@ let ambientFor = null;
 function applyTheme() {
   const t = previewTheme && Themes.THEMES.some((x) => x.id === previewTheme)
     ? Themes.byId(previewTheme)
-    : Themes.activeTheme(state.settings.theme, new Date());
+    : Themes.activeTheme(state.settings.theme, new Date(), state.meta.themeBeforeHoliday);
   theme = t;
   document.documentElement.dataset.theme = t.id;
   $('#theme-color')?.setAttribute('content', t.themeColor);
@@ -211,17 +226,14 @@ function renderAmbient(t) {
 
 function themePickerHtml() {
   const now = new Date();
-  const seasonal = Themes.seasonalTheme(now);
-  const pref = state.settings.theme || 'auto';
-  const current = Themes.activeTheme(pref, now);
-  const isOn = (id) => (id === 'auto' ? pref === 'auto' || current.id !== pref : pref === id && current.id === id);
+  const current = Themes.activeTheme(state.settings.theme, now, state.meta.themeBeforeHoliday);
+  const isOn = (id) => current.id === id;
   const chip = (id, emoji, name, sub) =>
     `<button class="theme-chip ${isOn(id) ? 'on' : ''}" data-theme-pick="${id}" type="button"><span>${emoji}</span><span>${name}${sub ? `<small>${sub}</small>` : ''}</span></button>`;
   return `
     <h3>Theme</h3>
     <div class="theme-picker">
-      ${chip('auto', seasonal ? seasonal.emoji : '✨', 'Auto', seasonal ? `${seasonal.name} now` : 'Holidays when in season')}
-      ${Themes.availableThemes(now).map((t) => chip(t.id, t.emoji, t.name, '')).join('')}
+      ${Themes.availableThemes(now).map((t) => chip(t.id, t.emoji, t.name, t.holiday ? 'Limited time' : '')).join('')}
     </div>`;
 }
 
@@ -230,10 +242,10 @@ function themePickerHtml() {
 // ---------------------------------------------------------------------------
 
 function maybeWelcomeMonth() {
-  if (!state.settings.onboarded || !$('#modal').hidden) return;
+  if (!state.settings.onboarded || !$('#modal').hidden) return null;
   const now = new Date();
   const ym = todayKey().slice(0, 7);
-  if (state.meta.lastMonthSeen === ym) return;
+  if (state.meta.lastMonthSeen === ym) return null;
   state.meta.lastMonthSeen = ym;
   save({ dirty: false });
   const month = now.toLocaleDateString(undefined, { month: 'long' });
@@ -245,7 +257,7 @@ function maybeWelcomeMonth() {
         sum.big ? `, including <b>${sum.big}</b> big one${sum.big === 1 ? '' : 's'} 🌟` : ''
       }. Let’s make ${month} great!</p>`
     : `<p class="recap">A fresh month, a fresh start. Let’s make it a great one!</p>`;
-  showModal({
+  const done = showModal({
     emoji: '🐇',
     title: `Welcome to ${month}!`,
     html: `<p class="rabbit">rabbit rabbit</p>${recap}`,
@@ -253,6 +265,63 @@ function maybeWelcomeMonth() {
     fx: () => fx.confetti({ count: 110 }),
   });
   $('#modal .modal-emoji')?.classList.add('hop');
+  return done;
+}
+
+// ---------------------------------------------------------------------------
+// "New theme!" when a holiday unlocks (once per holiday per year)
+// ---------------------------------------------------------------------------
+
+function maybeAnnounceHoliday() {
+  if (!state.settings.onboarded || !$('#modal').hidden) return null;
+  const now = new Date();
+  const t = Themes.seasonalTheme(now);
+  if (!t) return null;
+  const key = Themes.seasonKey(t, now);
+  const seen = state.meta.holidaysAnnounced || [];
+  if (seen.includes(key)) return null;
+  state.meta.holidaysAnnounced = [...seen.slice(-20), key];
+  save({ dirty: false });
+  if (theme.id === t.id) return null; // already wearing it
+  return showModal({
+    emoji: t.emoji,
+    title: `New theme: ${t.name}!`,
+    html: `
+      <p>${t.pitch} Want to try it?</p>
+      <div class="row modal-row">
+        <button class="btn primary" data-try-theme="${t.id}">Try it! ${t.emoji}</button>
+        <button class="btn ghost" data-close-modal>Not now</button>
+      </div>
+      <p class="muted small modal-foot">You can switch anytime in Settings ⚙️</p>`,
+    cta: null,
+    fx: () => fx.confetti({ count: 110, colors: t.confetti, emojis: t.confettiEmoji }),
+  });
+}
+
+/** Pick a theme. Remembers her non-holiday pick so an expired holiday can hand it back. */
+function chooseTheme(id) {
+  if (!Themes.isHoliday(id)) state.meta.themeBeforeHoliday = id;
+  else if (!Themes.isHoliday(state.settings.theme)) state.meta.themeBeforeHoliday = state.settings.theme;
+  state.settings.theme = id;
+  save();
+  render();
+}
+
+/** Month welcome first, then any holiday news — one popup at a time. */
+let announcing = false;
+async function runAnnouncements() {
+  if (announcing) return;
+  announcing = true;
+  try {
+    const month = maybeWelcomeMonth();
+    if (month) {
+      await month;
+      await wait(350); // let the first popup finish closing
+    }
+    await maybeAnnounceHoliday();
+  } finally {
+    announcing = false;
+  }
 }
 
 function quickButtons(key) {
@@ -986,6 +1055,12 @@ function finishOnboarding(form) {
   state.settings = { ...state.settings, name: String(data.get('name') || '').trim(), regularGoal, bigGoal, onboarded: true };
   state.meta.startedOn = todayKey();
   state.meta.lastMonthSeen = todayKey().slice(0, 7); // no "welcome to <month>" right after signing up
+  const seasonal = Themes.seasonalTheme(new Date());
+  if (seasonal) {
+    state.settings.theme = seasonal.id; // start in the holiday that's on now
+    state.meta.themeBeforeHoliday = 'classic';
+    state.meta.holidaysAnnounced = [...(state.meta.holidaysAnnounced || []), Themes.seasonKey(seasonal, new Date())];
+  }
   state.meta.goalsChangedOn = todayKey();
   save();
   closeModal();
@@ -1070,10 +1145,15 @@ document.addEventListener('click', (e) => {
     toast('No problem — I’ll check back in a week 💕');
     return;
   }
+  if (t.dataset.tryTheme) {
+    chooseTheme(t.dataset.tryTheme);
+    closeModal();
+    fx.confetti({ count: 110 });
+    toast(`${theme.name} theme on! ${theme.emoji}`);
+    return;
+  }
   if (t.dataset.themePick) {
-    state.settings.theme = t.dataset.themePick;
-    save();
-    render();
+    chooseTheme(t.dataset.themePick);
     openSettings();
     fx.confetti({ count: 90 });
     return;
@@ -1129,7 +1209,7 @@ document.addEventListener('visibilitychange', () => {
   render();
   if (maybeRenewGoogle()) return;
   syncNow();
-  maybeWelcomeMonth();
+  runAnnouncements();
 });
 addEventListener('online', () => syncNow());
 
@@ -1254,7 +1334,7 @@ render();
   if (ret) await handleGoogleReturn(ret);
   else if (maybeRenewGoogle()) return;
   if (!state.settings.onboarded) setTimeout(onboard, 250);
-  else setTimeout(maybeWelcomeMonth, 500);
+  else setTimeout(runAnnouncements, 500);
   syncNow();
 })();
 
