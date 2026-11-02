@@ -172,6 +172,7 @@ const STATUS_INFO = {
   regular: { emoji: '👟', label: 'Hit my goal', short: 'Goal met' },
   skip: { emoji: '🎟️', label: 'Use a skip day', short: 'Skip day' },
   missed: { emoji: '🌙', label: 'Not today', short: 'Rest day' },
+  progress: { emoji: '🚶', label: 'In progress', short: 'In progress' },
 };
 
 const MSG = {
@@ -235,7 +236,21 @@ function snapshot() {
 // Rendering
 // ---------------------------------------------------------------------------
 
+/** Days left "in progress" from before yesterday quietly become rest days (steps kept). */
+function finalizeOldProgress() {
+  const y = L.addDays(todayKey(), -1);
+  let changed = false;
+  for (const [k, v] of Object.entries(state.days)) {
+    if (v.status === 'progress' && k < y) {
+      state.days[k] = { ...v, status: 'missed' };
+      changed = true;
+    }
+  }
+  if (changed) save();
+}
+
 function render() {
+  finalizeOldProgress();
   applyTheme();
   renderHeader();
   renderToday();
@@ -833,6 +848,22 @@ function renderToday() {
   const d = state.days[t];
   const { regularGoal, bigGoal } = state.settings;
   const el = $('#today');
+  if (d?.status === 'progress') {
+    const e = L.encouragement(d.steps || 0, regularGoal);
+    el.className = 'card today-card progress';
+    el.innerHTML = `
+      <p class="eyebrow">Today · in progress 🚶</p>
+      <h2>${fmt(d.steps || 0)} <span class="of-goal">/ ${fmt(regularGoal)} steps</span></h2>
+      <div class="goal-meter" aria-label="${e.pct}% of your goal"><i style="width:${e.pct}%"></i></div>
+      <p class="encourage"><b>${fmt(e.left)} to go.</b> ${e.msg}</p>
+      ${sunLine()}
+      <div class="row progress-actions">
+        <button class="btn primary" data-open-day="${t}">Update steps</button>
+        <button class="btn regular-btn" data-log="regular" data-key="${t}">👟 Hit my goal</button>
+      </div>
+      <button class="link-btn" data-log="missed" data-key="${t}">Call it a rest day 🌙</button>`;
+    return;
+  }
   if (d) {
     const info = STATUS_INFO[d.status];
     const sub =
@@ -872,7 +903,7 @@ function renderCatchup() {
   const y = L.addDays(t, -1);
   const el = $('#catchup');
   const started = state.meta.startedOn;
-  if (!started || y < started || state.days[y]) {
+  if (!started || y < started || (state.days[y] && state.days[y].status !== 'progress')) {
     el.innerHTML = '';
     return;
   }
@@ -880,6 +911,7 @@ function renderCatchup() {
     <div class="card catchup-card">
       <p class="eyebrow">Catch up</p>
       <h3>How did yesterday go?</h3>
+      ${state.days[y]?.steps ? `<p class="muted small">Last you said: ${fmt(state.days[y].steps)} steps</p>` : ''}
       ${quickButtons(y)}
       <button class="link-btn" data-open-day="${y}">More options →</button>
     </div>`;
@@ -1089,7 +1121,7 @@ function renderGoals() {
 // Logging a day (+ celebrations)
 // ---------------------------------------------------------------------------
 
-const RANK = { missed: 0, skip: 1, regular: 2, big: 3 };
+const RANK = { missed: 0, progress: 0.5, skip: 1, regular: 2, big: 3 };
 
 async function setDay(key, status, steps) {
   const before = snapshot();
@@ -1110,6 +1142,11 @@ async function setDay(key, status, steps) {
   render();
   popCell(key);
 
+  if (status === 'progress') {
+    const e = L.encouragement(steps || 0, state.settings.regularGoal);
+    toast(`${fmt(Math.round(steps || 0))} steps saved! ${fmt(e.left)} to go, about ${L.formatDuration(e.minutes * 60000)} of walking 💪`, { duration: 4500 });
+    return;
+  }
   if (!status || status === old?.status) return;
   const after = snapshot();
   const improved = RANK[status] > (old ? RANK[old.status] : -1);
@@ -1719,7 +1756,9 @@ document.addEventListener('submit', (e) => {
     const key = f.dataset.stepsForm;
     const steps = Number(f.querySelector('input').value);
     if (!(steps > 0)) return toast('Type in your step count first 👟');
-    return setDay(key, L.classifySteps(steps, state.settings), steps);
+    let status = L.classifySteps(steps, state.settings);
+    if (status === 'missed' && key === todayKey()) status = 'progress'; // the day isn't over yet!
+    return setDay(key, status, steps);
   }
   if ('settingsForm' in f.dataset) return saveSettings(f);
   if ('onboardForm' in f.dataset) return finishOnboarding(f);

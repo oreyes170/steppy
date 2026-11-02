@@ -349,3 +349,28 @@ test('sunrise and sunset for New York match published times (±3 min)', () => {
   assert.equal(L.formatDuration(72 * 60000), '1h 12m');
   assert.equal(L.formatDuration(5 * 60000), '5m');
 });
+
+test('in-progress days do not break or count toward streaks, skips or the coach', () => {
+  const d = days('rrr.'); // three goal days, then today
+  d[TODAY] = { status: 'progress', steps: 3000 };
+  assert.equal(L.currentStreak(d, TODAY), 3); // today still open
+  assert.equal(L.skipInfo(d).progress, 3);
+  const s = { regularGoal: 7000, bigGoal: 10000 };
+  const many = days('rrrrrrrrr');
+  many[TODAY] = { status: 'progress', steps: 100 };
+  assert.equal(L.suggestGoals({ days: many, settings: s }, TODAY).kind, 'raise'); // progress ignored
+});
+
+test('encouragement adapts to time left in the day', () => {
+  const at = (h, m = 0) => new Date(2026, 10, 2, h, m);
+  const morning = L.encouragement(4200, 7000, at(9));
+  assert.equal(morning.left, 2800);
+  assert.equal(morning.minutes, 28);
+  assert.match(morning.msg, /Plenty of day left/);
+  assert.match(L.encouragement(4200, 7000, at(19)).msg, /this evening/);
+  assert.match(L.encouragement(4200, 7000, at(22)).msg, /house/);
+  assert.match(L.encouragement(4200, 7000, at(23, 20)).msg, /tight/);
+  assert.match(L.encouragement(4200, 7000, at(23, 50)).msg, /Every step counted/);
+  assert.match(L.encouragement(6500, 7000, at(15)).msg, /So close/);
+  assert.match(L.encouragement(1000, 9000, at(8)).msg, /1h 20m of walking/);
+});

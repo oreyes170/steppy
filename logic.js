@@ -5,6 +5,8 @@ export const STATUS = Object.freeze({
   BIG: 'big',
   MISSED: 'missed',
   SKIP: 'skip',
+  // today, steps entered but not at the goal yet: counts like an unlogged day until it's over
+  PROGRESS: 'progress',
 });
 
 /** Streak lengths that get a big celebration. */
@@ -54,7 +56,7 @@ export function keepsStreak(status) {
  */
 export function currentStreak(days, todayKey) {
   let k = todayKey;
-  if (!days[k]) k = addDays(k, -1);
+  if (!days[k] || days[k].status === STATUS.PROGRESS) k = addDays(k, -1);
   let n = 0;
   while (days[k] && keepsStreak(days[k].status)) {
     n++;
@@ -147,7 +149,7 @@ export function suggestGoals({ days, settings, meta = {} }, todayKey) {
     const k = addDays(todayKey, -i);
     if (since && k < since) break;
     const d = days[k];
-    if (d && d.status !== STATUS.SKIP) entries.push(d);
+    if (d && d.status !== STATUS.SKIP && d.status !== STATUS.PROGRESS) entries.push(d);
   }
   const n = entries.length;
   if (n < COACH_MIN_DAYS) return null;
@@ -318,4 +320,34 @@ export function formatDuration(ms) {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return h ? `${h}h ${m}m` : `${m}m`;
+}
+
+// ---------- in-progress encouragement ----------
+
+/** Brisk walking is roughly 100 steps a minute. */
+export const STEPS_PER_MINUTE = 100;
+
+/**
+ * How far she is from today's goal, as steps and walking minutes, plus a friendly nudge
+ * that depends on how much of the day is left (until midnight, sunset doesn't matter).
+ */
+export function encouragement(steps, goal, now = new Date()) {
+  const left = Math.max(0, goal - steps);
+  const minutes = Math.max(1, Math.ceil(left / STEPS_PER_MINUTE));
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const minsLeft = Math.max(0, Math.round((midnight - now) / 60000));
+  const walk = minutes >= 60 ? `about ${formatDuration(minutes * 60000)} of walking` : `about a ${minutes}-minute walk`;
+  const pct = Math.min(100, Math.round((steps / goal) * 100));
+  let msg;
+  if (pct >= 90) msg = `So close! Just ${walk}. 🏁`;
+  else if (minsLeft > 6 * 60) msg = `Plenty of day left. ${cap(walk)} gets you there! 👟`;
+  else if (minsLeft > 3 * 60) msg = `${cap(walk)} this evening and you’ve got it. 🌆`;
+  else if (minsLeft > minutes + 30) msg = `Still time! ${cap(walk)}. Laps around the house count too. 🏠`;
+  else if (minsLeft > minutes) msg = `It’s tight, but ${walk} still makes it. Pace while you watch TV! 📺`;
+  else msg = 'Every step counted today. Proud of you for moving! 💛';
+  return { left, minutes, minsLeft, pct, msg };
+}
+
+function cap(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }

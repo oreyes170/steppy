@@ -1050,6 +1050,27 @@ html[data-theme='christmas'] {
   }
 }
 
+/* in-progress Today card */
+.today-card.progress h2 { font-size: 30px; margin: 2px 0 8px; }
+.today-card.progress .of-goal { font-size: 16px; color: var(--muted); font-weight: 700; }
+.goal-meter {
+  height: 12px;
+  border-radius: 99px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.goal-meter i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  transition: width 0.8s cubic-bezier(.3, 1.4, .5, 1);
+}
+.encourage { margin-top: 10px; line-height: 1.4; }
+.progress-actions { margin-top: 12px; }
+.progress-actions .btn { flex: 1; }
+.cell.progress::before { background: var(--bg-2); box-shadow: inset 0 0 0 2px var(--primary); }
+
 /* sunrise & sunset line on the Today card */
 .sun-line {
   font-size: 13px;
