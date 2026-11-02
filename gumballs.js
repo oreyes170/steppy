@@ -34,6 +34,7 @@ export const SETS = [
   { id: 'treats', name: 'Treat yourself', emoji: '🍟' },
   // intro: 'race' plays a 🚦 3-2-1-GO countdown before the reveal
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
+  { id: 'fyp', name: 'For You Page', emoji: '📱' },
 ];
 
 export const GUMBALLS = [
@@ -446,6 +447,64 @@ export const GUMBALLS = [
     confetti: ['#ffd400', '#8e44ad', '#ffffff', '#fff07a', '#b57edc'],
     emojis: ['🧄', '💰', '💜', '⚡', '🏁'], cheer: 'Ka-ching! 💰',
     pitch: 'Deep purple and loud yellow. Extra garlic, extra coins.',
+  },
+  // ── 📱 For You Page: memes we quote (each one's quote shows when she wins it) ──
+  {
+    id: 'fyp-avocadothanks', set: 'fyp', name: 'An avocado? Thanks', emoji: '🥑',
+    colors: { bg: '#f3f6e8', primary: '#5a7d2a', accent: '#7a4a2a', ink: '#22301a', blend: '#8fb04a' },
+    emojis: ['🥑', '🙂', '👍'], cheer: 'An avocado… thanks 🥑', note: 'An avocado… thanks 🥑',
+    pitch: 'Avocado green and pit brown. Very polite.',
+  },
+  {
+    id: 'fyp-roadwork', set: 'fyp', name: 'Road work ahead', emoji: '🚧',
+    colors: { bg: '#fff4e0', primary: '#e07a00', accent: '#1c1c1c', ink: '#1f1f1f', blend: '#ffb627' },
+    confetti: ['#f28c00', '#1c1c1c', '#ffffff', '#8a8a8a', '#ffb627'],
+    emojis: ['🚧', '🚗', '🦺'], cheer: 'Road work ahead? I sure hope it does 🚧', note: 'Road work ahead? Uh, yeah, I sure hope it does 🚧',
+    pitch: 'Caution orange, black and asphalt grey.',
+  },
+  {
+    id: 'fyp-burntnugget', set: 'fyp', name: 'Burnt chicken nugget', emoji: '🍗',
+    colors: { bg: '#fbf0dc', primary: '#b8741f', accent: '#3a2414', ink: '#2e1d0e', blend: '#e0a03a' },
+    confetti: ['#b8741f', '#e0a03a', '#3a2414', '#f5d58a', '#6b3a1a'],
+    emojis: ['🍗', '🔥', '🥲'], cheer: 'Because you love yourself! 🍗', note: 'Because you love yourself! 🍗',
+    pitch: 'Toasty golden brown with a charred edge.',
+  },
+  {
+    id: 'fyp-chickens', set: 'fyp', name: 'Look at all those chickens', emoji: '🐔',
+    colors: { bg: '#eef7fd', primary: '#c8322b', accent: '#f2c94c', ink: '#2a1c14', blend: '#e86a4a' },
+    emojis: ['🐔', '🐓', '🐣', '🌾'], cheer: 'Look at all those chickens! 🐔', note: 'Look at all those chickens! 🐔',
+    pitch: 'Barnyard red, straw yellow and big blue sky. So many chickens.',
+  },
+  {
+    id: 'fyp-freshavocado', set: 'fyp', name: 'Freeesh avocado', emoji: '✨',
+    colors: { bg: '#fff8e6', primary: '#d71920', accent: '#ffc425', ink: '#2a1410', blend: '#f26a2a' },
+    confetti: ['#d71920', '#ffc425', '#5aa846', '#ffffff', '#f26a2a'],
+    emojis: ['🥑', '✨', '🌮'], cheer: 'Freeeesh avocado! ✨', note: 'Freeeesh avocado! ✨',
+    pitch: 'Del Taco red and sunshine gold, with a fresh avocado.',
+  },
+  {
+    id: 'fyp-hurricanetortilla', set: 'fyp', name: 'Hurricane tortilla', emoji: '🌀',
+    colors: { bg: '#e9eef3', primary: '#4a6a8a', accent: '#e3c58f', ink: '#1c2a38', blend: '#7a9ec0' },
+    emojis: ['🌀', '🫓', '💨', '🌧️'], motion: 'fall', cheer: 'Hurricane tortilla! 🌀', note: 'Hurricane tortilla! 🌀',
+    pitch: 'Stormy grey-blue with flying tortillas.',
+  },
+  {
+    id: 'fyp-roommates', set: 'fyp', name: 'They were roommates', emoji: '😱',
+    colors: { bg: '#fff0f5', primary: '#e8338a', accent: '#f2d4b8', ink: '#3a1028', blend: '#ff7ab8' },
+    emojis: ['😱', '🏠', '🛏️', '💕'], cheer: 'Oh my god, they were roommates 😱', note: 'Oh my god, they were roommates 😱',
+    pitch: 'Gasp-worthy hot pink and cozy apartment cream.',
+  },
+  {
+    id: 'fyp-bagagwa', set: 'fyp', name: 'Bagagwa', emoji: '😼', ball: '#1a1a22',
+    colors: { bg: '#0a0a0f', primary: '#f5d020', accent: '#7a3fbf', ink: '#f2eee0', blend: '#fff07a' }, dark: true,
+    emojis: ['🐈‍⬛', '🕯️', '👁️', '🌑'], cheer: 'You summoned Bagagwa 🕯️', note: 'You summoned Bagagwa 🕯️',
+    pitch: 'Pitch black, glowing cat eyes and candlelight purple.',
+  },
+  {
+    id: 'fyp-weeweewee', set: 'fyp', name: 'Wee wee wee', emoji: '🐱',
+    colors: { bg: '#fff5ee', primary: '#e0607e', accent: '#f6c9a8', ink: '#4a2a2a', blend: '#f59ab0' },
+    emojis: ['🐱', '🐾', '🍼', '💕'], cheer: 'Wee wee wee! 🐱', note: 'Wee wee wee! 🐱',
+    pitch: 'Soft kitten peach and little pink nose.',
   },
 ];
 
