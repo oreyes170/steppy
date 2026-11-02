@@ -258,7 +258,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 81);
+  assert.equal(G.GUMBALLS.length, 82);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -321,7 +321,7 @@ test('For You Page memes show their quote when won', async () => {
 
 test('So Random collection', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 8 });
+  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 4 });
   assert.equal(G.setById('random').name, 'So Random');
 });
 
@@ -395,4 +395,10 @@ test('weather: describe codes and pick a walking tip', async () => {
   assert.match(W.walkingTip(base({ temperature_2m: 20 })), /Bundle up/);
   assert.match(W.walkingTip(base({ temperature_2m: 65, weather_code: 1 })), /Great walking weather/);
   assert.match(W.weatherUrl(40.71, -74.01), /temperature_unit=fahrenheit/);
+});
+
+test('Bookworm collection holds the book themes (old ids kept)', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('books', []), { owned: 0, total: 5 });
+  assert.deepEqual(G.revealedSets(['rand-kindle']).map((s) => s.id), ['books']);
 });

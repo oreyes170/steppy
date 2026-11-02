@@ -39,6 +39,7 @@ export const SETS = [
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
   { id: 'fyp', name: 'For You Page', emoji: '📱' },
   { id: 'random', name: 'So Random', emoji: '🎲' },
+  { id: 'books', name: 'Bookworm', emoji: '📚' },
 ];
 
 export const GUMBALLS = [
@@ -511,8 +512,9 @@ export const GUMBALLS = [
     pitch: 'Soft kitten peach and little pink nose.',
   },
   // ── 🎲 So Random: one-offs that don't fit anywhere else ──
+  // (Kindle, Bookshelf, The Library and Libby live in 📚 Bookworm; ids keep their old 'rand-' prefix)
   {
-    id: 'rand-kindle', set: 'random', name: 'Kindle', emoji: '📖', style: 'kindle',
+    id: 'rand-kindle', set: 'books', name: 'Kindle', emoji: '📖', style: 'kindle',
     colors: { bg: '#f4f1ea', primary: '#1f1d1a', accent: '#8a867e', ink: '#1f1d1a', blend: '#4a4741' },
     confetti: ['#2b2b2b', '#f2f0ea', '#8a8a8a', '#d9d6cc', '#ffffff'],
     emojis: ['📖', '📚', '☕', '🔖'], cheer: 'Page turner! 📖', note: 'Just one more chapter… 📖',
@@ -540,25 +542,32 @@ export const GUMBALLS = [
     pitch: 'Stitch blue and hibiscus pink, with surfboards, waves and pineapples.',
   },
   {
-    id: 'rand-bookshelf', set: 'random', name: 'Bookshelf', emoji: '📚', head: 'storybook',
+    id: 'rand-bookshelf', set: 'books', name: 'Bookshelf', emoji: '📚', head: 'storybook',
     colors: { bg: '#f6efe1', primary: '#7a1f2b', accent: '#2f5a3e', ink: '#2e1e14', blend: '#b0874a' },
     confetti: ['#7a1f2b', '#2f5a3e', '#c9a24a', '#f6efe1', '#4a2a1a'],
     emojis: ['📚', '📖', '🕯️', '☕', '🔖'], cheer: 'Another chapter conquered! 📖', note: 'Ahh… that new-book smell 📚',
     pitch: 'A cozy reading nook: oxblood leather, forest green, cream pages and gold foil.',
   },
   {
-    id: 'rand-library', set: 'random', name: 'The Library', emoji: '🤫', head: 'typewriter', ball: '#a8743f',
+    id: 'rand-library', set: 'books', name: 'The Library', emoji: '🤫', head: 'typewriter', ball: '#a8743f',
     colors: { bg: '#f7ecd2', primary: '#8a5a2b', accent: '#c8322b', ink: '#33230f', blend: '#c08a52' },
     confetti: ['#8a5a2b', '#f2e2b8', '#c8322b', '#5a3a1a', '#e8d29a'],
     emojis: ['📚', '🤫', '🗂️', '🪪', '📕'], cheer: 'Overdue for a celebration! 📚', note: 'Shhh… you found the library 🤫',
     pitch: 'Warm oak shelves, manila library cards and a red due-date stamp.',
   },
   {
-    id: 'rand-libby', set: 'random', name: 'Libby', emoji: '🎧',
+    id: 'rand-libby', set: 'books', name: 'Libby', emoji: '🎧',
     colors: { bg: '#eaf6f5', primary: '#1f8a8a', accent: '#f0745a', ink: '#123536', blend: '#4cc0b5' },
     confetti: ['#1f8a8a', '#4cc0b5', '#f0745a', '#ffffff', '#ffd27a'],
     emojis: ['📱', '📚', '🎧', '🔖'], cheer: 'Checked out and crushed it! 📚', note: 'Your hold is ready! 📚',
     pitch: 'Soft teal and warm coral. Audiobooks for the walk!',
+  },
+  {
+    id: 'books-goodreads', set: 'books', name: 'Goodreads', emoji: '⭐',
+    colors: { bg: '#f4f1ea', primary: '#382110', accent: '#409d69', ink: '#2a1a0c', blend: '#7a5a3a' },
+    confetti: ['#382110', '#409d69', '#f4c542', '#e9e5cd', '#8a6a4a'],
+    emojis: ['⭐', '📚', '📈', '🔖'], cheer: 'Reading challenge: on track! 📈', note: 'Added to Want to Read ⭐',
+    pitch: 'Cozy beige and coffee brown, with that green Want to Read button.',
   },
   {
     id: 'rand-bronxzoo', set: 'random', name: 'Bronx Zoo', emoji: '🦁',
