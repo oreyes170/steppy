@@ -258,7 +258,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 77);
+  assert.equal(G.GUMBALLS.length, 79);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -321,7 +321,7 @@ test('For You Page memes show their quote when won', async () => {
 
 test('So Random collection', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 4 });
+  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 6 });
   assert.equal(G.setById('random').name, 'So Random');
 });
 
@@ -332,7 +332,7 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 14);
+  assert.equal(Object.keys(heads).length, 16);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {

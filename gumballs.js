@@ -539,6 +539,20 @@ export const GUMBALLS = [
     emojis: ['🌺', '🏄', '🌊', '🍍', '💙'], cheer: 'Ohana means you never quit! 💙', note: 'Aloha, little blue alien 🌺',
     pitch: 'Stitch blue and hibiscus pink, with surfboards, waves and pineapples.',
   },
+  {
+    id: 'rand-bookshelf', set: 'random', name: 'Bookshelf', emoji: '📚', head: 'storybook',
+    colors: { bg: '#f6efe1', primary: '#7a1f2b', accent: '#2f5a3e', ink: '#2e1e14', blend: '#b0874a' },
+    confetti: ['#7a1f2b', '#2f5a3e', '#c9a24a', '#f6efe1', '#4a2a1a'],
+    emojis: ['📚', '📖', '🕯️', '☕', '🔖'], cheer: 'Another chapter conquered! 📖', note: 'Ahh… that new-book smell 📚',
+    pitch: 'A cozy reading nook: oxblood leather, forest green, cream pages and gold foil.',
+  },
+  {
+    id: 'rand-library', set: 'random', name: 'The Library', emoji: '🤫', head: 'typewriter', ball: '#a8743f',
+    colors: { bg: '#f7ecd2', primary: '#8a5a2b', accent: '#c8322b', ink: '#33230f', blend: '#c08a52' },
+    confetti: ['#8a5a2b', '#f2e2b8', '#c8322b', '#5a3a1a', '#e8d29a'],
+    emojis: ['📚', '🤫', '🗂️', '🪪', '📕'], cheer: 'Overdue for a celebration! 📚', note: 'Shhh… you found the library 🤫',
+    pitch: 'Warm oak shelves, manila library cards and a red due-date stamp.',
+  },
 ];
 
 // ---------- colour helpers ----------
