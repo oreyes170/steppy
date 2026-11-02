@@ -15,6 +15,8 @@
 //   confetti   optional: exact confetti colours (otherwise made from the theme colours)
 //   ball       optional: gumball colour (otherwise the main colour)
 //   note       optional: an extra line shown under the title when she wins it
+//   head       optional: a heading font from styles.css (typewriter, hand, slab, deco, didot,
+//              bodoni, storybook, sign, script, chalk, blackletter, pixel)
 //   style      optional: a special look defined in styles.css (html[data-style='…'])
 //   rip        optional: true for a place that's closed. Winning it gets a quiet candle-lit moment
 //   colors.blend  optional: second colour for the title/button gradient, when blending
@@ -65,13 +67,13 @@ export const GUMBALLS = [
     pitch: 'Deep reds, cozy scarves and falling maple leaves.',
   },
   {
-    id: 'ts-1989', set: 'taylor', name: '1989', revealName: 'The 1989 era', emoji: '🕊️',
+    id: 'ts-1989', head: 'hand', set: 'taylor', name: '1989', revealName: 'The 1989 era', emoji: '🕊️',
     colors: { bg: '#ebf5fc', primary: '#3f95cf', accent: '#e8c58a', ink: '#163247' },
     emojis: ['🕊️', '📸', '🌊', '✨'], cheer: 'Picture perfect! 📸',
     pitch: 'Sky blue and sand, with polaroids, waves and birds.',
   },
   {
-    id: 'ts-reputation', set: 'taylor', name: 'Reputation', revealName: 'The Reputation era', emoji: '🐍',
+    id: 'ts-reputation', head: 'blackletter', set: 'taylor', name: 'Reputation', revealName: 'The Reputation era', emoji: '🐍',
     colors: { bg: '#111111', primary: '#cfcfcf', accent: '#7a7a7a', ink: '#f2f2f2' }, dark: true,
     emojis: ['🐍', '🖤', '⛓️', '🌑'], cheer: 'Legendary! 🐍',
     pitch: 'Black and silver, with snakes and chains. Very dramatic.',
@@ -83,13 +85,13 @@ export const GUMBALLS = [
     pitch: 'Cotton-candy pink and blue, hearts and rainbows.',
   },
   {
-    id: 'ts-folklore', set: 'taylor', name: 'Folklore', revealName: 'The Folklore era', emoji: '🌲',
+    id: 'ts-folklore', head: 'storybook', set: 'taylor', name: 'Folklore', revealName: 'The Folklore era', emoji: '🌲',
     colors: { bg: '#efefed', primary: '#6d6d68', accent: '#9aa392', ink: '#2b2b28' },
     emojis: ['🌲', '🤍', '🌫️', '🍃'], cheer: 'Woodland wonder! 🌲',
     pitch: 'Soft greys and misty forest greens.',
   },
   {
-    id: 'ts-evermore', set: 'taylor', name: 'Evermore', revealName: 'The Evermore era', emoji: '🍂',
+    id: 'ts-evermore', head: 'storybook', set: 'taylor', name: 'Evermore', revealName: 'The Evermore era', emoji: '🍂',
     colors: { bg: '#f6ede1', primary: '#a8571f', accent: '#6b4a2b', ink: '#3a2414' },
     emojis: ['🍂', '🧥', '🌾', '🕯️'], cheer: 'Cozy season! 🍂',
     pitch: 'Burnt orange and brown, flannel, candles and wheat.',
@@ -101,13 +103,13 @@ export const GUMBALLS = [
     pitch: 'Midnight blue and lavender, with moons, stars and clocks.',
   },
   {
-    id: 'ts-ttpd', set: 'taylor', name: 'The Tortured Poets Department', revealName: 'The Tortured Poets Department era', emoji: '✒️',
+    id: 'ts-ttpd', head: 'typewriter', set: 'taylor', name: 'The Tortured Poets Department', revealName: 'The Tortured Poets Department era', emoji: '✒️',
     colors: { bg: '#f5f1e9', primary: '#5e564e', accent: '#b8ab97', ink: '#2f2b27' },
     emojis: ['🤍', '✒️', '📜', '🕊️'], cheer: 'Poetic! ✒️',
     pitch: 'Parchment and ink, with quills and scrolls.',
   },
   {
-    id: 'ts-showgirl', set: 'taylor', name: 'The Life of a Showgirl', revealName: 'The Life of a Showgirl era', emoji: '🪩',
+    id: 'ts-showgirl', head: 'bodoni', set: 'taylor', name: 'The Life of a Showgirl', revealName: 'The Life of a Showgirl era', emoji: '🪩',
     colors: { bg: '#fff3e8', primary: '#ec6417', accent: '#3fc4a2', ink: '#3d1d08' },
     emojis: ['💃', '🪩', '✨', '🧡'], cheer: 'Showstopper! 🪩',
     pitch: 'Bright orange and mint, glitter and disco balls.',
@@ -154,7 +156,7 @@ export const GUMBALLS = [
     pitch: 'Bright teal, navy and a rainbow of stars. The confetti is a rainbow too.',
   },
   {
-    id: 'bway24-gatsby', set: 'broadway-2024', name: 'The Great Gatsby', emoji: '🥂',
+    id: 'bway24-gatsby', head: 'deco', set: 'broadway-2024', name: 'The Great Gatsby', emoji: '🥂',
     colors: { bg: '#0c0c0c', primary: '#d4af37', accent: '#2fa36b', ink: '#f5ecd8', blend: '#f2d77a' }, dark: true,
     emojis: ['🥂', '🍾', '💚', '✨', '🎷'], cheer: 'Roaring success! 🥂',
     pitch: 'Art-deco black and gold, with a green light across the bay.',
@@ -180,14 +182,14 @@ export const GUMBALLS = [
     pitch: 'Hot pink, sunshine yellow and turquoise, with thread, needles and dresses.',
   },
   {
-    id: 'bway25-deadoutlaw', set: 'broadway-2025', name: 'Dead Outlaw', emoji: '💀',
+    id: 'bway25-deadoutlaw', head: 'slab', set: 'broadway-2025', name: 'Dead Outlaw', emoji: '💀',
     colors: { bg: '#141110', primary: '#c8322b', accent: '#d9b77e', ink: '#f4ece0', blend: '#e0703a' }, dark: true,
     emojis: ['💀', '🤠', '🌵', '🎸'], cheer: 'Wanted: one big goal! 🤠',
     pitch: 'Black, outlaw red and desert sand. A rock-and-roll Wild West.',
   },
   {
     // Seen in 2024. The id keeps '25' on purpose: ids never change once she might own one.
-    id: 'bway25-sunsetblvd', set: 'broadway-2024', name: 'Sunset Blvd.', emoji: '🎬',
+    id: 'bway25-sunsetblvd', head: 'didot', set: 'broadway-2024', name: 'Sunset Blvd.', emoji: '🎬',
     colors: { bg: '#0b0b0b', primary: '#d7192e', accent: '#f2f2f2', ink: '#f5f5f5', blend: '#ff5a6a' }, dark: true,
     emojis: ['🎬', '🎞️', '🌴', '❤️'], cheer: 'Ready for your close-up! 🎬',
     pitch: 'Stark black and blood red. Lights, camera, Hollywood.',
@@ -199,7 +201,7 @@ export const GUMBALLS = [
     pitch: 'Midnight black and burnished gold, with wands, owls and broomsticks.',
   },
   {
-    id: 'bway25-mindplay', set: 'broadway-2025', name: 'Mindplay', emoji: '🔮',
+    id: 'bway25-mindplay', head: 'script', set: 'broadway-2025', name: 'Mindplay', emoji: '🔮',
     colors: { bg: '#1c1029', primary: '#9b6bd6', accent: '#e2b858', ink: '#f2e9ff', blend: '#c9a2ff' }, dark: true,
     emojis: ['🔮', '🧠', '🃏', '👁️'], cheer: 'I knew you’d do it! 🔮',
     pitch: 'Deep plum, mysterious violet and candlelight gold. Vinny already knows what you’re thinking.',
@@ -243,7 +245,7 @@ export const GUMBALLS = [
     pitch: 'Vintage mustard, poster red and black, with top hats and cocktails.',
   },
   {
-    id: 'bway26-everybrilliantthing', set: 'broadway-2026', name: 'Every Brilliant Thing', emoji: '📝',
+    id: 'bway26-everybrilliantthing', head: 'hand', set: 'broadway-2026', name: 'Every Brilliant Thing', emoji: '📝',
     colors: { bg: '#e9ecf5', primary: '#3c4a7a', accent: '#f29a2e', ink: '#1e2440', blend: '#7083c4' },
     emojis: ['📝', '☀️', '🍦', '✨'], motion: 'fall', cheer: 'Another brilliant thing! ✨',
     pitch: 'Slate blue and orange tape, with little notes drifting down like a list of brilliant things.',
@@ -458,7 +460,7 @@ export const GUMBALLS = [
     pitch: 'Avocado green and pit brown. Very polite.',
   },
   {
-    id: 'fyp-roadwork', set: 'fyp', name: 'Road work ahead', emoji: '🚧',
+    id: 'fyp-roadwork', head: 'sign', set: 'fyp', name: 'Road work ahead', emoji: '🚧',
     colors: { bg: '#fff4e0', primary: '#e07a00', accent: '#1c1c1c', ink: '#1f1f1f', blend: '#ffb627' },
     confetti: ['#f28c00', '#1c1c1c', '#ffffff', '#8a8a8a', '#ffb627'],
     emojis: ['🚧', '🚗', '🦺'], cheer: 'Road work ahead? I sure hope it does 🚧', note: 'Road work ahead? Uh, yeah, I sure hope it does 🚧',
@@ -517,7 +519,7 @@ export const GUMBALLS = [
     pitch: 'True black and white e-ink, warm paper, book fonts and crisp shadows.',
   },
   {
-    id: 'rand-chunk', set: 'random', name: 'Chunk', emoji: '🐶',
+    id: 'rand-chunk', head: 'pixel', set: 'random', name: 'Chunk', emoji: '🐶',
     colors: { bg: '#f3ecfb', primary: '#7b3fc4', accent: '#a8c86b', ink: '#2a1640', blend: '#a874e8' },
     confetti: ['#7b3fc4', '#a8c86b', '#c9a8f0', '#2a1640', '#dfe8b8'],
     emojis: ['🐶', '🦴', '💜', '🐾'], cheer: 'Chunk is so proud of you! 🐶', note: 'Chunk missed you! 🐶💜',
@@ -619,6 +621,7 @@ export function buildTheme(g) {
     rip: !!g.rip,
     note: g.note || '',
     style: g.style || '',
+    head: g.head || '',
   };
 }
 

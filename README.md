@@ -83,7 +83,8 @@ Without a client ID the Google features are hidden, and Steppy falls back to man
 | `drive.js`, `config.js` | Google sign-in and Drive backup |
 | `themes.js` | Holiday themes and their date windows |
 | `gumballs.js` | Theme Machine: collections, gumball themes, spin rules |
-| `styles.css` | All styling, light and dark |
+| `styles.css` | All styling, light and dark, plus per-theme heading fonts and the Kindle look |
+| `fonts/` | Two bundled heading fonts (blackletter, pixel); see `fonts/README.md` |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and home-screen install |
 
 The version shown at the top of the app lives in `version.js`. Bump it, and the cache name in `sw.js`, with each release.

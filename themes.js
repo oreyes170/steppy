@@ -28,6 +28,7 @@ export const THEMES = [
   },
   {
     id: 'halloween',
+    head: 'chalk',
     headerIcon: 'icons/header-halloween.png',
     name: 'Halloween',
     emoji: '🎃',

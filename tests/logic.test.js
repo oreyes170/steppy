@@ -324,3 +324,13 @@ test('So Random collection', async () => {
   assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 3 });
   assert.equal(G.setById('random').name, 'So Random');
 });
+
+test('heading fonts are assigned to the right themes', async () => {
+  const T = await import('../themes.js');
+  const heads = Object.fromEntries(T.ALL_THEMES.filter((t) => t.head).map((t) => [t.id, t.head]));
+  assert.equal(heads['ts-ttpd'], 'typewriter');
+  assert.equal(heads['ts-reputation'], 'blackletter');
+  assert.equal(heads['rand-chunk'], 'pixel');
+  assert.equal(heads['halloween'], 'chalk');
+  assert.equal(Object.keys(heads).length, 14);
+});

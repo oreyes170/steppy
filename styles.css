@@ -1003,6 +1003,49 @@ html[data-theme='christmas'] {
   }
 }
 
+/* ================= heading fonts =================
+   A theme can set `head` to give headings (and the Steppy title) their own font.
+   Body text always stays in the normal, readable font. Fonts without a local file
+   come with the iPhone; others fall back to similar fonts. */
+@font-face {
+  font-family: 'Steppy Blackletter';
+  src: url('fonts/blackletter.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Steppy Pixel';
+  src: url('fonts/pixel.woff2') format('woff2');
+  font-display: swap;
+}
+html[data-head] h1,
+html[data-head] h2,
+html[data-head] h3,
+html[data-head] .banner-text {
+  font-family: var(--head-font);
+  font-style: var(--head-style, normal);
+  font-weight: var(--head-weight, 800);
+  letter-spacing: var(--head-spacing, normal);
+}
+html[data-head] h1 { font-size: var(--head-h1, 32px); }
+html[data-head='typewriter'] { --head-font: 'American Typewriter', 'Courier New', monospace; --head-weight: 600; }
+html[data-head='hand'] { --head-font: 'Noteworthy', 'Bradley Hand', 'Segoe Print', cursive; --head-weight: 700; }
+html[data-theme='gumball'][data-head='hand'] h1 { font-family: 'Bradley Hand', 'Noteworthy', cursive; }
+html[data-head='slab'] { --head-font: 'Rockwell', 'Rockwell Extra Bold', 'Clarendon', 'American Typewriter', serif; --head-weight: 800; }
+html[data-head='deco'] { --head-font: 'Copperplate', 'Copperplate Gothic Light', 'Futura', serif; --head-weight: 700; --head-spacing: 0.04em; }
+html[data-head='didot'] { --head-font: 'Didot', 'Bodoni 72', 'Bodoni MT', serif; --head-weight: 700; --head-h1: 34px; }
+html[data-head='bodoni'] { --head-font: 'Bodoni 72', 'Didot', 'Bodoni MT', serif; --head-weight: 800; --head-h1: 34px; }
+html[data-head='storybook'] { --head-font: 'Hoefler Text', 'Baskerville', Georgia, serif; --head-style: italic; --head-weight: 600; --head-h1: 34px; }
+html[data-head='sign'] { --head-font: 'Avenir Next Condensed', 'DIN Condensed', 'Arial Narrow', sans-serif; --head-weight: 800; --head-h1: 34px; }
+html[data-head='script'] { --head-font: 'Snell Roundhand', 'Savoye LET', 'Brush Script MT', cursive; --head-weight: 700; --head-h1: 38px; }
+html[data-head='chalk'] { --head-font: 'Chalkduster', 'Chalkboard SE', 'Comic Sans MS', cursive; --head-weight: 400; }
+html[data-head='blackletter'] { --head-font: 'Steppy Blackletter', 'Old English Text MT', serif; --head-weight: 400; --head-h1: 38px; }
+html[data-head='pixel'] { --head-font: 'Steppy Pixel', 'Menlo', monospace; --head-weight: 400; --head-h1: 22px; }
+html[data-head='pixel'] h2 { font-size: 15px; line-height: 1.45; }
+html[data-head='pixel'] h3 { font-size: 12px; line-height: 1.45; }
+html[data-head='pixel'] .banner-text { font-size: clamp(28px, 9vw, 44px); }
+html[data-head='script'] h3,
+html[data-head='hand'] h3 { font-size: 19px; }
+
 /* 📖 Kindle: true black and white e-ink, warm paper, book fonts, crisp shadows.
    Everything here only applies while the Kindle theme is on. */
 html[data-style='kindle'] {
