@@ -418,7 +418,7 @@ test('Critters and Couch Time collections; Taylor renamed', async () => {
   assert.deepEqual(G.setProgress('animals', []), { owned: 0, total: 4 });
   assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 11 });
   // WandaVision: grayscale base, red only for big goals
-  const wv = T.byId('tv-wandavision');
+  const wv = G.GUMBALL_THEMES.find((t) => t.id === 'tv-wandavision');
   assert.equal(wv.vars.big, '#c8203a');
   assert.equal(wv.vars.regular, '#6a6a6a');
   assert.equal(G.setById('taylor').name, 'The Eras Walking Tour');
