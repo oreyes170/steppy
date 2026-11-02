@@ -162,8 +162,10 @@ test('holiday themes appear only in their windows', async () => {
   assert.equal(ids(2026, 11, 6), 'classic,thanksgiving'); // thanksgiving hidden until Nov 6
   assert.equal(ids(2026, 11, 26), 'classic,thanksgiving'); // Thanksgiving Day
   assert.equal(ids(2026, 11, 27), 'classic,christmas'); // christmas starts the day after
-  assert.equal(ids(2026, 12, 31), 'classic,christmas');
-  assert.equal(ids(2027, 1, 1), 'classic');
+  assert.equal(ids(2026, 12, 16), 'classic,christmas');
+  assert.equal(ids(2026, 12, 17), 'classic,christmas,doomsday'); // Avengers: Doomsday unlocks
+  assert.equal(ids(2026, 12, 31), 'classic,christmas,doomsday');
+  assert.equal(ids(2027, 1, 1), 'classic,doomsday');
   assert.equal(ids(2025, 11, 27), 'classic,thanksgiving'); // 2025's Thanksgiving is the 27th
   assert.equal(ids(2025, 11, 28), 'classic,christmas');
 });
@@ -288,4 +290,17 @@ test('Mario Kart collection plays the race countdown', async () => {
   assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'mk-wario').dark, true);
   const emojis = G.GUMBALLS.filter((g) => g.set === 'mariokart').map((g) => g.emoji);
   assert.equal(new Set(emojis).size, 9);
+});
+
+test('holidays and events are permanent once unlocked', async () => {
+  const T = await import('../themes.js');
+  const march = new Date(2027, 2, 1);
+  assert.equal(T.activeTheme('halloween', march, 'classic', ['halloween']).id, 'halloween');
+  assert.equal(T.activeTheme('halloween', march, 'classic', []).id, 'classic');
+  assert.deepEqual(T.pickable(march, ['halloween', 'doomsday']).map((t) => t.id), ['classic', 'halloween', 'doomsday']);
+  assert.deepEqual(T.openOn(new Date(2026, 11, 20)).map((t) => t.id), ['christmas', 'doomsday']);
+  assert.equal(T.seasonalTheme(new Date(2027, 0, 5)), null, 'doomsday is an event, not a holiday');
+  const d = T.byId('doomsday');
+  assert.equal(d.dark, true);
+  assert.equal(d.vars.primary, '#6fcf5a');
 });

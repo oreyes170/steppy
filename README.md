@@ -22,13 +22,14 @@ All data stays on the device (`localStorage`). There's no account and no server.
 
 ## Holiday themes and monthly welcome
 
-- **Holiday themes** unlock by date:
-  - 🎃 Halloween: Oct 1 – Nov 5
-  - 🦃 Thanksgiving: Nov 6 – Thanksgiving Day
-  - 🎄 Christmas: day after Thanksgiving – Dec 31
+- **Date-unlocked themes.** Once a theme unlocks, it's hers **forever**:
+  - 🎃 Halloween: Oct 1
+  - 🦃 Thanksgiving: Nov 6
+  - 🎄 Christmas: the day after Thanksgiving
+  - 🛡️ Avengers: Doomsday: Dec 17, 2026 (preview night). It enters with two flashes of green lightning.
 
-  **Her pick always wins.** The first time she opens Steppy after a holiday unlocks, a popup says "New theme: Thanksgiving!" with **Try it!** or **Not now** (once per holiday per year). When a holiday she's wearing ends, she goes back to the theme she wore before it. Each theme has its own colours (light and dark), confetti colours and emoji, background decorations, header icon and big-goal emoji.
-- **Preview any theme early** by adding `?theme=christmas` (or `halloween`, `thanksgiving`, `classic`) to the address. The preview isn't saved.
+  The first time each one unlocks, a popup says "New theme: …!" with **Try it!** or **Not now**. Each popup only ever shows once, and if several unlock at once they come one at a time. **Her pick always wins.** Themes never switch on their own. Each theme has its own colours, confetti, background decorations, header icon and big-goal emoji.
+- **Preview any theme early** by adding `?theme=christmas` (or `halloween`, `thanksgiving`, `doomsday`, `classic`) to the address. The preview isn't saved.
 - **Welcome to <Month>:** the first time she opens Steppy in a new month, she gets "Welcome to November!" with *rabbit rabbit* in small letters and a recap of last month.
 
 The date rules are in `themes.js` (unit tested).

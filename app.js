@@ -71,7 +71,9 @@ const defaultState = () => ({
     lastBackupOn: null,
     backupSnoozedUntil: null,
     themeBeforeHoliday: 'classic', // where she goes back to when a holiday theme ends
-    holidaysAnnounced: [], // e.g. 'thanksgiving-2026' — each holiday pops up once a year
+    holidaysAnnounced: [], // older versions: e.g. 'thanksgiving-2026'
+    unlockedThemes: [], // holidays/events she's unlocked: hers forever
+    themesAnnounced: [], // "New theme!" popups already shown (once each, ever)
     lastMonthSeen: null, // 'YYYY-MM' — for the "Welcome to <Month>" greeting
     changedAt: 0, // last time anything changed (ms) — compared with google.lastSyncAt
     gumballs: { unlocked: false, introSeen: false, owned: [], spent: 0 }, // the Theme Machine
@@ -107,6 +109,12 @@ function normalize(s) {
 
 /** One-off upgrades for data saved by older versions. */
 function migrate(s) {
+  // v1.14: holidays are permanent once unlocked. Carry over what she's already seen.
+  for (const key of s.meta.holidaysAnnounced || []) {
+    const id = String(key).replace(/-\d{4}$/, '');
+    if (!s.meta.unlockedThemes.includes(id)) s.meta.unlockedThemes = [...s.meta.unlockedThemes, id];
+    if (!s.meta.themesAnnounced.includes(id)) s.meta.themesAnnounced = [...s.meta.themesAnnounced, id];
+  }
   // v1.8.3 wrote the cheat code into her real data (and could sync it). Undo that: the
   // cheat now lives only on the device (see Cheat below), so move it there.
   if (s.meta.allUnlocked) {
@@ -226,6 +234,7 @@ function render() {
   renderCatchup();
   renderStats();
   checkMachineUnlock();
+  if (state.settings.onboarded) syncUnlocks();
   renderSuggestion();
   renderMachineCard();
   renderBackupReminder();
@@ -369,7 +378,7 @@ function currentTheme(date) {
     const pick = Themes.ALL_THEMES.find((t) => t.id === (Cheat.theme() || state.settings.theme));
     if (pick) return pick;
   }
-  return Themes.activeTheme(state.settings.theme, date, state.meta.themeBeforeHoliday);
+  return Themes.activeTheme(state.settings.theme, date, state.meta.themeBeforeHoliday, state.meta.unlockedThemes);
 }
 
 function themePickerHtml() {
@@ -381,7 +390,7 @@ function themePickerHtml() {
   return `
     <h3>Theme</h3>
     <div class="theme-picker">
-      ${(Cheat.on() ? Themes.THEMES : Themes.availableThemes(now)).map((t) => chip(t.id, t.emoji, t.name, t.holiday && !Cheat.on() ? 'Limited time' : '')).join('')}
+      ${(Cheat.on() ? Themes.THEMES : Themes.pickable(now, state.meta.unlockedThemes)).map((t) => chip(t.id, t.emoji, t.name, '')).join('')}
     </div>
     ${collectionHtml(current)}`;
 }
@@ -648,30 +657,51 @@ function maybeWelcomeMonth() {
 // "New theme!" when a holiday unlocks (once per holiday per year)
 // ---------------------------------------------------------------------------
 
-function maybeAnnounceHoliday() {
+/** Record any holiday/event that's open today as unlocked for good. */
+function syncUnlocks() {
+  const fresh = Themes.openOn(new Date())
+    .map((t) => t.id)
+    .filter((id) => !state.meta.unlockedThemes.includes(id));
+  if (!fresh.length) return;
+  state.meta.unlockedThemes = [...state.meta.unlockedThemes, ...fresh];
+  save();
+}
+
+async function maybeAnnounceHoliday() {
   if (!state.settings.onboarded || !$('#modal').hidden) return null;
-  const now = new Date();
-  const t = Themes.seasonalTheme(now);
+  syncUnlocks();
+  const t = Themes.openOn(new Date()).find((x) => !state.meta.themesAnnounced.includes(x.id));
   if (!t) return null;
-  const key = Themes.seasonKey(t, now);
-  const seen = state.meta.holidaysAnnounced || [];
-  if (seen.includes(key)) return null;
-  state.meta.holidaysAnnounced = [...seen.slice(-20), key];
+  state.meta.themesAnnounced = [...state.meta.themesAnnounced, t.id];
   save({ dirty: false });
   if (theme.id === t.id) return null; // already wearing it
-  return showModal({
+  if (t.entrance === 'lightning') await lightningFlash();
+  const done = showModal({
     emoji: t.emoji,
     title: `New theme: ${t.name}!`,
     html: `
       <p>${t.pitch} Want to try it?</p>
       <div class="row modal-row">
-        <button class="btn primary" data-try-theme="${t.id}">Try it! ${t.emoji}</button>
+        <button class="btn primary" data-try-theme="${t.id}" ${t.vars ? `style="background:linear-gradient(135deg, ${t.vars.primary}, ${t.vars['primary-2']});color:${t.vars['primary-ink']}"` : ''}>Try it! ${t.emoji}</button>
         <button class="btn ghost" data-close-modal>Not now</button>
       </div>
       <p class="muted small modal-foot">You can switch anytime in Settings ⚙️</p>`,
     cta: null,
     fx: () => fx.confetti({ count: 110, colors: t.confetti, emojis: t.confettiEmoji }),
   });
+  return { done };
+}
+
+/** ⚡ Two flashes of green lightning (Avengers: Doomsday's entrance). */
+async function lightningFlash() {
+  if (fx.reducedMotion()) return;
+  const el = document.createElement('div');
+  el.className = 'lightning';
+  document.body.appendChild(el);
+  fx.vibrate([30, 80, 60]);
+  await wait(900);
+  el.remove();
+  fx.emojiRain(['⚡', '⚡', '🛡️'], 10);
 }
 
 /** Pick a theme. Remembers her non-holiday pick so an expired holiday can hand it back. */
@@ -698,7 +728,12 @@ async function runAnnouncements() {
       await month;
       await wait(350); // let the first popup finish closing
     }
-    await maybeAnnounceHoliday();
+    for (let i = 0; i < 4; i++) {
+      const shown = await maybeAnnounceHoliday();
+      if (!shown) break;
+      await shown.done;
+      await wait(350);
+    }
   } finally {
     announcing = false;
   }
@@ -1471,6 +1506,8 @@ function finishOnboarding(form) {
     state.meta.themeBeforeHoliday = 'classic';
     state.meta.holidaysAnnounced = [...(state.meta.holidaysAnnounced || []), Themes.seasonKey(seasonal, new Date())];
   }
+  state.meta.themesAnnounced = Themes.openOn(new Date()).map((t) => t.id); // no popups for what she starts with
+  syncUnlocks();
   state.meta.goalsChangedOn = todayKey();
   save();
   closeModal();

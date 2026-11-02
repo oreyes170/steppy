@@ -1,7 +1,8 @@
-import { GUMBALL_THEMES } from './gumballs.js';
+import { GUMBALL_THEMES, cssVars } from './gumballs.js';
 
-// Holiday themes. Each one is only available inside its date window; "auto" (the
-// default) picks whichever holiday is in season, otherwise the classic look.
+// Date-unlocked themes: holidays (unlock each year on their dates) and events like a
+// movie premiere (unlock once, on a date). Once a theme has unlocked she keeps it
+// forever; the app records that in meta.unlockedThemes.
 // Pure and DOM-free so the date rules are unit tested.
 
 /** Thanksgiving (US): the 4th Thursday of November. Returns a day-of-month. */
@@ -77,6 +78,26 @@ export const THEMES = [
     holiday: true,
     pitch: 'Red, green and gold, falling snow, and ho-ho-ho big goal days.',
   },
+  {
+    // Avengers: Doomsday premieres Dec 18, 2026; unlocks on preview night.
+    id: 'doomsday',
+    name: 'Avengers: Doomsday',
+    emoji: '🛡️',
+    event: true,
+    available: (d) => d >= new Date(2026, 11, 17),
+    dark: true,
+    vars: cssVars({ colors: { bg: '#0b140e', primary: '#6fcf5a', accent: '#b9c2bd', ink: '#e8f3e6', blend: '#b8f08a' }, dark: true }),
+    themeColor: '#0b140e',
+    iconTint: '#2a5a30',
+    confetti: ['#6fcf5a', '#b8f08a', '#b9c2bd', '#2f6b3a', '#e8f3e6'],
+    confettiEmoji: ['🛡️', '⚡', '💥'],
+    rain: ['🛡️', '⚡', '🔨', '💥', '🟢'],
+    ambient: { emojis: ['⚡', '✨', '⚡'], motion: 'fall', count: 12 },
+    greetingEmoji: '🛡️',
+    bigSub: 'Heroic! 🛡️',
+    entrance: 'lightning',
+    pitch: 'Doom green glowing through dark stained glass, with steel silver.',
+  },
 ];
 
 /** Every theme: classic, holidays and Theme Machine gumballs. */
@@ -91,7 +112,17 @@ export function availableThemes(date) {
 
 /** The holiday in season on this date, or null. */
 export function seasonalTheme(date) {
-  return THEMES.find((t) => t.id !== 'classic' && t.available(date)) || null;
+  return THEMES.find((t) => t.holiday && t.available(date)) || null;
+}
+
+/** Date-unlocked themes (holidays and events) that are open on this date. */
+export function openOn(date) {
+  return THEMES.filter((t) => t.id !== 'classic' && t.available(date));
+}
+
+/** Themes she can pick: classic, anything open today, and anything she's unlocked before. */
+export function pickable(date, unlocked = []) {
+  return THEMES.filter((t) => t.id === 'classic' || t.available(date) || unlocked.includes(t.id));
 }
 
 export const isHoliday = (id) => !!THEMES.find((t) => t.id === id)?.holiday;
@@ -100,10 +131,10 @@ export const isHoliday = (id) => !!THEMES.find((t) => t.id === id)?.holiday;
  * Which theme to show. Her pick always wins. If her pick is a holiday that has gone
  * out of season, she goes back to `fallback` (the theme she wore before the holiday).
  */
-export function activeTheme(pref, date, fallback = 'classic') {
+export function activeTheme(pref, date, fallback = 'classic', unlocked = []) {
   for (const id of [pref, fallback]) {
     const t = ALL_THEMES.find((x) => x.id === id);
-    if (t && t.available(date)) return t;
+    if (t && (t.available(date) || unlocked.includes(t.id))) return t;
   }
   return byId('classic');
 }

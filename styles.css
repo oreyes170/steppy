@@ -1320,6 +1320,22 @@ html[data-theme='christmas'] {
   font-size: 12px !important;
   margin: -4px 0 10px !important;
 }
+.lightning {
+  position: fixed;
+  inset: 0;
+  z-index: 72;
+  pointer-events: none;
+  background: radial-gradient(circle at 60% 30%, rgba(184, 240, 138, 0.95), rgba(111, 207, 90, 0.55) 40%, rgba(11, 20, 14, 0.85));
+  animation: lightning 0.9s steps(1, end) forwards;
+}
+@keyframes lightning {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  18% { opacity: 0.1; }
+  30% { opacity: 0.9; }
+  45% { opacity: 0; }
+  100% { opacity: 0; }
+}
 .race-countdown {
   position: fixed;
   inset: 0;
