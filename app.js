@@ -665,7 +665,7 @@ function collectionHtml(current) {
 // ---------------------------------------------------------------------------
 
 function maybeWelcomeMonth() {
-  if (!state.settings.onboarded || !$('#modal').hidden) return null;
+  if (!state.settings.onboarded || modalBusy()) return null;
   const now = new Date();
   const ym = todayKey().slice(0, 7);
   if (state.meta.lastMonthSeen === ym) return null;
@@ -685,9 +685,9 @@ function maybeWelcomeMonth() {
     title: `Welcome to ${month}!`,
     html: `<p class="rabbit">rabbit rabbit</p>${recap}`,
     cta: 'Hop to it! 🐾',
+    emojiClass: 'hop',
     fx: () => fx.confetti({ count: 110 }),
   });
-  $('#modal .modal-emoji')?.classList.add('hop');
   return done;
 }
 
@@ -706,7 +706,7 @@ function syncUnlocks() {
 }
 
 async function maybeAnnounceHoliday() {
-  if (!state.settings.onboarded || !$('#modal').hidden) return null;
+  if (!state.settings.onboarded || modalBusy()) return null;
   syncUnlocks();
   const t = Themes.openOn(new Date()).find((x) => !state.meta.themesAnnounced.includes(x.id));
   if (!t) return null;
@@ -1209,6 +1209,7 @@ const RANK = { missed: 0, progress: 0.5, skip: 1, regular: 2, big: 3 };
 
 async function setDay(key, status, steps) {
   const before = snapshot();
+  const machineWasUnlocked = machineUnlocked();
   const old = state.days[key];
   if (status === 'skip' && old?.status !== 'skip' && before.skips.available < 1) {
     toast('No skip days yet — keep stepping to earn one! 🎟️');
@@ -1234,19 +1235,32 @@ async function setDay(key, status, steps) {
   if (!status || status === old?.status) return;
   const after = snapshot();
   const improved = RANK[status] > (old ? RANK[old.status] : -1);
+  celebrating = true; // hold month/holiday popups and stray messages until we're done
+  try {
+    await celebrateDay({ key, status, steps, old, before, after, improved, machineWasUnlocked });
+  } finally {
+    celebrating = false;
+    flushToasts();
+    // anything that waited (a new month, a holiday unlock) gets its turn now, unless she went to the machine
+    setTimeout(() => {
+      if ($('#sheet').hidden) runAnnouncements();
+    }, 700);
+  }
+}
 
+async function celebrateDay({ key, status, steps, before, after, improved, machineWasUnlocked }) {
   // 1. The day itself
   if (status === 'big' && improved) {
     fx.vibrate([30, 40, 30, 40, 80]);
     fx.cannons();
     fx.emojiRain(theme.rain);
     fx.banner('BIG GOAL!', theme.bigSub || pick(MSG.big));
-    await wait(1600);
+    await wait(2500); // let the banner finish before anything else appears
   } else if (status === 'regular' && improved) {
     fx.vibrate(40);
     fx.confetti();
     toast(pick(MSG.regular));
-    await wait(900);
+    await wait(1400);
   } else if (status === 'skip') {
     fx.flyTo('🎟️', $('#stat-skips'), document.querySelector(`[data-day="${key}"]`));
     toast(pick(MSG.skip));
@@ -1263,19 +1277,7 @@ async function setDay(key, status, steps) {
     }
   }
 
-  // 2. Earned a skip day
-  if (after.skips.earned > before.skips.earned) {
-    await fx.flyTo('🎟️', null, $('#stat-skips'));
-    await showModal({
-      emoji: '🎟️',
-      title: 'You earned a skip day!',
-      body: `Save it for a busy or lazy day — it keeps your streak alive. You have <b>${after.skips.available}</b> now.`,
-      cta: 'Nice!',
-      fx: () => fx.confetti({ count: 80, colors: ['#a78bfa', '#c4b5fd', '#f0abfc', '#ffffff'] }),
-    });
-  }
-
-  // 3. Streak milestone / personal best
+  // 2. Streak milestone / personal best
   let milestone = L.crossedMilestone(before.streak, after.streak);
   if (milestone) {
     // Celebrate each milestone once per streak (e.g. not again after a missed day is rescued by a skip).
@@ -1301,6 +1303,34 @@ async function setDay(key, status, steps) {
     });
   } else if (after.best > before.best && after.best >= 3 && after.streak === after.best) {
     toast(`New personal best: ${after.best} days! 🏆`);
+  }
+
+  // 3. Earned a skip day (last, since it may lead to the Theme Machine)
+  if (after.skips.earned > before.skips.earned) {
+    await fx.flyTo('🎟️', null, $('#stat-skips'));
+    const justUnlocked = !machineWasUnlocked && machineUnlocked();
+    if (justUnlocked) {
+      // one popup for both, instead of a skip-day popup plus a separate unlock announcement
+      await showModal({
+        emoji: '🍬',
+        title: 'New skip day, and a surprise!',
+        body: `You earned a skip day <b>and unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
+        cta: null,
+        html: `<div class="row modal-row">
+            <button class="btn primary" data-open-machine type="button">Take me there 🍬</button>
+            <button class="btn ghost" data-close-modal type="button">Later</button>
+          </div>`,
+        fx: () => fx.confetti({ count: 110, colors: ['#a78bfa', '#ff6f91', '#ffc75f', '#4ecdc4', '#ffffff'] }),
+      });
+    } else {
+      await showModal({
+        emoji: '🎟️',
+        title: 'You earned a skip day!',
+        body: `Save it for a busy or lazy day — it keeps your streak alive. You have <b>${after.skips.available}</b> now.`,
+        cta: 'Nice!',
+        fx: () => fx.confetti({ count: 80, colors: ['#a78bfa', '#c4b5fd', '#f0abfc', '#ffffff'] }),
+      });
+    }
   }
 }
 
@@ -1607,14 +1637,34 @@ async function importBackup(file) {
 let modalResolve = null;
 let modalGen = 0; // guards against a closing modal's delayed hide hiding the next one
 
-function showModal({ emoji, title, body, cta = 'Yay!', big = false, fx: effect, html = '' }) {
+// One popup at a time: each showModal waits for the one before it to close (plus a short
+// breather), and messages (toasts) that arrive meanwhile wait until the popups are done.
+let modalQueue = Promise.resolve();
+let modalsPending = 0;
+let celebrating = false; // a logged day is still playing its celebrations
+const modalBusy = () => modalsPending > 0 || celebrating;
+
+function showModal(opts) {
+  modalsPending++;
+  const shown = modalQueue.then(() => openModal(opts));
+  modalQueue = shown
+    .then(() => wait(380))
+    .finally(() => {
+      modalsPending--;
+      flushToasts();
+    });
+  return shown;
+}
+
+function openModal({ emoji, title, body, cta = 'Yay!', big = false, fx: effect, html = '', emojiClass = '' }) {
   return new Promise((resolve) => {
+    $('#toast').classList.remove('show'); // never leave a message sitting on top of a popup
     const m = $('#modal');
     modalGen++;
     m.classList.remove('open');
     m.innerHTML = `
       <div class="modal-card ${big ? 'big' : ''}">
-        <div class="modal-emoji">${emoji}</div>
+        <div class="modal-emoji ${emojiClass}">${emoji}</div>
         <h2>${title}</h2>
         ${body ? `<p>${body}</p>` : ''}
         ${html}
@@ -1648,7 +1698,19 @@ function closeModal() {
 }
 
 let toastTimer = null;
-function toast(msg, { action, onAction, duration = 3200 } = {}) {
+let heldToast = null;
+function flushToasts() {
+  if (modalBusy() || !heldToast) return;
+  const t = heldToast;
+  heldToast = null;
+  setTimeout(() => toast(...t), 150);
+}
+function toast(msg, opts = {}) {
+  if (modalBusy()) {
+    heldToast = [msg, opts]; // show it once the popups are done
+    return;
+  }
+  const { action, onAction, duration = 3200 } = opts;
   const el = $('#toast');
   el.innerHTML = `<span></span>${action ? `<button class="toast-action"></button>` : ''}`;
   el.querySelector('span').textContent = msg;

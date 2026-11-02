@@ -884,7 +884,7 @@ input:focus {
   position: fixed;
   top: -60px;
   pointer-events: none;
-  z-index: 61;
+  z-index: 30; /* above the page, but behind popups so their words stay readable */
   animation-name: drop;
   animation-timing-function: cubic-bezier(.4, .1, .7, 1);
   animation-fill-mode: forwards;
