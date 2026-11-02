@@ -100,8 +100,11 @@ p {
   min-width: 0;
 }
 .title-row h1 {
-  line-height: 1.05;
+  line-height: 1.15;
   white-space: nowrap;
+  /* the gradient only paints inside the box: give descenders (y, p) room, without moving anything */
+  padding: 0.04em 0.06em 0.18em 0;
+  margin: -0.04em -0.06em -0.18em 0;
 }
 .greeting {
   margin: 0 0 2px;
