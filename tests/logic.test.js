@@ -417,6 +417,10 @@ test('Critters and Couch Time collections; Taylor renamed', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('animals', []), { owned: 0, total: 4 });
   assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 11 });
+  // WandaVision: grayscale base, red only for big goals
+  const wv = T.byId('tv-wandavision');
+  assert.equal(wv.vars.big, '#c8203a');
+  assert.equal(wv.vars.regular, '#6a6a6a');
   assert.equal(G.setById('taylor').name, 'The Eras Walking Tour');
   assert.deepEqual(G.revealedSets(['rand-chunk']).map((s) => s.id), ['animals']);
   assert.match(G.GUMBALL_THEMES.find((t) => t.id === 'treat-maddogbeans').note, /Where it all started/);

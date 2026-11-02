@@ -711,9 +711,12 @@ export const GUMBALLS = [
   },
   {
     id: 'tv-wandavision', set: 'tv', name: 'WandaVision', emoji: '📺', head: 'script', ball: '#c8203a',
-    colors: { bg: '#f5f1ea', primary: '#c8203a', accent: '#2e2e2e', ink: '#1c1a1a', blend: '#e8506a' },
-    confetti: ['#c8203a', '#e8506a', '#2e2e2e', '#bdbdbd', '#ffffff'],
-    emojis: ['📺', '❤️', '✨', '🏡'], cheer: 'A very special episode! 📺', note: 'Black and white, then colour. Welcome to Westview. 📺',
+    colors: {
+      bg: '#ececec', primary: '#c8203a', accent: '#5a5a5a', ink: '#1a1a1a', blend: '#8e1226', wash: '#7a7a7a',
+      status: { regular: '#6a6a6a', big: '#c8203a', skip: '#a8a8a8' },
+    }, iconTint: '#3a3a3a',
+    confetti: ['#2a2a2a', '#6e6e6e', '#a8a8a8', '#dcdcdc', '#c8203a'],
+    emojis: ['📺', '🎞️', '❤️', '🏡'], cheer: 'A very special episode! 📺', note: 'Black and white, then colour. Welcome to Westview. 📺',
     pitch: 'A black-and-white sitcom set, with scarlet magic breaking through.',
   },
   {
@@ -809,12 +812,15 @@ const luminance = (h) => {
 
 /** Full set of CSS colour variables, worked out from a theme's four colours. */
 export function cssVars({ colors: c, dark }) {
-  const status = { regular: '#4ecdc4', big: '#ffb627', skip: '#a78bfa' };
-  const tint = (col) => mix(col, c.primary, 0.2);
+  // Optional: `wash` is the colour blended into backgrounds (defaults to primary);
+  // `status` overrides the goal colours (e.g. a grayscale theme).
+  const status = { regular: '#4ecdc4', big: '#ffb627', skip: '#a78bfa', ...(c.status || {}) };
+  const wash = c.wash || c.primary;
+  const tint = (col) => (c.status ? col : mix(col, c.primary, 0.2));
   const v = dark
     ? {
         bg: c.bg,
-        'bg-2': mix(c.bg, c.primary, 0.14),
+        'bg-2': mix(c.bg, wash, 0.14),
         card: mix(c.bg, '#ffffff', 0.07),
         text: c.ink,
         muted: mix(c.ink, c.bg, 0.4),
@@ -828,17 +834,17 @@ export function cssVars({ colors: c, dark }) {
       }
     : {
         bg: c.bg,
-        'bg-2': mix(c.bg, c.primary, 0.1),
+        'bg-2': mix(c.bg, wash, 0.1),
         card: mix('#ffffff', c.bg, 0.25),
         text: c.ink,
         muted: mix(c.ink, c.bg, 0.45),
-        line: mix(c.bg, c.primary, 0.18),
+        line: mix(c.bg, wash, 0.18),
         'regular-soft': mix(c.bg, tint(status.regular), 0.22),
         'big-soft': mix(c.bg, tint(status.big), 0.25),
         'skip-soft': mix(c.bg, tint(status.skip), 0.2),
         missed: mix(c.bg, c.ink, 0.25),
         'missed-soft': mix(c.bg, c.ink, 0.07),
-        shadow: `0 6px 22px ${mix(c.bg, c.primary, 0.5)}33, 0 1px 3px rgba(0, 0, 0, 0.06)`,
+        shadow: `0 6px 22px ${mix(c.bg, wash, 0.5)}33, 0 1px 3px rgba(0, 0, 0, 0.06)`,
       };
   return {
     ...v,
