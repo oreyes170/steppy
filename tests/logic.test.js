@@ -255,10 +255,18 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 7 });
-  assert.equal(G.GUMBALLS.length, 29);
+  assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
+  assert.equal(G.GUMBALLS.length, 35);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
   assert.equal(sunset.vars.primary, '#d7192e');
+});
+
+test('Broadway magnets 2024 collection (Sunset Blvd. moved here, id unchanged)', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('broadway-2024', []), { owned: 0, total: 7 });
+  assert.equal(G.GUMBALLS.find((g) => g.id === 'bway25-sunsetblvd').set, 'broadway-2024');
+  assert.deepEqual(G.revealedSets(['bway25-sunsetblvd']).map((s) => s.id), ['broadway-2024']);
+  assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'bway24-kimberlyakimbo').confetti.length, 6);
 });

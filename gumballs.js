@@ -12,6 +12,7 @@
 //   cheer      short line under "BIG GOAL!"
 //   pitch      one sentence describing it (shown when she wins it)
 //   motion     optional: 'fall' makes the background emoji drift down instead of float
+//   confetti   optional: exact confetti colours (otherwise made from the theme colours)
 //   colors.blend  optional: second colour for the title/button gradient, when blending
 //                 primary into accent would go muddy (e.g. red into green)
 // Everything else (cards, borders, buttons, status colours, the header icon tint)
@@ -24,6 +25,7 @@ export const UNLOCK_AT = 3; // the machine appears the first time she has this m
 
 export const SETS = [
   { id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' },
+  { id: 'broadway-2024', name: 'Broadway magnets · 2024', emoji: '🧲' },
   { id: 'broadway-2025', name: 'Broadway magnets · 2025', emoji: '🧲' },
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
 ];
@@ -102,6 +104,45 @@ export const GUMBALLS = [
     pitch: 'Bright orange and mint, glitter and disco balls.',
   },
 
+  // ── 🧲 Broadway magnets · 2024: shows we saw together (Sunset Blvd. is further down) ──
+  {
+    id: 'bway24-maybehappyending', set: 'broadway-2024', name: 'Maybe Happy Ending', emoji: '🤖',
+    colors: { bg: '#1a1438', primary: '#ff9e6b', accent: '#2fd0d6', ink: '#f6efff', blend: '#e46fd0' }, dark: true,
+    emojis: ['🤖', '💡', '✨', '💌', '🎶'], cheer: 'Beep boop, big goal! 🤖',
+    pitch: 'Deep violet night with a neon glow and cyan circuitry.',
+  },
+  {
+    id: 'bway24-backtothefuture', set: 'broadway-2024', name: 'Back to the Future', emoji: '🕰️',
+    colors: { bg: '#10172e', primary: '#ff7a1a', accent: '#36c5f0', ink: '#f2f4ff', blend: '#ffb53a' }, dark: true,
+    emojis: ['⚡', '🚗', '🕰️', '🔥', '🎸'], cheer: 'Up to 88 mph! 🚗',
+    pitch: 'Night-sky navy, flame orange and lightning blue. Mind the clock tower.',
+  },
+  {
+    id: 'bway24-waterforelephants', set: 'broadway-2024', name: 'Water for Elephants', emoji: '🐘',
+    colors: { bg: '#f8efdd', primary: '#b82a2a', accent: '#d4a537', ink: '#3a2416', blend: '#e0503a' },
+    emojis: ['🐘', '🎪', '🎠', '🤹'], cheer: 'Under the big top! 🎪',
+    pitch: 'Vintage cream, circus-tent red and gold. Run away with the circus.',
+  },
+  {
+    id: 'bway24-illinoise', set: 'broadway-2024', name: 'Illinoise', emoji: '🦋',
+    colors: { bg: '#0f2236', primary: '#f2e23a', accent: '#33c3e0', ink: '#eaf2f8', blend: '#f7f08a' }, dark: true,
+    emojis: ['🦋', '💡', '⭐', '🎺'], cheer: 'Dancing through the Midwest! 🎺',
+    pitch: 'Dusky navy, glowing yellow and moth-wing cyan.',
+  },
+  {
+    id: 'bway24-kimberlyakimbo', set: 'broadway-2024', name: 'Kimberly Akimbo', emoji: '🌈',
+    colors: { bg: '#e2f5f5', primary: '#0f9ea3', accent: '#f2c531', ink: '#1d2f6e', blend: '#1d3a9e' },
+    confetti: ['#e8382e', '#f5862b', '#f2c531', '#2e9e4f', '#2c5fc4', '#0f9ea3'],
+    emojis: ['🌈', '⭐', '⛸️', '🎂'], cheer: 'Totally rad! ⛸️',
+    pitch: 'Bright teal, navy and a rainbow of stars. The confetti is a rainbow too.',
+  },
+  {
+    id: 'bway24-gatsby', set: 'broadway-2024', name: 'The Great Gatsby', emoji: '🥂',
+    colors: { bg: '#0c0c0c', primary: '#d4af37', accent: '#2fa36b', ink: '#f5ecd8', blend: '#f2d77a' }, dark: true,
+    emojis: ['🥂', '🍾', '💚', '✨', '🎷'], cheer: 'Roaring success! 🥂',
+    pitch: 'Art-deco black and gold, with a green light across the bay.',
+  },
+
   // ── 🧲 Broadway magnets · 2025: shows we saw together ──
   {
     id: 'bway25-roblake', set: 'broadway-2025', name: 'Rob Lake Magic', emoji: '🐸',
@@ -128,7 +169,8 @@ export const GUMBALLS = [
     pitch: 'Black, outlaw red and desert sand. A rock-and-roll Wild West.',
   },
   {
-    id: 'bway25-sunsetblvd', set: 'broadway-2025', name: 'Sunset Blvd.', emoji: '🎬',
+    // Seen in 2024. The id keeps '25' on purpose: ids never change once she might own one.
+    id: 'bway25-sunsetblvd', set: 'broadway-2024', name: 'Sunset Blvd.', emoji: '🎬',
     colors: { bg: '#0b0b0b', primary: '#d7192e', accent: '#f2f2f2', ink: '#f5f5f5', blend: '#ff5a6a' }, dark: true,
     emojis: ['🎬', '🎞️', '🌴', '❤️'], cheer: 'Ready for your close-up! 🎬',
     pitch: 'Stark black and blood red. Lights, camera, Hollywood.',
@@ -286,7 +328,7 @@ export function buildTheme(g) {
     themeColor: c.bg,
     ball: c.primary,
     iconTint: g.dark ? mix(c.primary, c.bg, 0.55) : mix(c.primary, '#000000', 0.25),
-    confetti: [c.primary, c.accent, mix(c.primary, '#ffffff', 0.45), mix(c.accent, '#ffffff', 0.4), mix(c.primary, c.ink, 0.4)],
+    confetti: g.confetti || [c.primary, c.accent, mix(c.primary, '#ffffff', 0.45), mix(c.accent, '#ffffff', 0.4), mix(c.primary, c.ink, 0.4)],
     confettiEmoji: g.emojis,
     rain: g.emojis,
     ambient: { emojis: g.emojis, motion: g.motion || 'float', count: g.motion === 'fall' ? 12 : 9 },
