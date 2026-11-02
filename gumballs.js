@@ -553,6 +553,20 @@ export const GUMBALLS = [
     emojis: ['📚', '🤫', '🗂️', '🪪', '📕'], cheer: 'Overdue for a celebration! 📚', note: 'Shhh… you found the library 🤫',
     pitch: 'Warm oak shelves, manila library cards and a red due-date stamp.',
   },
+  {
+    id: 'rand-libby', set: 'random', name: 'Libby', emoji: '🎧',
+    colors: { bg: '#eaf6f5', primary: '#1f8a8a', accent: '#f0745a', ink: '#123536', blend: '#4cc0b5' },
+    confetti: ['#1f8a8a', '#4cc0b5', '#f0745a', '#ffffff', '#ffd27a'],
+    emojis: ['📱', '📚', '🎧', '🔖'], cheer: 'Checked out and crushed it! 📚', note: 'Your hold is ready! 📚',
+    pitch: 'Soft teal and warm coral. Audiobooks for the walk!',
+  },
+  {
+    id: 'rand-bronxzoo', set: 'random', name: 'Bronx Zoo', emoji: '🦁',
+    colors: { bg: '#f3f1e2', primary: '#2f6b3a', accent: '#e0a52a', ink: '#23301c', blend: '#6a9a3a' },
+    confetti: ['#2f6b3a', '#e0a52a', '#a86a3a', '#6a9a3a', '#f3e2b0'],
+    emojis: ['🦁', '🦒', '🐘', '🦍', '🐧'], cheer: 'Roar-some! 🦁', note: 'Welcome to the wild side! 🦁',
+    pitch: 'Jungle green and savanna gold, with lions, giraffes, gorillas and penguins.',
+  },
 ];
 
 // ---------- colour helpers ----------
