@@ -86,10 +86,29 @@ p {
 .top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 4px 0;
+  gap: 12px;
+  padding: 4px 2px 0;
+}
+.brand {
+  flex: 1;
+  min-width: 0;
+}
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.title-row h1 {
+  line-height: 1.05;
+  white-space: nowrap;
 }
 .greeting {
+  margin: 0 0 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--muted);
   /* a bit closer to the main text colour, so it stays crisp on dark themes */
   color: color-mix(in srgb, var(--text) 72%, var(--bg));
@@ -105,9 +124,9 @@ h1 {
   background-clip: text;
   color: transparent;
 }
-h1 .version {
+.version {
   display: inline-block;
-  margin-left: 8px;
+  flex: 0 0 auto;
   padding: 3px 8px;
   border-radius: 99px;
   background: var(--bg-2);
@@ -118,13 +137,34 @@ h1 .version {
   letter-spacing: 0;
   vertical-align: middle;
 }
-h1 .logo-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  vertical-align: -6px;
-  margin-right: 10px;
+.logo-icon {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border-radius: 15px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+.settings-btn {
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+.settings-btn svg {
+  opacity: 0.8;
+  transition: transform 0.4s ease;
+}
+.settings-btn:active svg {
+  transform: rotate(60deg);
+}
+/* small phones (iPhone SE / mini): tighten the header so nothing gets cut off */
+@media (max-width: 360px) {
+  .top { gap: 10px; }
+  .logo-icon { width: 44px; height: 44px; flex-basis: 44px; border-radius: 12px; }
+  .greeting { font-size: 13px; }
+  h1 { font-size: 27px; }
+  .version { font-size: 10px; padding: 2px 6px; }
+  .title-row { gap: 6px; }
 }
 
 .icon-btn {
@@ -1041,7 +1081,7 @@ html[data-head] .banner-text {
   font-weight: var(--head-weight, 800);
   letter-spacing: var(--head-spacing, normal);
 }
-html[data-head] h1 { font-size: var(--head-h1, 32px); }
+html[data-head] h1 { font-size: min(var(--head-h1, 32px), 9.5vw); }
 html[data-head='typewriter'] { --head-font: 'American Typewriter', 'Courier New', monospace; --head-weight: 600; }
 html[data-head='hand'] { --head-font: 'Noteworthy', 'Bradley Hand', 'Segoe Print', cursive; --head-weight: 700; }
 html[data-theme='gumball'][data-head='hand'] h1 { font-family: 'Bradley Hand', 'Noteworthy', cursive; }
@@ -1081,7 +1121,7 @@ html[data-style='kindle'] h1 {
   text-shadow: 3px 3px 0 rgba(31, 29, 26, 0.18);
   letter-spacing: 0;
 }
-html[data-style='kindle'] h1 .version { -webkit-text-fill-color: var(--muted); text-shadow: none; }
+html[data-style='kindle'] .version { -webkit-text-fill-color: var(--muted); text-shadow: none; }
 html[data-style='kindle'] h2,
 html[data-style='kindle'] h3,
 html[data-style='kindle'] .stat-num {
