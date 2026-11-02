@@ -1003,6 +1003,44 @@ html[data-theme='christmas'] {
   }
 }
 
+/* 📖 Kindle: true black and white e-ink, warm paper, book fonts, crisp shadows.
+   Everything here only applies while the Kindle theme is on. */
+html[data-style='kindle'] {
+  --font: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+}
+html[data-style='kindle'] .app,
+html[data-style='kindle'] .fx,
+html[data-style='kindle'] .emoji-drop,
+html[data-style='kindle'] .banner-pop,
+html[data-style='kindle'] .ambient,
+html[data-style='kindle'] .toast {
+  filter: grayscale(1) sepia(0.14);
+}
+html[data-style='kindle'] h1 {
+  background: none;
+  -webkit-text-fill-color: var(--text);
+  color: var(--text);
+  text-shadow: 3px 3px 0 rgba(31, 29, 26, 0.18);
+  letter-spacing: 0;
+}
+html[data-style='kindle'] h1 .version { -webkit-text-fill-color: var(--muted); text-shadow: none; }
+html[data-style='kindle'] h2,
+html[data-style='kindle'] h3,
+html[data-style='kindle'] .stat-num {
+  text-shadow: 1.5px 1.5px 0 rgba(31, 29, 26, 0.14);
+}
+html[data-style='kindle'] .card {
+  border: 1.5px solid #1f1d1a;
+  box-shadow: 4px 4px 0 rgba(31, 29, 26, 0.85);
+}
+html[data-style='kindle'] .catchup-card { box-shadow: none; }
+html[data-style='kindle'] .btn.primary {
+  background: #1f1d1a;
+  color: #f4f1ea;
+  box-shadow: 3px 3px 0 rgba(31, 29, 26, 0.35);
+}
+html[data-style='kindle'] .eyebrow { letter-spacing: 0.12em; }
+
 /* ambient decorations (falling leaves, snow, floating bats) */
 .ambient {
   position: fixed;

@@ -15,6 +15,7 @@
 //   confetti   optional: exact confetti colours (otherwise made from the theme colours)
 //   ball       optional: gumball colour (otherwise the main colour)
 //   note       optional: an extra line shown under the title when she wins it
+//   style      optional: a special look defined in styles.css (html[data-style='…'])
 //   rip        optional: true for a place that's closed. Winning it gets a quiet candle-lit moment
 //   colors.blend  optional: second colour for the title/button gradient, when blending
 //                 primary into accent would go muddy (e.g. red into green)
@@ -509,11 +510,11 @@ export const GUMBALLS = [
   },
   // ── 🎲 So Random: one-offs that don't fit anywhere else ──
   {
-    id: 'rand-kindle', set: 'random', name: 'Kindle', emoji: '📖',
-    colors: { bg: '#f2f0ea', primary: '#2b2b2b', accent: '#8a8a8a', ink: '#1f1f1f', blend: '#5a5a5a' },
+    id: 'rand-kindle', set: 'random', name: 'Kindle', emoji: '📖', style: 'kindle',
+    colors: { bg: '#f4f1ea', primary: '#1f1d1a', accent: '#8a867e', ink: '#1f1d1a', blend: '#4a4741' },
     confetti: ['#2b2b2b', '#f2f0ea', '#8a8a8a', '#d9d6cc', '#ffffff'],
     emojis: ['📖', '📚', '☕', '🔖'], cheer: 'Page turner! 📖', note: 'Just one more chapter… 📖',
-    pitch: 'E-ink paper, ink black and soft grey. Calm and cozy.',
+    pitch: 'True black and white e-ink, warm paper, book fonts and crisp shadows.',
   },
   {
     id: 'rand-chunk', set: 'random', name: 'Chunk', emoji: '🐶',
@@ -617,6 +618,7 @@ export function buildTheme(g) {
     pitch: g.pitch,
     rip: !!g.rip,
     note: g.note || '',
+    style: g.style || '',
   };
 }
 

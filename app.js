@@ -322,6 +322,8 @@ function applyTheme() {
   theme = t;
   const root = document.documentElement;
   root.dataset.theme = t.gumball ? 'gumball' : t.id;
+  if (t.style) root.dataset.style = t.style; // a special look (see styles.css)
+  else delete root.dataset.style;
   // Gumball themes set their colours directly; other themes use the CSS in styles.css.
   for (const k of appliedVars) root.style.removeProperty(`--${k}`);
   appliedVars = [];
