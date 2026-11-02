@@ -532,6 +532,13 @@ export const GUMBALLS = [
     emojis: ['🍃', '🍎', '🐟', '🦝', '🔔'], cheer: 'Ka-ching, bells! 🔔', note: 'Welcome to your island! 🏝️',
     pitch: 'Leafy green, island sky blue and cozy cream, with warm brown text.',
   },
+  {
+    id: 'rand-stitch', set: 'random', name: 'Stitch', emoji: '🌺',
+    colors: { bg: '#eef5ff', primary: '#3f6fd8', accent: '#ff7eb3', ink: '#14254a', blend: '#7aa2ff' },
+    confetti: ['#3f6fd8', '#7aa2ff', '#ff7eb3', '#2fbfa8', '#ffd25e'],
+    emojis: ['🌺', '🏄', '🌊', '🍍', '💙'], cheer: 'Ohana means you never quit! 💙', note: 'Aloha, little blue alien 🌺',
+    pitch: 'Stitch blue and hibiscus pink, with surfboards, waves and pineapples.',
+  },
 ];
 
 // ---------- colour helpers ----------
