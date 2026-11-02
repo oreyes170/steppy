@@ -547,7 +547,7 @@ export const GUMBALLS = [
     emoji: '🥚', ball: '#1e3a9a', iconTint: '#16286e',
     colors: { bg: '#14246a', primary: '#2a4fb0', accent: '#e6b84a', ink: '#23261a', blend: '#5a7ad8' },
     confetti: ['#1e3a9a', '#e6b84a', '#cfe4f4', '#8fd0c8', '#ffffff'],
-    emojis: ['🥚', '👽', '⭐', '🌙'], cheer: 'Chunk is all grown up! 👽', note: 'Before the Giga Pet, there was a little egg. Hi again, Chunk! 🥚',
+    emojis: ['🥚', '👽', '🛸', '⭐', '🌙'], cheer: 'Chunk is all grown up! 👽', note: 'Before the Giga Pet, there was a little egg. Hi again, Chunk! 🥚',
     pitch: 'The first Chunk: a glittery night-sky shell with gold stars, and a gold-framed LCD screen.',
   },
   {
