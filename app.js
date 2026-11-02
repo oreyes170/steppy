@@ -376,7 +376,7 @@ function renderAmbient(t) {
       `--d:${dur.toFixed(1)}s`,
       `--delay:${(-Math.random() * dur).toFixed(1)}s`,
       `--sway:${(10 + Math.random() * 40).toFixed(0)}px`,
-      `--top:${(5 + Math.random() * 85).toFixed(0)}vh`,
+      `--top:${(22 + Math.random() * 70).toFixed(0)}vh`, // below the header, so they never drift behind the greeting
       `--o:${(0.25 + Math.random() * 0.4).toFixed(2)}`,
     ].join(';');
     html += `<span class="amb ${a.motion}" style="${style}">${e}</span>`;

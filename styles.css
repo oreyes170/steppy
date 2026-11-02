@@ -90,7 +90,9 @@ p {
 }
 .greeting {
   color: var(--muted);
-  font-weight: 600;
+  /* a bit closer to the main text colour, so it stays crisp on dark themes */
+  color: color-mix(in srgb, var(--text) 72%, var(--bg));
+  font-weight: 700;
   font-size: 15px;
 }
 h1 {
@@ -1112,7 +1114,6 @@ html[data-style='kindle'] .eyebrow { letter-spacing: 0.12em; }
   position: absolute;
   top: -8vh;
   opacity: var(--o, 0.55);
-  will-change: transform;
 }
 .amb.fall {
   animation: amb-fall var(--d, 16s) linear infinite;
