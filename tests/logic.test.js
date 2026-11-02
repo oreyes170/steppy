@@ -258,7 +258,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 73);
+  assert.equal(G.GUMBALLS.length, 76);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -317,4 +317,10 @@ test('For You Page memes show their quote when won', async () => {
   assert.deepEqual(G.setProgress('fyp', []), { owned: 0, total: 9 });
   for (const t of G.GUMBALL_THEMES.filter((x) => x.set === 'fyp')) assert.ok(t.note, `${t.id} has its quote`);
   assert.equal(G.GUMBALL_THEMES.find((x) => x.id === 'fyp-burntnugget').note, 'Because you love yourself! 🍗');
+});
+
+test('So Random collection', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 3 });
+  assert.equal(G.setById('random').name, 'So Random');
 });

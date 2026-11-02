@@ -35,6 +35,7 @@ export const SETS = [
   // intro: 'race' plays a 🚦 3-2-1-GO countdown before the reveal
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
   { id: 'fyp', name: 'For You Page', emoji: '📱' },
+  { id: 'random', name: 'So Random', emoji: '🎲' },
 ];
 
 export const GUMBALLS = [
@@ -505,6 +506,28 @@ export const GUMBALLS = [
     colors: { bg: '#fff5ee', primary: '#e0607e', accent: '#f6c9a8', ink: '#4a2a2a', blend: '#f59ab0' },
     emojis: ['🐱', '🐾', '🍼', '💕'], cheer: 'Wee wee wee! 🐱', note: 'Wee wee wee! 🐱',
     pitch: 'Soft kitten peach and little pink nose.',
+  },
+  // ── 🎲 So Random: one-offs that don't fit anywhere else ──
+  {
+    id: 'rand-kindle', set: 'random', name: 'Kindle', emoji: '📖',
+    colors: { bg: '#f2f0ea', primary: '#2b2b2b', accent: '#8a8a8a', ink: '#1f1f1f', blend: '#5a5a5a' },
+    confetti: ['#2b2b2b', '#f2f0ea', '#8a8a8a', '#d9d6cc', '#ffffff'],
+    emojis: ['📖', '📚', '☕', '🔖'], cheer: 'Page turner! 📖', note: 'Just one more chapter… 📖',
+    pitch: 'E-ink paper, ink black and soft grey. Calm and cozy.',
+  },
+  {
+    id: 'rand-chunk', set: 'random', name: 'Chunk', emoji: '🐶',
+    colors: { bg: '#f3ecfb', primary: '#7b3fc4', accent: '#a8c86b', ink: '#2a1640', blend: '#a874e8' },
+    confetti: ['#7b3fc4', '#a8c86b', '#c9a8f0', '#2a1640', '#dfe8b8'],
+    emojis: ['🐶', '🦴', '💜', '🐾'], cheer: 'Chunk is so proud of you! 🐶', note: 'Chunk missed you! 🐶💜',
+    pitch: 'Giga Pet purple with a little LCD-green screen. Chunk the dog lives here.',
+  },
+  {
+    id: 'rand-animalcrossing', set: 'random', name: 'Animal Crossing', emoji: '🍃',
+    colors: { bg: '#f6f4e4', primary: '#3f9a52', accent: '#7cc6e8', ink: '#4a3420', blend: '#8fd06a' },
+    confetti: ['#3f9a52', '#7cc6e8', '#f2c94c', '#e8655a', '#8fd06a'],
+    emojis: ['🍃', '🍎', '🐟', '🦝', '🔔'], cheer: 'Ka-ching, bells! 🔔', note: 'Welcome to your island! 🏝️',
+    pitch: 'Leafy green, island sky blue and cozy cream, with warm brown text.',
   },
 ];
 
