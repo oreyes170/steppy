@@ -31,6 +31,8 @@ export const SETS = [
   { id: 'broadway-2025', name: 'Broadway magnets · 2025', emoji: '🧲' },
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
   { id: 'treats', name: 'Treat yourself', emoji: '🍟' },
+  // intro: 'race' plays a 🚦 3-2-1-GO countdown before the reveal
+  { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
 ];
 
 export const GUMBALLS = [
@@ -372,6 +374,69 @@ export const GUMBALLS = [
     confetti: ['#008163', '#f47b20', '#ee2526', '#ffffff'],
     emojis: ['🥤', '🌭', '🍕'], cheer: 'Slurp-tacular! 🥤',
     pitch: 'Green, orange and red stripes. Grab a giant slushie.',
+  },
+  // ── 🏁 Mario Kart racers ──
+  {
+    id: 'mk-mario', set: 'mariokart', name: 'Mario', emoji: '⭐',
+    colors: { bg: '#fff1f0', primary: '#e52521', accent: '#0047bb', ink: '#2a1414', blend: '#ff5a4f' },
+    confetti: ['#e52521', '#0047bb', '#ffd23f', '#ffffff', '#1a1a1a'],
+    emojis: ['⭐', '🍄', '🏎️', '🪙', '🏁'], cheer: 'Wahoo! ⭐',
+    pitch: 'Mario red, overall blue and coin gold. Grab a star!',
+  },
+  {
+    id: 'mk-luigi', set: 'mariokart', name: 'Luigi', emoji: '👻',
+    colors: { bg: '#eef8ef', primary: '#1b9a3e', accent: '#1f2e6b', ink: '#12261a', blend: '#4cc46a' },
+    confetti: ['#1b9a3e', '#1f2e6b', '#ffffff', '#4cc46a', '#1a1a1a'],
+    emojis: ['💚', '👻', '🔦', '⭐', '🏁'], cheer: 'Green machine! 💚',
+    pitch: 'Luigi green and navy, with a flashlight for the haunted mansion.',
+  },
+  {
+    id: 'mk-yoshi', set: 'mariokart', name: 'Yoshi', emoji: '🥚',
+    colors: { bg: '#f1fbe9', primary: '#4cb02e', accent: '#e2312d', ink: '#1a2e12', blend: '#8fd640' },
+    confetti: ['#4cb02e', '#ffffff', '#e2312d', '#f28c28', '#8fd640'],
+    emojis: ['🥚', '🦖', '🍎', '🍉', '🏁'], cheer: 'Egg-cellent! 🥚',
+    pitch: 'Lime green, white and red, with spotted eggs and fruit.',
+  },
+  {
+    id: 'mk-toad', set: 'mariokart', name: 'Toad', emoji: '🍄', ball: '#e8202a',
+    colors: { bg: '#f3f6ff', primary: '#2a5bd7', accent: '#e8202a', ink: '#14203f', blend: '#5b8cff' },
+    confetti: ['#e8202a', '#ffffff', '#e8202a', '#ffffff', '#2a5bd7'],
+    emojis: ['🍄', '🔴', '⚪', '🏎️', '🏁'], cheer: 'Fun-gi! 🍄',
+    pitch: 'White with red spots and a blue vest.',
+  },
+  {
+    id: 'mk-peach', set: 'mariokart', name: 'Peach', emoji: '👑',
+    colors: { bg: '#fff0f6', primary: '#d9548a', accent: '#f2c14e', ink: '#4a1d33', blend: '#f58bb5' },
+    confetti: ['#f9b6cf', '#f2c14e', '#3fa9f5', '#ffffff', '#f27aa8'],
+    emojis: ['👑', '💗', '🍑', '🏰', '🏁'], cheer: 'Royally done! 👑',
+    pitch: 'Soft pastel pink, crown gold and a sparkle of blue.',
+  },
+  {
+    id: 'mk-toadette', set: 'mariokart', name: 'Toadette', emoji: '🌸',
+    colors: { bg: '#fff0f8', primary: '#e8288a', accent: '#ff9ccc', ink: '#3a0f2a', blend: '#ff6fb5' },
+    confetti: ['#e8288a', '#ffffff', '#e8288a', '#ffffff', '#ff9ccc'],
+    emojis: ['🌸', '🍄', '💗', '✨', '🏁'], cheer: 'Pink power! 💗',
+    pitch: 'Hot magenta with white polka dots.',
+  },
+  {
+    id: 'mk-daisy', set: 'mariokart', name: 'Daisy', emoji: '🌼',
+    colors: { bg: '#fff6e0', primary: '#f08a1c', accent: '#4caf50', ink: '#3a2208', blend: '#ffc93a' },
+    emojis: ['🌼', '🧡', '👑', '🎾', '🏁'], cheer: 'Flower power! 🌼',
+    pitch: 'Sunny orange and yellow with a leaf-green sparkle.',
+  },
+  {
+    id: 'mk-donkeykong', set: 'mariokart', name: 'Donkey Kong', emoji: '🍌',
+    colors: { bg: '#f6ecdf', primary: '#8b4a1c', accent: '#d32f2f', ink: '#2e1a0c', blend: '#c27a3a' },
+    confetti: ['#8b4a1c', '#d32f2f', '#ffd23f', '#5aa846', '#c27a3a'],
+    emojis: ['🍌', '🦍', '🛢️', '🌴', '🏁'], cheer: 'Banana-rama! 🍌',
+    pitch: 'Jungle brown, red tie and banana yellow, with barrels.',
+  },
+  {
+    id: 'mk-wario', set: 'mariokart', name: 'Wario', emoji: '🧄', ball: '#ffd400',
+    colors: { bg: '#1e0f2e', primary: '#ffd400', accent: '#8e44ad', ink: '#fff6cc', blend: '#fff07a' }, dark: true,
+    confetti: ['#ffd400', '#8e44ad', '#ffffff', '#fff07a', '#b57edc'],
+    emojis: ['🧄', '💰', '💜', '⚡', '🏁'], cheer: 'Ka-ching! 💰',
+    pitch: 'Deep purple and loud yellow. Extra garlic, extra coins.',
   },
 ];
 

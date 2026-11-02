@@ -256,7 +256,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 54);
+  assert.equal(G.GUMBALLS.length, 63);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -279,4 +279,13 @@ test('Treat yourself collection, with Chip City marked RIP', async () => {
   assert.equal(G.GUMBALL_THEMES.filter((t) => t.rip).length, 1);
   const emojis = G.GUMBALLS.filter((g) => g.set === 'treats').map((g) => g.emoji);
   assert.equal(new Set(emojis).size, emojis.length, 'every spot has its own gumball emoji');
+});
+
+test('Mario Kart collection plays the race countdown', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('mariokart', []), { owned: 0, total: 9 });
+  assert.equal(G.setById('mariokart').intro, 'race');
+  assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'mk-wario').dark, true);
+  const emojis = G.GUMBALLS.filter((g) => g.set === 'mariokart').map((g) => g.emoji);
+  assert.equal(new Set(emojis).size, 9);
 });

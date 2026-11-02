@@ -532,6 +532,7 @@ async function doSpin(setId) {
   spinning = false;
 
   const set = Gumballs.setById(t.set);
+  if (set?.intro === 'race') await raceCountdown();
   await showModal({
     emoji: '',
     title: t.rip ? `${t.name} 🕯️` : /[!?]$/.test(t.revealName) ? t.revealName : `${t.revealName}!`,
@@ -559,6 +560,26 @@ async function doSpin(setId) {
     },
   });
   if (Themes.byId(state.settings.theme).id !== t.id) toast(`${t.name} is in your collection 🍬`);
+}
+
+/** 🚦 3… 2… 1… GO! before revealing a Mario Kart gumball. */
+async function raceCountdown() {
+  if (fx.reducedMotion()) return;
+  const el = document.createElement('div');
+  el.className = 'race-countdown';
+  document.body.appendChild(el);
+  for (const [text, light] of [['3', '🔴'], ['2', '🟡'], ['1', '🟡'], ['GO!', '🟢']]) {
+    el.innerHTML = `<div class="race-light">${light}</div><div class="race-num ${text === 'GO!' ? 'go' : ''}">${text}</div>`;
+    fx.vibrate(text === 'GO!' ? [70] : [20]);
+    await wait(text === 'GO!' ? 450 : 600);
+  }
+  const kart = document.createElement('div');
+  kart.className = 'race-kart';
+  kart.textContent = '🏎️💨';
+  document.body.appendChild(kart);
+  await wait(350);
+  el.remove();
+  setTimeout(() => kart.remove(), 1300);
 }
 
 function collectionHtml(current) {
