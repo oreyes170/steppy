@@ -601,6 +601,27 @@ export const GUMBALLS = [
     emojis: ['🏀', '🐺', '🏆', '🐾'], cheer: 'Nothing but net! 🏀', note: 'Go Huskies! 🐾',
     pitch: 'Crisp white with Husky navy and silver.',
   },
+  {
+    id: 'sport-fordham', set: 'sports', name: 'Fordham', emoji: '🐏',
+    colors: { bg: '#fbf1f4', primary: '#860038', accent: '#b8a07a', ink: '#33101c', blend: '#c2335e' },
+    confetti: ['#860038', '#ffffff', '#c2335e', '#e8d5dc', '#5a0026'],
+    emojis: ['🐏', '🏈', '🏟️', '🍂'], cheer: 'Ram tough! 🏈', note: 'Go Rams! 🐏',
+    pitch: 'Fordham maroon and white. Bronx football Saturdays.',
+  },
+  {
+    id: 'sport-dartmouth', set: 'sports', name: 'Dartmouth', emoji: '🌲',
+    colors: { bg: '#eef6f1', primary: '#00693e', accent: '#a7c4b3', ink: '#0d2a1c', blend: '#2f9a64' },
+    confetti: ['#00693e', '#ffffff', '#2f9a64', '#cfe4d7', '#004d2d'],
+    emojis: ['🌲', '🏈', '🏟️', '❄️'], cheer: 'Touchdown, Big Green! 🏈', note: 'Go Big Green! 🌲',
+    pitch: 'Dartmouth green and white, straight from the North Woods.',
+  },
+  {
+    id: 'sport-tunesquad', set: 'sports', name: 'Tune Squad', emoji: '🥕', ball: '#f47b20',
+    colors: { bg: '#fff4ea', primary: '#e8661a', accent: '#2a6fd6', ink: '#3a1c08', blend: '#ffa04a' },
+    confetti: ['#f47b20', '#ffffff', '#2a6fd6', '#ffc28a', '#ffd84a'],
+    emojis: ['🏀', '🐰', '🥕', '🪐', '🚀'], cheer: 'Out of this world! 🪐', note: 'Tune Squad, assemble! 🐰🏀',
+    pitch: 'Tune Squad orange and white with a dash of blue. Basketball from outer space.',
+  },
 ];
 
 // ---------- colour helpers ----------
