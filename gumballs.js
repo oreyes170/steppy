@@ -41,6 +41,7 @@ export const SETS = [
   { id: 'fyp', name: 'For You Page', emoji: '📱' },
   { id: 'random', name: 'So Random', emoji: '🎲' },
   { id: 'books', name: 'Bookworm', emoji: '📚' },
+  { id: 'sports', name: 'Game Day', emoji: '🏟️' },
 ];
 
 export const GUMBALLS = [
@@ -576,6 +577,29 @@ export const GUMBALLS = [
     confetti: ['#2f6b3a', '#e0a52a', '#a86a3a', '#6a9a3a', '#f3e2b0'],
     emojis: ['🦁', '🦒', '🐘', '🦍', '🐧'], cheer: 'Roar-some! 🦁', note: 'Welcome to the wild side! 🦁',
     pitch: 'Jungle green and savanna gold, with lions, giraffes, gorillas and penguins.',
+  },
+
+  // ── 🏟️ Game Day: teams we root for ──
+  {
+    id: 'sport-curacao', set: 'sports', name: 'Curaçao', emoji: '⚽', ball: '#1f4fbf',
+    colors: { bg: '#eef3ff', primary: '#1f4fbf', accent: '#f5c518', ink: '#0f1f4a', blend: '#4a7cf0' },
+    confetti: ['#1f4fbf', '#f5c518', '#ffffff', '#4a7cf0', '#ffe27a'],
+    emojis: ['⚽', '🇨🇼', '🌴', '💙'], cheer: 'GOOOOL! ⚽', note: 'Bon bini! ⚽',
+    pitch: 'Caribbean royal blue and sunshine yellow, like the flag.',
+  },
+  {
+    id: 'sport-patriots', set: 'sports', name: 'Patriots', emoji: '🏈', ball: '#c60c30',
+    colors: { bg: '#0b1a33', primary: '#e0263f', accent: '#b0b7bc', ink: '#f1f4f8', blend: '#ff6a7a' }, dark: true,
+    confetti: ['#c60c30', '#ffffff', '#b0b7bc', '#1f3a6a', '#e0263f'],
+    emojis: ['🏈', '⭐', '🇺🇸', '🏆'], cheer: 'Touchdown! 🏈', note: 'Go Pats! 🏈',
+    pitch: 'Patriots navy, red and silver.',
+  },
+  {
+    id: 'sport-uconn', set: 'sports', name: 'UConn', emoji: '🏀', ball: '#0e1a4a',
+    colors: { bg: '#f4f6fb', primary: '#0e1a4a', accent: '#9aa3b5', ink: '#0e1a4a', blend: '#3a4f9a' },
+    confetti: ['#0e1a4a', '#ffffff', '#9aa3b5', '#3a4f9a', '#e8ecf5'],
+    emojis: ['🏀', '🐺', '🏆', '🐾'], cheer: 'Nothing but net! 🏀', note: 'Go Huskies! 🐾',
+    pitch: 'Crisp white with Husky navy and silver.',
   },
 ];
 

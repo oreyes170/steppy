@@ -261,7 +261,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 82);
+  assert.equal(G.GUMBALLS.length, 85);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -405,4 +405,10 @@ test('Bookworm collection holds the book themes (old ids kept)', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('books', []), { owned: 0, total: 5 });
   assert.deepEqual(G.revealedSets(['rand-kindle']).map((s) => s.id), ['books']);
+});
+
+test('Game Day collection', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('sports', []), { owned: 0, total: 3 });
+  assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'sport-patriots').dark, true);
 });
