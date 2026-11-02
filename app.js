@@ -4,6 +4,7 @@ import * as Drive from './drive.js';
 import { APP_VERSION } from './version.js';
 import * as Themes from './themes.js';
 import * as Gumballs from './gumballs.js';
+import * as Weather from './weather.js';
 
 // ---------------------------------------------------------------------------
 // State & persistence
@@ -68,7 +69,8 @@ const defaultState = () => ({
     onboarded: false,
     theme: 'classic',
     // sunrise/sunset on the Today card: New York unless she taps "Use my location"
-    sun: { show: true, mode: 'nyc', lat: 40.71, lon: -74.01 },
+    sun: { show: true, mode: 'nyc', lat: 40.71, lon: -74.01 }, // also the weather location
+    weather: { show: true },
   },
   days: {}, // { 'YYYY-MM-DD': { status: 'regular'|'big'|'missed'|'skip', steps?: number } }
   meta: {
@@ -104,7 +106,7 @@ function normalize(s) {
   return migrate({
     ...d,
     ...s,
-    settings: { ...d.settings, ...(s.settings || {}), sun: { ...d.settings.sun, ...(s.settings?.sun || {}) } },
+    settings: { ...d.settings, ...(s.settings || {}), sun: { ...d.settings.sun, ...(s.settings?.sun || {}) }, weather: { ...d.settings.weather, ...(s.settings?.weather || {}) } },
     meta: {
       ...d.meta,
       ...(s.meta || {}),
@@ -789,40 +791,113 @@ function sunLine() {
   return `<p class="sun-line">🌅 ${clock(sunrise)} · 🌇 ${clock(sunset)} <span>· ${extra}</span></p>`;
 }
 
-function sunSettingsHtml() {
-  const sun = state.settings.sun;
-  const where = sun.mode === 'here' ? 'your location' : 'New York';
+// ---------------------------------------------------------------------------
+// Live weather (Open-Meteo, no account needed). Shares the location with sunrise/sunset.
+// ---------------------------------------------------------------------------
+
+const WEATHER_KEY = 'steppy:weather'; // device-only cache, never backed up
+const WEATHER_FRESH_MS = 30 * 60000; // refresh every 30 minutes
+const WEATHER_STALE_MS = 3 * 3600000; // hide if older than 3 hours (e.g. long offline)
+let weatherLoading = false;
+
+const placeKey = () => `${state.settings.sun.lat},${state.settings.sun.lon}`;
+
+function cachedWeather() {
+  try {
+    const c = JSON.parse(localStorage.getItem(WEATHER_KEY) || 'null');
+    if (c && c.place === placeKey() && Date.now() - c.at < WEATHER_STALE_MS) return c;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+async function refreshWeather(force = false) {
+  if (!state.settings.weather?.show || weatherLoading || !navigator.onLine) return;
+  const c = cachedWeather();
+  if (!force && c && Date.now() - c.at < WEATHER_FRESH_MS) return;
+  weatherLoading = true;
+  try {
+    const { lat, lon } = state.settings.sun;
+    const data = await Weather.fetchWeather(lat, lon);
+    try {
+      localStorage.setItem(WEATHER_KEY, JSON.stringify({ place: placeKey(), at: Date.now(), data }));
+    } catch {
+      /* ignore */
+    }
+    renderToday(); // the Today card sits under any open sheet, so this is always safe
+  } catch {
+    /* offline or service down: keep whatever we had */
+  } finally {
+    weatherLoading = false;
+  }
+}
+
+function weatherLine() {
+  if (!state.settings.weather?.show) return '';
+  const c = cachedWeather();
+  if (!c?.data?.current) {
+    refreshWeather();
+    return '';
+  }
+  const { current, daily } = c.data;
+  const [emoji, words] = Weather.describe(current.weather_code, current.is_day !== 0);
+  const hi = daily?.temperature_2m_max?.[0];
+  const lo = daily?.temperature_2m_min?.[0];
+  const tip = Weather.walkingTip(c.data);
   return `
-    <h3>🌅 Sunrise & sunset</h3>
-    <p class="muted small">${sun.show ? `Shown on the Today card, for <b>${where}</b>.` : 'Hidden.'}</p>
-    <div class="row">
-      ${
-        sun.show
-          ? sun.mode === 'here'
-            ? '<button class="btn ghost" data-sun="nyc" type="button">Use New York</button>'
-            : '<button class="btn ghost" data-sun="here" type="button">📍 Use my location</button>'
-          : ''
-      }
-      <button class="btn ghost" data-sun="${sun.show ? 'hide' : 'show'}" type="button">${sun.show ? 'Hide' : 'Show'}</button>
+    <p class="weather-line">${emoji} <b>${Math.round(current.temperature_2m)}°</b> · ${words}${
+      hi != null ? ` <span>· H ${Math.round(hi)}° L ${Math.round(lo)}°</span>` : ''
+    }</p>
+    ${tip ? `<p class="weather-tip">${tip}</p>` : ''}`;
+}
+
+/** Weather + sunrise/sunset lines for the Today card. */
+const skyLines = () => weatherLine() + sunLine();
+
+function locationName() {
+  const sun = state.settings.sun;
+  return sun.mode === 'here' ? 'Your location' : (Weather.PLACES[sun.mode] || Weather.PLACES.nyc).name;
+}
+
+function sunSettingsHtml() {
+  const { sun, weather } = state.settings;
+  const place = (mode, label) =>
+    `<button class="btn ghost loc-btn ${sun.mode === mode ? 'on' : ''}" data-sun="${mode}" type="button">${label}</button>`;
+  return `
+    <h3>📍 Location</h3>
+    <p class="muted small">For the weather and sunrise & sunset on the Today card. Now: <b>${locationName()}</b>.</p>
+    <div class="loc-row">
+      ${place('nyc', '🗽 New York')}
+      ${place('nh', '🌲 New Hampshire')}
+      ${place('here', '📍 Use my location')}
+    </div>
+    <div class="row toggle-row">
+      <button class="btn ghost" data-sun="weather" type="button">${weather.show ? '✓ ' : ''}🌤️ Weather</button>
+      <button class="btn ghost" data-sun="${sun.show ? 'hide' : 'show'}" type="button">${sun.show ? '✓ ' : ''}🌅 Sunrise & sunset</button>
     </div>`;
 }
 
 function setSun(action) {
-  const sun = state.settings.sun;
+  const { sun, weather } = state.settings;
   if (action === 'hide' || action === 'show') {
     sun.show = action === 'show';
-  } else if (action === 'nyc') {
-    Object.assign(sun, { mode: 'nyc', lat: 40.71, lon: -74.01 });
+  } else if (action === 'weather') {
+    weather.show = !weather.show;
+  } else if (Weather.PLACES[action]) {
+    Object.assign(sun, { mode: action, lat: Weather.PLACES[action].lat, lon: Weather.PLACES[action].lon });
+    refreshWeather(true);
   } else if (action === 'here') {
     if (!navigator.geolocation) return toast('Location isn’t available on this device.');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        // rounded to ~1 km: plenty for sunrise times, and less precise to store
+        // rounded to ~1 km: plenty for weather and sunrise times, and less precise to store
         Object.assign(sun, { mode: 'here', lat: +pos.coords.latitude.toFixed(2), lon: +pos.coords.longitude.toFixed(2) });
         save();
         render();
         openSettings();
-        toast('Sunrise & sunset now use your location 🌅');
+        refreshWeather(true);
+        toast('Weather and sunrise & sunset now use your location 📍');
       },
       () => toast('Couldn’t get your location. You can allow it in Settings → Privacy → Location.'),
       { enableHighAccuracy: false, timeout: 15000, maximumAge: 3600000 },
@@ -832,6 +907,7 @@ function setSun(action) {
   save();
   render();
   openSettings();
+  if (weather.show) refreshWeather();
 }
 
 function quickButtons(key) {
@@ -856,7 +932,7 @@ function renderToday() {
       <h2>${fmt(d.steps || 0)} <span class="of-goal">/ ${fmt(regularGoal)} steps</span></h2>
       <div class="goal-meter" aria-label="${e.pct}% of your goal"><i style="width:${e.pct}%"></i></div>
       <p class="encourage"><b>${fmt(e.left)} to go.</b> ${e.msg}</p>
-      ${sunLine()}
+      ${skyLines()}
       <div class="row progress-actions">
         <button class="btn primary" data-open-day="${t}">Update steps</button>
         <button class="btn regular-btn" data-log="regular" data-key="${t}">👟 Hit my goal</button>
@@ -882,7 +958,7 @@ function renderToday() {
           <p class="eyebrow">Today</p>
           <h2>${info.short}${d.steps ? ` · ${fmt(d.steps)} steps` : ''}</h2>
           <p class="muted">${sub}</p>
-          ${sunLine()}
+          ${skyLines()}
         </div>
       </div>
       <button class="link-btn" data-open-day="${t}">Change</button>`;
@@ -892,7 +968,7 @@ function renderToday() {
       <p class="eyebrow">Today · ${prettyDate(t, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
       <h2>How did your steps go?</h2>
       <p class="muted">Goal <b>${fmt(regularGoal)}</b> · Big goal <b>${fmt(bigGoal)}</b></p>
-      ${sunLine()}
+      ${skyLines()}
       ${quickButtons(t)}
       <button class="link-btn" data-open-day="${t}">Enter step count or use a skip day →</button>`;
   }
@@ -1820,6 +1896,7 @@ document.addEventListener('visibilitychange', async () => {
   render();
   if (maybeRenewGoogle()) return;
   syncNow();
+  refreshWeather();
   runAnnouncements();
 });
 addEventListener('online', () => syncNow());
@@ -1941,6 +2018,7 @@ async function handleGoogleReturn(r) {
 $('#app-version').textContent = `v${APP_VERSION}`;
 setInterval(() => {
   if (document.visibilityState === 'visible' && $('#sheet').hidden && $('#modal').hidden) renderToday();
+  refreshWeather();
 }, 60000);
 render();
 (async () => {

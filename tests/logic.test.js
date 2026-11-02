@@ -374,3 +374,25 @@ test('encouragement adapts to time left in the day', () => {
   assert.match(L.encouragement(6500, 7000, at(15)).msg, /So close/);
   assert.match(L.encouragement(1000, 9000, at(8)).msg, /1h 20m of walking/);
 });
+
+test('weather: describe codes and pick a walking tip', async () => {
+  const W = await import('../weather.js');
+  assert.deepEqual(W.describe(0, true), ['☀️', 'Sunny']);
+  assert.deepEqual(W.describe(0, false), ['🌙', 'Clear']);
+  assert.deepEqual(W.describe(63), ['🌧️', 'Rain']);
+  assert.deepEqual(W.describe(73), ['🌨️', 'Snow']);
+  const base = (current, hourly = []) => ({
+    current: { time: '2026-11-02T10:00', temperature_2m: 50, weather_code: 2, ...current },
+    hourly: {
+      time: hourly.map((h) => h[0]),
+      precipitation_probability: hourly.map((h) => h[1]),
+      weather_code: hourly.map((h) => h[2]),
+    },
+  });
+  assert.match(W.walkingTip(base({ weather_code: 61 })), /wet/);
+  assert.match(W.walkingTip(base({}, [['2026-11-02T11:00', 10, 2], ['2026-11-02T15:00', 70, 61]])), /Rain likely around 3 PM/);
+  assert.equal(W.walkingTip(base({}, [['2026-11-03T08:00', 90, 61]])), '', 'tomorrow’s rain is ignored');
+  assert.match(W.walkingTip(base({ temperature_2m: 20 })), /Bundle up/);
+  assert.match(W.walkingTip(base({ temperature_2m: 65, weather_code: 1 })), /Great walking weather/);
+  assert.match(W.weatherUrl(40.71, -74.01), /temperature_unit=fahrenheit/);
+});

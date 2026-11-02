@@ -1071,6 +1071,18 @@ html[data-theme='christmas'] {
 .progress-actions .btn { flex: 1; }
 .cell.progress::before { background: var(--bg-2); box-shadow: inset 0 0 0 2px var(--primary); }
 
+/* weather line on the Today card */
+.weather-line { font-size: 14px; color: var(--text); margin-top: 8px; }
+.weather-line span { color: var(--muted); font-weight: 600; }
+.weather-tip { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+.weather-line + .weather-tip + .sun-line, .weather-line + .sun-line { margin-top: 4px; }
+/* location picker in Settings */
+.loc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.loc-row .loc-btn:last-child { grid-column: 1 / -1; }
+.loc-btn.on { outline: 2px solid var(--primary); outline-offset: -2px; background: var(--bg-2); }
+.toggle-row { margin-top: 8px; }
+.toggle-row .btn { flex: 1; font-size: 14px; }
+
 /* sunrise & sunset line on the Today card */
 .sun-line {
   font-size: 13px;
