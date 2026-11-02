@@ -543,6 +543,14 @@ export const GUMBALLS = [
     pitch: 'The real Giga Pet: purple 90s shell, LCD screens with pixel shadows, and green buttons.',
   },
   {
+    id: 'rand-chunk-og', head: 'pixel', style: 'tamagotchi', set: 'animals', name: 'Original Chunk', revealName: 'The original Chunk',
+    emoji: '🥚', ball: '#1e3a9a', iconTint: '#16286e',
+    colors: { bg: '#14246a', primary: '#2a4fb0', accent: '#e6b84a', ink: '#23261a', blend: '#5a7ad8' },
+    confetti: ['#1e3a9a', '#e6b84a', '#cfe4f4', '#8fd0c8', '#ffffff'],
+    emojis: ['🥚', '⭐', '🌙', '🐶'], cheer: 'Chunk is all grown up! ⭐', note: 'Before the Giga Pet, there was a little egg. Hi again, Chunk! 🥚',
+    pitch: 'The first Chunk: a glittery night-sky shell with gold stars, and a gold-framed LCD screen.',
+  },
+  {
     id: 'rand-animalcrossing', set: 'animals', name: 'Animal Crossing', emoji: '🍃',
     colors: { bg: '#f6f4e4', primary: '#3f9a52', accent: '#7cc6e8', ink: '#4a3420', blend: '#8fd06a' },
     confetti: ['#3f9a52', '#7cc6e8', '#f2c94c', '#e8655a', '#8fd06a'],

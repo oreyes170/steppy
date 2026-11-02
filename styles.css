@@ -1325,6 +1325,84 @@ html[data-style='gigapet'] .goal-pill {
 }
 html[data-style='gigapet'] .link-btn { color: #2a7a16; }
 
+/* 🥚 Tamagotchi (the original Chunk): glittery night-sky shell, gold stars, gold-framed LCD cards,
+   pale blue device buttons. Only while it's on. */
+html[data-style='tamagotchi'] {
+  --bg: #14246a !important;
+  --card: #d6d6b4 !important;
+  --bg-2: #c4c6a0 !important;
+  --line: #9a9a78 !important;
+  --text: #23261a !important;
+  --muted: #55593e !important;
+  --primary: #1e3a9a !important;
+  --primary-2: #3a5cc8 !important;
+  --primary-ink: #ffffff !important;
+  --regular-soft: #b4d8c8 !important;
+  --big-soft: #ecd690 !important;
+  --skip-soft: #c8cce8 !important;
+  --missed-soft: #c6c6a8 !important;
+  --shadow: 0 6px 0 #0a1440 !important;
+}
+html[data-style='tamagotchi'] body {
+  background-color: #14246a;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='%23e6b84a'%3E%3Cpath d='M40 30l4 10 11 1-8 7 3 11-10-6-10 6 3-11-8-7 11-1z'/%3E%3Cpath d='M170 120l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z'/%3E%3Cpath d='M70 170l2 5 6 1-4 3 1 6-5-3-5 3 1-6-4-3 6-1z' opacity='.8'/%3E%3Cpath d='M182 30a16 16 0 1 0 8 30 13 13 0 1 1-8-30z' opacity='.9'/%3E%3C/g%3E%3Cg stroke='%23e6b84a' stroke-width='2.5' stroke-linecap='round' opacity='.7'%3E%3Cpath d='M100 60l26 22M108 56l26 22M116 52l26 22'/%3E%3Cpath d='M20 110l20 16M27 106l20 16'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle, rgba(170, 230, 230, 0.55) 0.8px, transparent 1.4px),
+    radial-gradient(circle, rgba(255, 220, 140, 0.45) 0.8px, transparent 1.4px),
+    radial-gradient(ellipse at 30% 10%, #2a46b0, #14246a 60%, #0c1748);
+  background-size: 220px 220px, 23px 29px, 37px 31px, 100% 100%;
+  background-position: 0 0, 0 0, 11px 7px, 0 0;
+  background-attachment: fixed;
+}
+/* gold-framed LCD screens */
+html[data-style='tamagotchi'] .card,
+html[data-style='tamagotchi'] .sheet,
+html[data-style='tamagotchi'] .modal-card,
+html[data-style='tamagotchi'] .icon-btn {
+  background-color: #d6d6b4;
+  background-image:
+    linear-gradient(rgba(35, 38, 26, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35, 38, 26, 0.05) 1px, transparent 1px),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%);
+  background-size: 3px 3px, 3px 3px, 100% 100%;
+  border: 4px solid #e2b445;
+  box-shadow: inset 0 0 0 2px #a87a1e, 0 6px 0 #0a1440;
+}
+html[data-style='tamagotchi'] .sheet { border-bottom: 0; box-shadow: inset 0 0 0 2px #a87a1e, 0 -6px 0 #0a1440; }
+html[data-style='tamagotchi'] .card h2,
+html[data-style='tamagotchi'] .card h3,
+html[data-style='tamagotchi'] .stat-num,
+html[data-style='tamagotchi'] .sheet h2,
+html[data-style='tamagotchi'] .modal-card h2 {
+  text-shadow: 2px 2px 0 rgba(35, 38, 26, 0.2); /* LCD pixel ghosting */
+}
+html[data-style='tamagotchi'] .greeting,
+html[data-style='tamagotchi'] .footer-note,
+html[data-style='tamagotchi'] .sync-status { color: #e4ecff; }
+html[data-style='tamagotchi'] h1 {
+  background: none;
+  -webkit-text-fill-color: #f0c454;
+  color: #f0c454;
+  text-shadow: 3px 3px 0 #0a1440;
+}
+html[data-style='tamagotchi'] .version { background: #0a1440; -webkit-text-fill-color: #f0c454; color: #f0c454; }
+html[data-style='tamagotchi'] .logo-icon { border: 3px solid #e2b445; box-shadow: 0 4px 0 #0a1440; }
+/* pale blue round device buttons */
+html[data-style='tamagotchi'] .btn.primary {
+  background: radial-gradient(circle at 40% 30%, #ffffff, #bcdcf2 65%);
+  color: #14246a;
+  border: 3px solid #6f9cc8;
+  box-shadow: 0 4px 0 #0a1440;
+}
+html[data-style='tamagotchi'] .btn.primary:active { transform: translateY(3px); box-shadow: 0 1px 0 #0a1440; }
+html[data-style='tamagotchi'] .quick .btn,
+html[data-style='tamagotchi'] .btn.ghost,
+html[data-style='tamagotchi'] .goal-pill {
+  border: 2px solid rgba(20, 36, 106, 0.45);
+  box-shadow: 0 3px 0 rgba(20, 36, 106, 0.45);
+}
+html[data-style='tamagotchi'] .link-btn { color: #1e3a9a; }
+
 /* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */
 html[data-style='mono'] .app,
 html[data-style='mono'] .fx,
