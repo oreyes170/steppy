@@ -261,7 +261,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 103);
+  assert.equal(G.GUMBALLS.length, 110);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -336,7 +336,7 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 20);
+  assert.equal(Object.keys(heads).length, 23);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {
@@ -416,7 +416,7 @@ test('Game Day collection', async () => {
 test('Critters and Couch Time collections; Taylor renamed', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('animals', []), { owned: 0, total: 4 });
-  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 4 });
+  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 11 });
   assert.equal(G.setById('taylor').name, 'The Eras Walking Tour');
   assert.deepEqual(G.revealedSets(['rand-chunk']).map((s) => s.id), ['animals']);
   assert.match(G.GUMBALL_THEMES.find((t) => t.id === 'treat-maddogbeans').note, /Where it all started/);
