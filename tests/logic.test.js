@@ -252,3 +252,13 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
   assert.equal(G.hiddenSetsRemain(['bway26-heathers']), true); // Taylor Swift eras still a secret
   assert.ok(G.GUMBALLS.find((g) => g.id === 'bway26-allout').emojis.includes('🐎'));
 });
+
+test('Broadway magnets 2025 collection', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 7 });
+  assert.equal(G.GUMBALLS.length, 29);
+  const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
+  assert.equal(sunset.dark, true);
+  assert.equal(sunset.vars.bg, '#0b0b0b');
+  assert.equal(sunset.vars.primary, '#d7192e');
+});

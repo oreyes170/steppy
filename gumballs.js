@@ -24,6 +24,7 @@ export const UNLOCK_AT = 3; // the machine appears the first time she has this m
 
 export const SETS = [
   { id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' },
+  { id: 'broadway-2025', name: 'Broadway magnets · 2025', emoji: '🧲' },
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
 ];
 
@@ -99,6 +100,50 @@ export const GUMBALLS = [
     colors: { bg: '#fff3e8', primary: '#ec6417', accent: '#3fc4a2', ink: '#3d1d08' },
     emojis: ['💃', '🪩', '✨', '🧡'], cheer: 'Showstopper! 🪩',
     pitch: 'Bright orange and mint, glitter and disco balls.',
+  },
+
+  // ── 🧲 Broadway magnets · 2025: shows we saw together ──
+  {
+    id: 'bway25-roblake', set: 'broadway-2025', name: 'Rob Lake Magic', emoji: '🐸',
+    colors: { bg: '#fdf1ee', primary: '#c8202f', accent: '#4cb944', ink: '#3a1215', blend: '#ef5b5b' },
+    emojis: ['🐸', '🎩', '🪄', '🃏', '✨'], cheer: 'Pure magic! 🪄',
+    pitch: 'Theater-curtain red, Muppet green and spotlight gold. Magic, with special guests.',
+  },
+  {
+    id: 'bway25-outsiders', set: 'broadway-2025', name: 'The Outsiders', emoji: '🌅',
+    colors: { bg: '#fbf0e1', primary: '#d9762b', accent: '#3d5a80', ink: '#3a2614', blend: '#f2b04a' },
+    emojis: ['🌅', '🏎️', '🥊', '📖'], cheer: 'Golden day! 🌅',
+    pitch: 'Golden-hour orange, dusty sepia and denim blue. Sunsets in 1960s Tulsa.',
+  },
+  {
+    id: 'bway25-realwomen', set: 'broadway-2025', name: 'Real Women Have Curves', emoji: '🧵',
+    colors: { bg: '#fff0f6', primary: '#e0287d', accent: '#2bb5a8', ink: '#3a1430', blend: '#f7a23b' },
+    emojis: ['🧵', '🪡', '👗', '💃', '🌵'], cheer: 'Sew fabulous! 👗',
+    pitch: 'Hot pink, sunshine yellow and turquoise, with thread, needles and dresses.',
+  },
+  {
+    id: 'bway25-deadoutlaw', set: 'broadway-2025', name: 'Dead Outlaw', emoji: '💀',
+    colors: { bg: '#141110', primary: '#c8322b', accent: '#d9b77e', ink: '#f4ece0', blend: '#e0703a' }, dark: true,
+    emojis: ['💀', '🤠', '🌵', '🎸'], cheer: 'Wanted: one big goal! 🤠',
+    pitch: 'Black, outlaw red and desert sand. A rock-and-roll Wild West.',
+  },
+  {
+    id: 'bway25-sunsetblvd', set: 'broadway-2025', name: 'Sunset Blvd.', emoji: '🎬',
+    colors: { bg: '#0b0b0b', primary: '#d7192e', accent: '#f2f2f2', ink: '#f5f5f5', blend: '#ff5a6a' }, dark: true,
+    emojis: ['🎬', '🎞️', '🌴', '❤️'], cheer: 'Ready for your close-up! 🎬',
+    pitch: 'Stark black and blood red. Lights, camera, Hollywood.',
+  },
+  {
+    id: 'bway25-cursedchild', set: 'broadway-2025', name: 'Harry Potter and the Cursed Child', emoji: '⚡',
+    colors: { bg: '#0d0d12', primary: '#c9a443', accent: '#7a6a4a', ink: '#f3ead6', blend: '#f0d27a' }, dark: true,
+    emojis: ['⚡', '🪄', '🦉', '🧹'], cheer: 'Magical! ⚡',
+    pitch: 'Midnight black and burnished gold, with wands, owls and broomsticks.',
+  },
+  {
+    id: 'bway25-mindplay', set: 'broadway-2025', name: 'Mindplay', emoji: '🔮',
+    colors: { bg: '#1c1029', primary: '#9b6bd6', accent: '#e2b858', ink: '#f2e9ff', blend: '#c9a2ff' }, dark: true,
+    emojis: ['🔮', '🧠', '🃏', '👁️'], cheer: 'I knew you’d do it! 🔮',
+    pitch: 'Deep plum, mysterious violet and candlelight gold. Vinny already knows what you’re thinking.',
   },
 
   // ── 🧲 Broadway magnets · 2026: shows we saw together ──
