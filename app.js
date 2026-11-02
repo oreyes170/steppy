@@ -563,7 +563,10 @@ function openMachine() {
   const sets = found.length >= 2 ? found.filter((st) => Gumballs.pool(owned, st.id).length) : [];
   const spinBtn = (cost, label, setId = '') => {
     const can = available >= cost && left > 0;
-    return `<button class="btn ${setId ? 'ghost set-spin' : 'primary spin-btn'}" data-spin="${setId || 'any'}" ${can ? '' : 'disabled'}>${label} · ${cost} 🎟️</button>`;
+    // collection buttons are compact (price is shown once above them)
+    return setId
+      ? `<button class="btn ghost set-spin" data-spin="${setId}" ${can ? '' : 'disabled'}>${label}</button>`
+      : `<button class="btn primary spin-btn" data-spin="any" ${can ? '' : 'disabled'}>${label} · ${cost} 🎟️</button>`;
   };
   const warn =
     left && available === Gumballs.SPIN_COST
@@ -582,8 +585,10 @@ function openMachine() {
     ${warn}
     ${
       sets.length
-        ? `<p class="small muted machine-sub">Or pick a collection:</p>
-           <div class="set-spins">${sets.map((st) => spinBtn(Gumballs.SET_SPIN_COST, `${st.emoji} ${st.name}`, st.id)).join('')}</div>`
+        ? `<p class="small muted machine-sub">Or pick a collection · ${Gumballs.SET_SPIN_COST} 🎟️ each</p>
+           <div class="set-spins">${sets
+             .map((st) => spinBtn(Gumballs.SET_SPIN_COST, `<span class="set-emoji">${st.emoji}</span><span class="set-name">${st.name}</span>`, st.id))
+             .join('')}</div>`
         : ''
     }
     <p class="small muted center machine-count"><b>${owned.length} theme${owned.length === 1 ? '' : 's'}</b> collected · no repeats${left ? ' · what’s next? 👀' : ''}</p>
@@ -613,6 +618,15 @@ async function doSpin(setId) {
   }
   renderStats();
   const t = Themes.byId(id);
+
+  // make sure she can see the machine: grey out the buttons and scroll back up to it first
+  const sheet = $('#sheet');
+  sheet.querySelectorAll('[data-spin]').forEach((b) => (b.disabled = true));
+  sheet.classList.add('is-spinning');
+  if (sheet.scrollTop > 4) {
+    sheet.scrollTo({ top: 0, behavior: fx.reducedMotion() ? 'auto' : 'smooth' });
+    await wait(fx.reducedMotion() ? 0 : 450);
+  }
 
   // knob turns, globe wobbles, a gumball rolls out
   const wrap = $('#machine-wrap');

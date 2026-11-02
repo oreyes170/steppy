@@ -1460,8 +1460,25 @@ html[data-style='mono'] .toast {
 }
 .sheet .spin-btn { width: 100%; font-size: 17px; padding: 15px; }
 .machine-sub { margin: 14px 0 6px; font-weight: 700; }
-.set-spins { display: flex; flex-direction: column; gap: 8px; }
-.set-spins .btn { width: 100%; }
+.set-spins {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.set-spins .btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 10px;
+  font-size: 13px;
+  text-align: left;
+  min-width: 0;
+  line-height: 1.2;
+}
+.set-spins .set-emoji { flex: 0 0 auto; font-size: 18px; }
+.set-spins .set-name { min-width: 0; }
+.sheet.is-spinning .set-spins,
+.sheet.is-spinning .spin-btn { opacity: 0.5; transition: opacity 0.2s; }
 .machine-count { margin-top: 14px; }
 .machine-count b { color: var(--text); }
 
