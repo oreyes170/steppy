@@ -30,10 +30,11 @@ All data stays on the device (`localStorage`). There's no account and no server.
   - 🎃 Halloween: Oct 1
   - 🦃 Thanksgiving: Nov 6
   - 🎄 Christmas: the day after Thanksgiving
+  - 🥂 New Year's: Dec 30 (it arrives with fireworks)
   - 🛡️ Avengers: Doomsday: Dec 17, 2026 (preview night). It enters with two flashes of green lightning.
 
   The first time each one unlocks, a popup says "New theme: …!" with **Try it!** or **Not now**. Each popup only ever shows once, and if several unlock at once they come one at a time. **Her pick always wins.** Themes never switch on their own. Each theme has its own colours, confetti, background decorations, header icon and big-goal emoji.
-- **Preview any theme early** by adding `?theme=christmas` (or `halloween`, `thanksgiving`, `doomsday`, `classic`) to the address. The preview isn't saved.
+- **Preview any theme early** by adding `?theme=christmas` (or `halloween`, `thanksgiving`, `newyears`, `doomsday`, `classic`) to the address. The preview isn't saved.
 - **Welcome to <Month>:** the first time she opens Steppy in a new month, she gets "Welcome to November!" with *rabbit rabbit* in small letters and a recap of last month.
 
 The date rules are in `themes.js` (unit tested).

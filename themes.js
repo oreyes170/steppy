@@ -80,6 +80,27 @@ export const THEMES = [
     pitch: 'Red, green and gold, falling snow, and ho-ho-ho big goal days.',
   },
   {
+    id: 'newyears',
+    name: 'New Year’s',
+    emoji: '🥂',
+    head: 'deco',
+    // Dec 30 – Jan 7 (so she gets it even if she opens Steppy after New Year's Day). Hers forever after.
+    available: (d) => md(d) >= 1230 || md(d) <= 107,
+    dark: true,
+    vars: cssVars({ colors: { bg: '#0c1230', primary: '#e8c66a', accent: '#c9cfe0', ink: '#f6f1e2', blend: '#fff0b8' }, dark: true }),
+    themeColor: '#0c1230',
+    iconTint: '#1e2a66',
+    confetti: ['#e8c66a', '#fff0b8', '#c9cfe0', '#ffffff', '#b58a2e'],
+    confettiEmoji: ['🥂', '🎆', '✨', '🪩'],
+    rain: ['🎆', '🥂', '🎉', '✨', '🪩'],
+    ambient: { emojis: ['✨', '✨', '⭐', '✨'], motion: 'fall', count: 14 },
+    greetingEmoji: '🥂',
+    bigSub: 'Happy New Year! 🥂',
+    holiday: true,
+    entrance: 'fireworks',
+    pitch: 'Midnight navy with champagne gold and silver sparkle.',
+  },
+  {
     // Avengers: Doomsday premieres Dec 18, 2026; unlocks on preview night.
     id: 'doomsday',
     name: 'Avengers: Doomsday',

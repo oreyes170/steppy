@@ -118,7 +118,7 @@ export function cannons() {
 }
 
 /** Bursts all over the sky — used for streak milestones. */
-export function fireworks(bursts = 6) {
+export function fireworks(bursts = 6, { colors, emojis } = {}) {
   if (reducedMotion()) return;
   for (let i = 0; i < bursts; i++) {
     setTimeout(() => {
@@ -128,6 +128,8 @@ export function fireworks(bursts = 6) {
         y: innerHeight * (0.15 + Math.random() * 0.35),
         spread: 2,
         power: 0.55,
+        ...(colors ? { colors } : {}),
+        ...(emojis ? { emojis } : {}),
       });
     }, i * 380);
   }

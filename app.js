@@ -714,6 +714,10 @@ async function maybeAnnounceHoliday() {
   save({ dirty: false });
   if (theme.id === t.id) return null; // already wearing it
   if (t.entrance === 'lightning') await lightningFlash();
+  if (t.entrance === 'fireworks' && !fx.reducedMotion()) {
+    fx.fireworks(6, { colors: t.confetti, emojis: t.confettiEmoji }); // the new theme's own sparkle
+    await wait(3600); // let them finish before the popup
+  }
   const done = showModal({
     emoji: t.emoji,
     title: `New theme: ${t.name}!`,
@@ -725,7 +729,8 @@ async function maybeAnnounceHoliday() {
       </div>
       <p class="muted small modal-foot">You can switch anytime in Settings ⚙️</p>`,
     cta: null,
-    fx: () => fx.confetti({ count: 110, colors: t.confetti, emojis: t.confettiEmoji }),
+    // themes with their own entrance already had their show; no second burst over the words
+    fx: t.entrance ? undefined : () => fx.confetti({ count: 110, colors: t.confetti, emojis: t.confettiEmoji }),
   });
   return { done };
 }
