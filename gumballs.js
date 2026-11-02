@@ -31,7 +31,7 @@ export const UNLOCK_AT = 3; // the machine appears if she ever holds this many t
 // …or as soon as she earns her next ticket (see checkMachineUnlock in app.js)
 
 export const SETS = [
-  { id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' },
+  { id: 'taylor', name: 'The Eras Walking Tour', emoji: '🎤' },
   { id: 'broadway-2024', name: 'Broadway magnets · 2024', emoji: '🧲' },
   { id: 'broadway-2025', name: 'Broadway magnets · 2025', emoji: '🧲' },
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
@@ -41,7 +41,9 @@ export const SETS = [
   { id: 'fyp', name: 'For You Page', emoji: '📱' },
   { id: 'random', name: 'So Random', emoji: '🎲' },
   { id: 'books', name: 'Bookworm', emoji: '📚' },
+  { id: 'animals', name: 'Critters', emoji: '🐾' },
   { id: 'sports', name: 'Game Day', emoji: '🏟️' },
+  { id: 'tv', name: 'Couch Time', emoji: '📺' },
 ];
 
 export const GUMBALLS = [
@@ -393,6 +395,14 @@ export const GUMBALLS = [
     emojis: ['🥤', '🌭', '🍕'], cheer: 'Slurp-tacular! 🥤',
     pitch: 'Green, orange and red stripes. Grab a giant slushie.',
   },
+  {
+    // where we got to know each other 💕
+    id: 'treat-maddogbeans', set: 'treats', name: 'Mad Dog & Beans', emoji: '🤠', head: 'slab',
+    colors: { bg: '#fbf1e2', primary: '#b8321f', accent: '#2a9d8f', ink: '#3a1f12', blend: '#e0602a' },
+    confetti: ['#b8321f', '#2a9d8f', '#e0a050', '#f6e2c0', '#6b3a1f'],
+    emojis: ['🤠', '🌮', '🌵', '🫘', '🐶'], cheer: 'Yeehaw! 🤠', note: 'Where it all started 💕🤠',
+    pitch: 'Chili red, turquoise and desert tan. Tacos with a little cowboy swagger.',
+  },
   // ── 🏁 Mario Kart racers ──
   {
     id: 'mk-mario', set: 'mariokart', name: 'Mario', emoji: '⭐',
@@ -524,21 +534,21 @@ export const GUMBALLS = [
     pitch: 'True black and white e-ink, warm paper, book fonts and crisp shadows.',
   },
   {
-    id: 'rand-chunk', head: 'pixel', set: 'random', name: 'Chunk', emoji: '🐶',
+    id: 'rand-chunk', head: 'pixel', set: 'animals', name: 'Chunk', emoji: '🐶',
     colors: { bg: '#f3ecfb', primary: '#7b3fc4', accent: '#a8c86b', ink: '#2a1640', blend: '#a874e8' },
     confetti: ['#7b3fc4', '#a8c86b', '#c9a8f0', '#2a1640', '#dfe8b8'],
     emojis: ['🐶', '🦴', '💜', '🐾'], cheer: 'Chunk is so proud of you! 🐶', note: 'Chunk missed you! 🐶💜',
     pitch: 'Giga Pet purple with a little LCD-green screen. Chunk the dog lives here.',
   },
   {
-    id: 'rand-animalcrossing', set: 'random', name: 'Animal Crossing', emoji: '🍃',
+    id: 'rand-animalcrossing', set: 'animals', name: 'Animal Crossing', emoji: '🍃',
     colors: { bg: '#f6f4e4', primary: '#3f9a52', accent: '#7cc6e8', ink: '#4a3420', blend: '#8fd06a' },
     confetti: ['#3f9a52', '#7cc6e8', '#f2c94c', '#e8655a', '#8fd06a'],
     emojis: ['🍃', '🍎', '🐟', '🦝', '🔔'], cheer: 'Ka-ching, bells! 🔔', note: 'Welcome to your island! 🏝️',
     pitch: 'Leafy green, island sky blue and cozy cream, with warm brown text.',
   },
   {
-    id: 'rand-stitch', set: 'random', name: 'Stitch', emoji: '🌺',
+    id: 'rand-stitch', set: 'animals', name: 'Stitch', emoji: '🌺',
     colors: { bg: '#eef5ff', primary: '#3f6fd8', accent: '#ff7eb3', ink: '#14254a', blend: '#7aa2ff' },
     confetti: ['#3f6fd8', '#7aa2ff', '#ff7eb3', '#2fbfa8', '#ffd25e'],
     emojis: ['🌺', '🏄', '🌊', '🍍', '💙'], cheer: 'Ohana means you never quit! 💙', note: 'Aloha, little blue alien 🌺',
@@ -573,7 +583,7 @@ export const GUMBALLS = [
     pitch: 'Cozy beige and coffee brown, with that green Want to Read button.',
   },
   {
-    id: 'rand-bronxzoo', set: 'random', name: 'Bronx Zoo', emoji: '🦁',
+    id: 'rand-bronxzoo', set: 'animals', name: 'Bronx Zoo', emoji: '🦁',
     colors: { bg: '#f3f1e2', primary: '#2f6b3a', accent: '#e0a52a', ink: '#23301c', blend: '#6a9a3a' },
     confetti: ['#2f6b3a', '#e0a52a', '#a86a3a', '#6a9a3a', '#f3e2b0'],
     emojis: ['🦁', '🦒', '🐘', '🦍', '🐧'], cheer: 'Roar-some! 🦁', note: 'Welcome to the wild side! 🦁',
@@ -636,6 +646,52 @@ export const GUMBALLS = [
     confetti: ['#ffd21f', '#2f8f3a', '#ffffff', '#ffe98a', '#1a1a1a'],
     emojis: ['🍌', '⚾', '🕺', '🎉'], cheer: 'Home run, bananas! 🍌', note: 'Banana Ball time! 🍌⚾',
     pitch: 'Banana yellow and leaf green. Baseball, but make it a party.',
+  },
+
+  // ── 🎲 So Random: puzzles ──
+  {
+    id: 'rand-wordle', set: 'random', name: 'Wordle', emoji: '🟩', ball: '#6aaa64',
+    colors: { bg: '#ffffff', primary: '#538d4e', accent: '#c9b458', ink: '#121213', blend: '#6aaa64' },
+    confetti: ['#6aaa64', '#c9b458', '#787c7e', '#ffffff', '#538d4e'],
+    emojis: ['🟩', '🟨', '⬜', '🔤'], cheer: 'Magnificent! 🟩', note: '🟩🟩🟩🟩🟩 Got it!',
+    pitch: 'Green, yellow and grey tiles. Five letters, six tries.',
+  },
+  {
+    id: 'rand-crossword', set: 'random', name: 'Crossword', emoji: '✏️', head: 'didot', ball: '#1a1a1a',
+    colors: { bg: '#fafaf7', primary: '#111111', accent: '#8a8a8a', ink: '#111111', blend: '#4a4a4a' },
+    confetti: ['#111111', '#ffffff', '#8a8a8a', '#d6d6d0', '#111111'],
+    emojis: ['✏️', '📰', '🧩', '☕'], cheer: 'Puzzle solved! ✏️', note: '1 Across: you. (3 letters) ✏️',
+    pitch: 'Black and white squares and newspaper headlines, with a pencil and coffee.',
+  },
+
+  // ── 📺 Couch Time: shows we watch together ──
+  {
+    id: 'tv-marbleruns', set: 'tv', name: 'Jelle’s Marble Runs', emoji: '🟣', ball: '#7b3fd8',
+    colors: { bg: '#f1f6ff', primary: '#6a3fd8', accent: '#ff7a3a', ink: '#1c1640', blend: '#3fa0ff' },
+    confetti: ['#e8344e', '#3fa0ff', '#2fbf6a', '#ffcc33', '#7b3fd8', '#ff7a3a'],
+    emojis: ['🔴', '🔵', '🟢', '🟡', '🏁', '🏆'], cheer: 'Marble-ous! 🏆', note: 'And they’re off! 🏁',
+    pitch: 'Rainbow marbles racing down the track.',
+  },
+  {
+    id: 'tv-thefloor', set: 'tv', name: 'The Floor', emoji: '⏱️', ball: '#1f8fe0',
+    colors: { bg: '#0a0f24', primary: '#3fd0ff', accent: '#ffcc33', ink: '#eef6ff', blend: '#8ae6ff' }, dark: true,
+    confetti: ['#3fd0ff', '#ffcc33', '#ffffff', '#1f6fd6', '#8ae6ff'],
+    emojis: ['🟦', '⏱️', '🏆', '🎤'], cheer: 'Duel won! ⏱️', note: 'You’ve conquered the Floor! 🟦',
+    pitch: 'A dark stage with glowing blue tiles and a ticking clock.',
+  },
+  {
+    id: 'tv-bakeoff', set: 'tv', name: 'Bake Off', revealName: 'The Great British Bake Off', emoji: '🎂',
+    colors: { bg: '#fdf6f0', primary: '#d8577a', accent: '#5aaac8', ink: '#3a1f2a', blend: '#f08aa8' },
+    confetti: ['#f4a7bd', '#9fd3e8', '#fff1a8', '#c8e6c0', '#ffffff', '#d8577a'],
+    emojis: ['🎂', '🧁', '🍰', '⛺', '🇬🇧'], cheer: 'Star Baker! ⭐', note: 'On your marks, get set… BAKE! 🧁',
+    pitch: 'Pastel bunting, a white tent and lots of cake.',
+  },
+  {
+    id: 'tv-taskmaster', set: 'tv', name: 'Taskmaster', emoji: '✉️', head: 'deco', ball: '#c8322b',
+    colors: { bg: '#141210', primary: '#d4a73a', accent: '#c8322b', ink: '#f4ead6', blend: '#f0cf7a' }, dark: true,
+    confetti: ['#d4a73a', '#c8322b', '#f4ead6', '#8a6a2a', '#ffffff'],
+    emojis: ['✉️', '🏆', '⏱️', '🍉'], cheer: 'Five points! 🏆', note: 'Your task: hit your step goal. Your time starts now. ✉️',
+    pitch: 'Dark wood, gold and a red wax seal. The tasks are absurd.',
   },
 ];
 

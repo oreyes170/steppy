@@ -261,7 +261,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 90);
+  assert.equal(G.GUMBALLS.length, 97);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -278,7 +278,7 @@ test('Broadway magnets 2024 collection (Sunset Blvd. moved here, id unchanged)',
 
 test('Treat yourself collection, with Chip City marked RIP', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('treats', []), { owned: 0, total: 19 });
+  assert.deepEqual(G.setProgress('treats', []), { owned: 0, total: 20 });
   const chip = G.GUMBALL_THEMES.find((t) => t.id === 'treat-chipcity');
   assert.equal(chip.rip, true);
   assert.equal(G.GUMBALL_THEMES.filter((t) => t.rip).length, 1);
@@ -325,7 +325,7 @@ test('For You Page memes show their quote when won', async () => {
 
 test('So Random collection', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 4 });
+  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 2 });
   assert.equal(G.setById('random').name, 'So Random');
 });
 
@@ -336,7 +336,7 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 17);
+  assert.equal(Object.keys(heads).length, 20);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {
@@ -411,4 +411,13 @@ test('Game Day collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('sports', []), { owned: 0, total: 8 });
   assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'sport-patriots').dark, true);
+});
+
+test('Critters and Couch Time collections; Taylor renamed', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('animals', []), { owned: 0, total: 4 });
+  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 4 });
+  assert.equal(G.setById('taylor').name, 'The Eras Walking Tour');
+  assert.deepEqual(G.revealedSets(['rand-chunk']).map((s) => s.id), ['animals']);
+  assert.match(G.GUMBALL_THEMES.find((t) => t.id === 'treat-maddogbeans').note, /Where it all started/);
 });
