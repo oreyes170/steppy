@@ -261,7 +261,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 102);
+  assert.equal(G.GUMBALLS.length, 103);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -424,8 +424,10 @@ test('Critters and Couch Time collections; Taylor renamed', async () => {
 
 test('Co-op Mode and Puzzle Break; empty sets never count as hidden', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('games', []), { owned: 0, total: 3 });
-  assert.deepEqual(G.setProgress('puzzles', []), { owned: 0, total: 4 });
+  assert.deepEqual(G.setProgress('games', []), { owned: 0, total: 8 });
+  assert.equal(G.setById('games').name, 'Game Night');
+  assert.equal(G.setById('puzzles'), undefined);
+  assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'game-mariokart').intro, 'race');
   const oneOfEach = G.SETS.map((s) => G.GUMBALLS.find((g) => g.set === s.id)?.id).filter(Boolean);
   assert.equal(G.hiddenSetsRemain(oneOfEach), false); // So Random is empty, so it doesn't count
 });

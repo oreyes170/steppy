@@ -631,7 +631,7 @@ async function doSpin(setId) {
   spinning = false;
 
   const set = Gumballs.setById(t.set);
-  if (set?.intro === 'race') await raceCountdown();
+  if (set?.intro === 'race' || t.intro === 'race') await raceCountdown();
   await showModal({
     emoji: '',
     title: t.rip ? `${t.name} 🕯️` : /[!?]$/.test(t.revealName) ? t.revealName : `${t.revealName}!`,

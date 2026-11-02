@@ -14,6 +14,7 @@
 //   motion     optional: 'fall' makes the background emoji drift down instead of float
 //   confetti   optional: exact confetti colours (otherwise made from the theme colours)
 //   ball       optional: gumball colour (otherwise the main colour)
+//   intro      optional: 'race' plays the 🚦 3-2-1-GO countdown before the reveal
 //   note       optional: an extra line shown under the title when she wins it
 //   head       optional: a heading font from styles.css (typewriter, hand, slab, deco, didot,
 //              bodoni, storybook, sign, script, chalk, blackletter, pixel)
@@ -40,8 +41,7 @@ export const SETS = [
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
   { id: 'fyp', name: 'For You Page', emoji: '📱' },
   { id: 'random', name: 'So Random', emoji: '🎲' },
-  { id: 'games', name: 'Co-op Mode', emoji: '🎮' },
-  { id: 'puzzles', name: 'Puzzle Break', emoji: '🧩' },
+  { id: 'games', name: 'Game Night', emoji: '🎮' },
   { id: 'books', name: 'Bookworm', emoji: '📚' },
   { id: 'animals', name: 'Critters', emoji: '🐾' },
   { id: 'sports', name: 'Game Day', emoji: '🏟️' },
@@ -650,16 +650,16 @@ export const GUMBALLS = [
     pitch: 'Banana yellow and leaf green. Baseball, but make it a party.',
   },
 
-  // ── 🧩 Puzzle Break (Wordle and Crossword keep their old 'rand-' ids) ──
+  // ── 🎮 Game Night: NYT games (ids keep their old 'rand-'/'puz-' prefixes) ──
   {
-    id: 'rand-wordle', set: 'puzzles', name: 'Wordle', emoji: '🟩', ball: '#6aaa64',
+    id: 'rand-wordle', set: 'games', name: 'Wordle', emoji: '🟩', ball: '#6aaa64',
     colors: { bg: '#ffffff', primary: '#538d4e', accent: '#c9b458', ink: '#121213', blend: '#6aaa64' },
     confetti: ['#6aaa64', '#c9b458', '#787c7e', '#ffffff', '#538d4e'],
     emojis: ['🟩', '🟨', '⬜', '🔤'], cheer: 'Magnificent! 🟩', note: '🟩🟩🟩🟩🟩 Got it!',
     pitch: 'Green, yellow and grey tiles. Five letters, six tries.',
   },
   {
-    id: 'rand-crossword', set: 'puzzles', name: 'Crossword', emoji: '✏️', head: 'didot', ball: '#1a1a1a',
+    id: 'rand-crossword', set: 'games', name: 'Crossword', emoji: '✏️', head: 'didot', ball: '#1a1a1a',
     colors: { bg: '#fafaf7', primary: '#111111', accent: '#8a8a8a', ink: '#111111', blend: '#4a4a4a' },
     confetti: ['#111111', '#ffffff', '#8a8a8a', '#d6d6d0', '#111111'],
     emojis: ['✏️', '📰', '🧩', '☕'], cheer: 'Puzzle solved! ✏️', note: '1 Across: you. (3 letters) ✏️',
@@ -696,21 +696,21 @@ export const GUMBALLS = [
     pitch: 'Dark wood, gold and a red wax seal. The tasks are absurd.',
   },
   {
-    id: 'puz-connections', set: 'puzzles', name: 'Connections', emoji: '🟪', ball: '#ba81c5',
+    id: 'puz-connections', set: 'games', name: 'Connections', emoji: '🟪', ball: '#ba81c5',
     colors: { bg: '#ffffff', primary: '#7a4a96', accent: '#a0c35a', ink: '#121212', blend: '#ba81c5' },
     confetti: ['#f9df6d', '#a0c35a', '#b0c4ef', '#ba81c5'],
     emojis: ['🟨', '🟩', '🟦', '🟪'], cheer: 'Perfect puzzle! 🟨🟩🟦🟪', note: 'One away… no wait, you got it! 🟪',
     pitch: 'Yellow, green, blue and purple: four groups of four.',
   },
   {
-    id: 'puz-spellingbee', set: 'puzzles', name: 'Spelling Bee', emoji: '🐝', ball: '#f7da21',
+    id: 'puz-spellingbee', set: 'games', name: 'Spelling Bee', emoji: '🐝', ball: '#f7da21',
     colors: { bg: '#fffbea', primary: '#8a6d00', accent: '#9a9a9a', ink: '#1a1a1a', blend: '#d9b800' },
     confetti: ['#f7da21', '#e6e6e6', '#1a1a1a', '#ffe97a', '#ffffff'],
     emojis: ['🐝', '🍯', '🔠', '⭐'], cheer: 'Genius! 🐝', note: 'Queen Bee! 🐝',
     pitch: 'Honeycomb yellow and grey. How many words can you make?',
   },
 
-  // ── 🎮 Co-op Mode: games we played together ──
+  // ── 🎮 Game Night: games we played together ──
   {
     id: 'game-ittakestwo', set: 'games', name: 'It Takes Two', emoji: '💞',
     colors: { bg: '#fdf0f6', primary: '#b0408a', accent: '#5aa86a', ink: '#3a1430', blend: '#e07ab8' },
@@ -731,6 +731,13 @@ export const GUMBALLS = [
     confetti: ['#7cc46a', '#f08ab0', '#ffd27a', '#8ac8f0', '#ffffff'],
     emojis: ['🧶', '🥚', '🦖', '🧵'], cheer: 'Yarn-tastic! 🧶', note: 'Knit together with love 🧶',
     pitch: 'Soft yarn greens and pastels, all stitched by hand.',
+  },
+  {
+    id: 'game-mariokart', set: 'games', name: 'Mario Kart', emoji: '🏁', intro: 'race', ball: '#1a1a1a',
+    colors: { bg: '#fff5f2', primary: '#d8202a', accent: '#1a1a1a', ink: '#1f1414', blend: '#ff5a3a' },
+    confetti: ['#d8202a', '#1a1a1a', '#ffffff', '#ffd23f', '#3fa0ff', '#2fbf6a', '#b06aff'],
+    emojis: ['🏁', '🍄', '🍌', '🐢', '⭐'], cheer: 'First place! 🏆', note: 'Ready, set, GO! 🏁',
+    pitch: 'Racing red and checkered flags, with a rainbow road of confetti.',
   },
 ];
 
@@ -819,6 +826,7 @@ export function buildTheme(g) {
     bigSub: g.cheer,
     pitch: g.pitch,
     rip: !!g.rip,
+    intro: g.intro || '',
     note: g.note || '',
     style: g.style || '',
     head: g.head || '',
