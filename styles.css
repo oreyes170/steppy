@@ -1252,6 +1252,79 @@ html[data-style='kindle'] .eyebrow { letter-spacing: 0.12em; }
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
+/* 🐶 Giga Pet (Chunk): purple 90s shell, LCD-screen cards with pixel drop shadows, lime buttons.
+   Only while Chunk is on. !important beats the theme's inline colour variables. */
+html[data-style='gigapet'] {
+  --bg: #5b2a96 !important;
+  --card: #cdd5bd !important;
+  --bg-2: #b8c2a4 !important;
+  --line: #8a967a !important;
+  --text: #1c2414 !important;
+  --muted: #4a5a3c !important;
+  --primary: #2a7a16 !important;
+  --primary-2: #4fb82e !important;
+  --primary-ink: #0f1a08 !important;
+  --regular-soft: #a9d690 !important;
+  --big-soft: #ecdc86 !important;
+  --skip-soft: #d4bfeb !important;
+  --missed-soft: #bcc4ae !important;
+  --shadow: 5px 5px 0 #2a0f4a !important;
+}
+html[data-style='gigapet'] body {
+  background-color: #5b2a96;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cg opacity='.55'%3E%3Cpath d='M18 26l16-10 4 18z' fill='%23ff6fb5'/%3E%3Cpath d='M120 40l20 6-14 14z' fill='%23ff6fb5'/%3E%3Cpath d='M60 120l12 18-20 2z' fill='%23ff6fb5'/%3E%3Cpath d='M150 130l-6 20-12-12z' fill='%2350d0c0'/%3E%3Cpath d='M86 70c6-8 14 8 20 0s14 8 20 0' stroke='%2350d0c0' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M20 150c6-8 14 8 20 0' stroke='%23ff6fb5' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/g%3E%3Cg fill='%23ffd23a' opacity='.8'%3E%3Crect x='96' y='150' width='22' height='6' rx='3'/%3E%3Ccircle cx='96' cy='150' r='4'/%3E%3Ccircle cx='96' cy='156' r='4'/%3E%3Ccircle cx='118' cy='150' r='4'/%3E%3Ccircle cx='118' cy='156' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+/* LCD screens */
+html[data-style='gigapet'] .card,
+html[data-style='gigapet'] .sheet,
+html[data-style='gigapet'] .modal-card,
+html[data-style='gigapet'] .icon-btn {
+  background-color: #cdd5bd;
+  background-image:
+    linear-gradient(rgba(28, 36, 20, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 36, 20, 0.05) 1px, transparent 1px),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%);
+  background-size: 3px 3px, 3px 3px, 100% 100%;
+  border: 3px solid #2a0f4a;
+  box-shadow: 5px 5px 0 #2a0f4a;
+}
+html[data-style='gigapet'] .sheet { border-bottom: 0; box-shadow: 0 -6px 0 #2a0f4a; }
+html[data-style='gigapet'] .card h2,
+html[data-style='gigapet'] .card h3,
+html[data-style='gigapet'] .stat-num,
+html[data-style='gigapet'] .sheet h2,
+html[data-style='gigapet'] .modal-card h2 {
+  text-shadow: 2px 2px 0 rgba(28, 36, 20, 0.22); /* LCD pixel ghosting */
+}
+/* header sits on the purple shell */
+html[data-style='gigapet'] .greeting,
+html[data-style='gigapet'] .footer-note,
+html[data-style='gigapet'] .sync-status { color: #f1e6ff; }
+html[data-style='gigapet'] h1 {
+  background: none;
+  -webkit-text-fill-color: #ffd23a;
+  color: #ffd23a;
+  text-shadow: 3px 3px 0 #2a0f4a;
+}
+html[data-style='gigapet'] .version { background: #2a0f4a; -webkit-text-fill-color: #ffd23a; color: #ffd23a; }
+html[data-style='gigapet'] .logo-icon { border: 3px solid #2a0f4a; box-shadow: 4px 4px 0 #2a0f4a; }
+/* chunky lime device buttons */
+html[data-style='gigapet'] .btn.primary {
+  background: radial-gradient(circle at 35% 30%, #8ae86a, #3fa82a 70%);
+  color: #0f1a08;
+  border: 3px solid #1f5a12;
+  box-shadow: 0 4px 0 #1f5a12;
+}
+html[data-style='gigapet'] .btn.primary:active { transform: translateY(3px); box-shadow: 0 1px 0 #1f5a12; }
+html[data-style='gigapet'] .quick .btn,
+html[data-style='gigapet'] .btn.ghost,
+html[data-style='gigapet'] .goal-pill {
+  border: 2px solid rgba(42, 15, 74, 0.55);
+  box-shadow: 3px 3px 0 rgba(42, 15, 74, 0.55);
+}
+html[data-style='gigapet'] .link-btn { color: #2a7a16; }
+
 /* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */
 html[data-style='mono'] .app,
 html[data-style='mono'] .fx,
