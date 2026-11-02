@@ -642,6 +642,7 @@ async function doSpin(setId) {
   await wait(fx.reducedMotion() ? 0 : 1000);
   closeSheet();
   await wait(260);
+  sheet.classList.remove('is-spinning');
   spinning = false;
 
   const set = Gumballs.setById(t.set);
@@ -1435,6 +1436,7 @@ function popCell(key) {
 
 function openSheet(html) {
   const sheet = $('#sheet');
+  sheet.classList.remove('is-spinning'); // never carry the faded spin look into a fresh sheet
   sheet.innerHTML = `<div class="sheet-handle"></div>${html}`;
   sheetGen++;
   sheet.hidden = false;
