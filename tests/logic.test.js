@@ -256,7 +256,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 35);
+  assert.equal(G.GUMBALLS.length, 54);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -269,4 +269,14 @@ test('Broadway magnets 2024 collection (Sunset Blvd. moved here, id unchanged)',
   assert.equal(G.GUMBALLS.find((g) => g.id === 'bway25-sunsetblvd').set, 'broadway-2024');
   assert.deepEqual(G.revealedSets(['bway25-sunsetblvd']).map((s) => s.id), ['broadway-2024']);
   assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'bway24-kimberlyakimbo').confetti.length, 6);
+});
+
+test('Treat yourself collection, with Chip City marked RIP', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('treats', []), { owned: 0, total: 19 });
+  const chip = G.GUMBALL_THEMES.find((t) => t.id === 'treat-chipcity');
+  assert.equal(chip.rip, true);
+  assert.equal(G.GUMBALL_THEMES.filter((t) => t.rip).length, 1);
+  const emojis = G.GUMBALLS.filter((g) => g.set === 'treats').map((g) => g.emoji);
+  assert.equal(new Set(emojis).size, emojis.length, 'every spot has its own gumball emoji');
 });

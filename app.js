@@ -534,9 +534,10 @@ async function doSpin(setId) {
   const set = Gumballs.setById(t.set);
   await showModal({
     emoji: '',
-    title: /[!?]$/.test(t.revealName) ? t.revealName : `${t.revealName}!`,
+    title: t.rip ? `${t.name} 🕯️` : /[!?]$/.test(t.revealName) ? t.revealName : `${t.revealName}!`,
     html: `
-      <div class="reveal-ball" style="background:${t.ball}">${t.emoji}</div>
+      <div class="reveal-ball ${t.rip ? 'rip' : ''}" style="background:${t.ball}">${t.emoji}</div>
+      ${t.rip ? '<p class="rip-line">Rest in peace</p>' : ''}
       ${newSet ? `<p class="new-set">New collection discovered: <b>${set.emoji} ${set.name}</b>!</p>` : ''}
       <p>${t.pitch}</p>
       <div class="reveal-swatches">${t.confetti
@@ -549,6 +550,10 @@ async function doSpin(setId) {
       </div>`,
     cta: null,
     fx: () => {
+      if (t.rip) {
+        fx.emojiRain(['🍪', '🕯️', '🍪', '🤍'], 14); // a quiet moment instead of a party
+        return;
+      }
       fx.confetti({ count: 140, colors: t.confetti, emojis: t.confettiEmoji });
       fx.vibrate([40, 30, 80]);
     },
@@ -562,7 +567,7 @@ function collectionHtml(current) {
   const owned = ownedIds();
   const sets = Gumballs.revealedSets(owned);
   const tile = (t) =>
-    `<button class="ball-tile ${current.id === t.id ? 'on' : ''}" data-theme-pick="${t.id}" type="button"><span class="ball" style="background:${t.ball}">${t.emoji}</span><span class="nm">${esc(t.name)}</span></button>`;
+    `<button class="ball-tile ${current.id === t.id ? 'on' : ''}" data-theme-pick="${t.id}" type="button"><span class="ball" style="background:${t.ball}">${t.emoji}</span><span class="nm">${esc(t.name)}${t.rip ? ' 🕯️' : ''}</span>${t.rip ? '<span class="rip-tag">RIP</span>' : ''}</button>`;
   const locked = '<div class="ball-tile locked"><span class="ball">?</span><span class="nm">???</span></div>';
   const body = sets.length
     ? sets

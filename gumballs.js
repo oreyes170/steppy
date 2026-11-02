@@ -13,6 +13,8 @@
 //   pitch      one sentence describing it (shown when she wins it)
 //   motion     optional: 'fall' makes the background emoji drift down instead of float
 //   confetti   optional: exact confetti colours (otherwise made from the theme colours)
+//   ball       optional: gumball colour (otherwise the main colour)
+//   rip        optional: true for a place that's closed. Winning it gets a quiet candle-lit moment
 //   colors.blend  optional: second colour for the title/button gradient, when blending
 //                 primary into accent would go muddy (e.g. red into green)
 // Everything else (cards, borders, buttons, status colours, the header icon tint)
@@ -28,6 +30,7 @@ export const SETS = [
   { id: 'broadway-2024', name: 'Broadway magnets · 2024', emoji: '🧲' },
   { id: 'broadway-2025', name: 'Broadway magnets · 2025', emoji: '🧲' },
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
+  { id: 'treats', name: 'Treat yourself', emoji: '🍟' },
 ];
 
 export const GUMBALLS = [
@@ -249,6 +252,127 @@ export const GUMBALLS = [
     emojis: ['🎆', '✨', '🌉', '⭐', '🍧'], cheer: 'Lighting up the sky! 🎆',
     pitch: 'Cream paper, brushy red and royal blue, with fireworks over the bridge. (City Center)',
   },
+  // ── 🍟 Treat yourself: spots we go to a lot (and ones she loves) ──
+  {
+    id: 'treat-dairyqueen', set: 'treats', name: 'Dairy Queen', emoji: '🍦',
+    colors: { bg: '#fff3f2', primary: '#e2231a', accent: '#1e5aa8', ink: '#2a1a1a', blend: '#ff6b5e' },
+    emojis: ['🍦', '🍒', '🍫'], cheer: 'Blizzard of steps! 🍦',
+    pitch: 'Cherry red and ice-cream-truck blue.',
+  },
+  {
+    id: 'treat-traderjoes', set: 'treats', name: 'Trader Joe’s', emoji: '🌺',
+    colors: { bg: '#f7efe3', primary: '#c8202f', accent: '#1f3a68', ink: '#2b1e14', blend: '#e85a3a' },
+    emojis: ['🛒', '🌺', '🥟', '🌻'], cheer: 'Ahoy, big goal! ⚓',
+    pitch: 'Red, nautical navy and kraft paper, with flowers and dumplings.',
+  },
+  {
+    id: 'treat-tacobell', set: 'treats', name: 'Taco Bell', emoji: '🌮',
+    colors: { bg: '#f5ecfa', primary: '#702082', accent: '#a77bca', ink: '#2a0f35', blend: '#c04fd0' },
+    emojis: ['🌮', '🔔', '🌯', '🔥'], cheer: 'Taco ’bout a big day! 🌮',
+    pitch: 'Late-night purple and magenta. Tacos, bells and fire sauce.',
+  },
+  {
+    id: 'treat-mcdonalds', set: 'treats', name: 'McDonald’s', emoji: '🍟',
+    colors: { bg: '#fff7e0', primary: '#da291c', accent: '#ffc72c', ink: '#27251f' },
+    emojis: ['🍟', '🍔', '🥤'], cheer: 'Fry-day feeling! 🍟',
+    pitch: 'Ketchup red and golden-fry yellow.',
+  },
+  {
+    id: 'treat-chipcity', set: 'treats', name: 'Chip City', emoji: '🍪', rip: true, ball: '#8fcbed',
+    colors: { bg: '#cfe9f7', primary: '#1c1c1c', accent: '#f4ead0', ink: '#1c1c1c', blend: '#4a4a4a' },
+    emojis: ['🍪', '🕯️', '🥛'], cheer: 'Gone but not forgotten 🍪',
+    pitch: 'Sky blue and cookie-dough cream. Gone but never forgotten.',
+  },
+  {
+    id: 'treat-shakeshack', set: 'treats', name: 'Shake Shack', emoji: '🍔',
+    colors: { bg: '#eef6ea', primary: '#1f8c3b', accent: '#1c1c1c', ink: '#1c2a1c', blend: '#6cc04a' },
+    emojis: ['🍔', '🥤', '🌭'], cheer: 'Shake it! 🥤',
+    pitch: 'Shack green and black, with burgers and shakes.',
+  },
+  {
+    id: 'treat-fiveguys', set: 'treats', name: 'Five Guys', emoji: '🥜',
+    colors: { bg: '#fbf5f0', primary: '#d22030', accent: '#ffffff', ink: '#2a1414', blend: '#ff5a5a' },
+    confetti: ['#d22030', '#ffffff', '#d22030', '#f2f2f2', '#b51a28'],
+    emojis: ['🍔', '🥜', '🍟'], cheer: 'Five stars! 🥜',
+    pitch: 'Red-and-white checkerboard. Bring the peanuts.',
+  },
+  {
+    id: 'treat-popeyes', set: 'treats', name: 'Popeyes', emoji: '🍗',
+    colors: { bg: '#fff2e8', primary: '#f15a22', accent: '#c8102e', ink: '#3a1a0a', blend: '#ff9a3c' },
+    emojis: ['🍗', '🌶️', '🧈'], cheer: 'Spicy! 🌶️',
+    pitch: 'Fiery orange and red, with chicken, spice and biscuits.',
+  },
+  {
+    id: 'treat-aldi', set: 'treats', name: 'Aldi', emoji: '🪙',
+    colors: { bg: '#eef1fb', primary: '#00005f', accent: '#f37021', ink: '#0f1440', blend: '#2f3fbf' },
+    confetti: ['#00005f', '#f37021', '#fcc016', '#2f9fd9', '#d6271b'],
+    emojis: ['🛒', '🪙', '🥨'], cheer: 'Quarter well spent! 🪙',
+    pitch: 'Navy, orange and yellow. Don’t forget the cart quarter.',
+  },
+  {
+    id: 'treat-misterdips', set: 'treats', name: 'Mister Dips', emoji: '😛', ball: '#f6d54a',
+    colors: { bg: '#fbe47a', primary: '#1a1a1a', accent: '#ffffff', ink: '#1a1a1a', blend: '#4a4a4a' },
+    confetti: ['#1a1a1a', '#ffffff', '#f6d54a', '#7a4a2a', '#ffffff'],
+    emojis: ['🍦', '😛', '🍔', '🍫'], cheer: 'Dip dip hooray! 🍦',
+    pitch: 'Sunny yellow, black and white, with a cheeky soft-serve grin.',
+  },
+  {
+    id: 'treat-dominos', set: 'treats', name: 'Domino’s', emoji: '🍕',
+    colors: { bg: '#eef5fa', primary: '#006491', accent: '#e31837', ink: '#10283a', blend: '#2b8fc7' },
+    emojis: ['🍕', '🎲', '📦'], cheer: 'Delivered! 🍕',
+    pitch: 'Domino blue and red. Pizza’s here!',
+  },
+  {
+    id: 'treat-olivegarden', set: 'treats', name: 'Olive Garden', emoji: '🫒',
+    colors: { bg: '#f5f1e4', primary: '#5c7a29', accent: '#7a1f2b', ink: '#2e2a18', blend: '#8fa848' },
+    emojis: ['🫒', '🍝', '🥖', '🍷'], cheer: 'Breadstick-tacular! 🥖',
+    pitch: 'Olive green, burgundy and warm tan. Unlimited breadsticks energy.',
+  },
+  {
+    id: 'treat-juniors', set: 'treats', name: 'Junior’s', emoji: '🍰',
+    colors: { bg: '#fff3e6', primary: '#e2531b', accent: '#c8102e', ink: '#3a1a0a', blend: '#ff8a3a' },
+    emojis: ['🍰', '🍒', '🌃'], cheer: 'Worth every bite! 🍰',
+    pitch: 'Neon orange and red. Cheesecake under the Brooklyn lights.',
+  },
+  {
+    id: 'treat-littlecupcake', set: 'treats', name: 'Little Cupcake Bakeshop', emoji: '🧁',
+    colors: { bg: '#fff0f5', primary: '#ef5e9e', accent: '#1a1a1a', ink: '#1a1a1a', blend: '#ff9cc5' },
+    confetti: ['#ef5e9e', '#ffffff', '#1a1a1a', '#ffb3d1', '#ffffff'],
+    emojis: ['🧁', '🎂', '🍰'], cheer: 'Sweet! 🧁',
+    pitch: 'Pink, white and black, with cupcakes and cake.',
+  },
+  {
+    id: 'treat-wholefoods', set: 'treats', name: 'Whole Foods', emoji: '🥑',
+    colors: { bg: '#eef5ef', primary: '#00674b', accent: '#c9a978', ink: '#1a2e22', blend: '#3a9a6e' },
+    emojis: ['🥑', '🥬', '🌿'], cheer: 'Fresh! 🥑',
+    pitch: 'Deep green and kraft tan, with avocados and greens.',
+  },
+  {
+    id: 'treat-target', set: 'treats', name: 'Target', emoji: '🎯',
+    colors: { bg: '#ffffff', primary: '#cc0000', accent: '#ffffff', ink: '#2a1010', blend: '#ff4d4d' },
+    confetti: ['#cc0000', '#ffffff', '#cc0000', '#ff6b6b', '#ffffff'],
+    emojis: ['🎯', '🛒', '🐶'], cheer: 'Bullseye! 🎯',
+    pitch: 'Bright red and crisp white. You came in for one thing…',
+  },
+  {
+    id: 'treat-cvs', set: 'treats', name: 'CVS', emoji: '🧾',
+    colors: { bg: '#fbf6ea', primary: '#cc0000', accent: '#6b6b6b', ink: '#2a2a2a', blend: '#e84a4a' },
+    emojis: ['🧾', '💊', '🧴'], cheer: 'A streak longer than the receipt! 🧾',
+    pitch: 'Red and receipt-paper cream. Very long receipts included.',
+  },
+  {
+    id: 'treat-dunkin', set: 'treats', name: 'Dunkin’', emoji: '🍩',
+    colors: { bg: '#fff3ea', primary: '#ff671f', accent: '#da1884', ink: '#3a1a10' },
+    emojis: ['🍩', '☕', '🧁'], cheer: 'Donut stop now! 🍩',
+    pitch: 'Orange and hot pink, with donuts and iced coffee.',
+  },
+  {
+    id: 'treat-7eleven', set: 'treats', name: '7-Eleven', emoji: '🥤',
+    colors: { bg: '#eef7f2', primary: '#008163', accent: '#f47b20', ink: '#10281e', blend: '#2fb07f' },
+    confetti: ['#008163', '#f47b20', '#ee2526', '#ffffff'],
+    emojis: ['🥤', '🌭', '🍕'], cheer: 'Slurp-tacular! 🥤',
+    pitch: 'Green, orange and red stripes. Grab a giant slushie.',
+  },
 ];
 
 // ---------- colour helpers ----------
@@ -326,7 +450,7 @@ export function buildTheme(g) {
     dark: !!g.dark,
     vars: cssVars(g),
     themeColor: c.bg,
-    ball: c.primary,
+    ball: g.ball || c.primary,
     iconTint: g.dark ? mix(c.primary, c.bg, 0.55) : mix(c.primary, '#000000', 0.25),
     confetti: g.confetti || [c.primary, c.accent, mix(c.primary, '#ffffff', 0.45), mix(c.accent, '#ffffff', 0.4), mix(c.primary, c.ink, 0.4)],
     confettiEmoji: g.emojis,
@@ -335,6 +459,7 @@ export function buildTheme(g) {
     greetingEmoji: g.emoji,
     bigSub: g.cheer,
     pitch: g.pitch,
+    rip: !!g.rip,
   };
 }
 
