@@ -40,6 +40,56 @@
   }
 }
 
+/* Classic looks (Settings → Theme → Classic): force light, dark, or true black for OLED. */
+html[data-mode='light'] {
+  --bg: #fff6f3;
+  --bg-2: #ffe9ef;
+  --card: #ffffff;
+  --text: #3a2b35;
+  --muted: #8a7682;
+  --line: #f1dde3;
+  --regular-soft: #d9f6f3;
+  --big-soft: #fff0c7;
+  --skip-soft: #ede7ff;
+  --missed: #c9bcc4;
+  --missed-soft: #f3eef1;
+  --shadow: 0 6px 22px rgba(255, 111, 145, 0.12), 0 1px 3px rgba(58, 43, 53, 0.06);
+  color-scheme: light;
+}
+html[data-mode='dark'] {
+  --bg: #1d1520;
+  --bg-2: #2a1d2b;
+  --card: #2b2030;
+  --text: #fbeff4;
+  --muted: #b49fae;
+  --line: #3f3044;
+  --regular-soft: #1f3d3b;
+  --big-soft: #43361a;
+  --skip-soft: #322a4a;
+  --missed-soft: #352b37;
+  --missed: #6d5d68;
+  --shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+html[data-mode='black'] {
+  --bg: #000000;
+  --bg-2: #141014;
+  --card: #0d0b0d;
+  --text: #f6eef3;
+  --muted: #a8949f;
+  --line: #2a2328;
+  --regular-soft: #102a28;
+  --big-soft: #2e2510;
+  --skip-soft: #1f1a33;
+  --missed-soft: #1c181b;
+  --missed: #5a4e56;
+  --shadow: 0 0 0 1px #1f1a1e;
+  color-scheme: dark;
+}
+html[data-mode='black'] body {
+  background: #000000;
+}
+
 * {
   box-sizing: border-box;
   /* scrolling only: no double-tap or pinch zoom (taps also respond instantly) */
@@ -1175,6 +1225,32 @@ html[data-style='kindle'] .btn.primary {
   box-shadow: 3px 3px 0 rgba(31, 29, 26, 0.35);
 }
 html[data-style='kindle'] .eyebrow { letter-spacing: 0.12em; }
+
+/* Classic look picker */
+.seg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px;
+  background: var(--bg-2);
+  border-radius: 14px;
+}
+.seg-btn {
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 2px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+.seg-btn.on {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
 
 /* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */
 html[data-style='mono'] .app,

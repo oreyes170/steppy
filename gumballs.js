@@ -109,7 +109,7 @@ export const GUMBALLS = [
     id: 'ts-ttpd', head: 'typewriter', style: 'mono', set: 'taylor', name: 'The Tortured Poets Department', revealName: 'The Tortured Poets Department era', emoji: '✒️',
     colors: { bg: '#f6f6f4', primary: '#1a1a1a', accent: '#8a8a8a', ink: '#111111', blend: '#4a4a4a' },
     confetti: ['#111111', '#ffffff', '#8a8a8a', '#d0d0d0', '#4a4a4a'],
-    emojis: ['🤍', '✒️', '📜', '🕊️'], cheer: 'Poetic! ✒️',
+    emojis: ['🤍', '✒️', '⌨️', '📜', '🕊️'], cheer: 'Poetic! ✒️',
     pitch: 'Fully black and white, like ink on a typed page.',
   },
   {

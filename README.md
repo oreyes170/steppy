@@ -20,6 +20,7 @@ A cheerful, no-pressure step goal tracker, like StepBet without the money.
 - **Live weather** on the Today card from [Open-Meteo](https://open-meteo.com) (free, no key): temperature, conditions, high/low, and a walking tip (rain coming, cold, great weather). Cached on the phone and refreshed every 30 minutes.
 - **Location** (Settings → 📍 Location) for weather and sunrise: New York (default), North Conway, NH, or Use my location.
 - **Sunrise & sunset** on the Today card, with daylight left, worked out on the phone (no internet). It's for New York by default; Settings → "Use my location" for exact local times.
+- **Classic looks** (Settings → Theme, when Classic is on): Auto (follows the phone), Light, Dark, or True Black for OLED screens.
 - Works offline, can be installed to the home screen, supports dark mode, and has backup export/import (Settings ⚙️).
 
 All data stays on the device (`localStorage`). There's no account and no server.

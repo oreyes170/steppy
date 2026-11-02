@@ -57,8 +57,37 @@ const Cheat = {
 };
 
 /** Themes she owns (all of them while the cheat is on). */
-const ownedIds = () => (Cheat.on() ? Gumballs.GUMBALLS.map((g) => g.id) : state.meta.gumballs.owned);
-const machineUnlocked = () => Cheat.on() || state.meta.gumballs.unlocked;
+// Test-mode cheat: save the goals as 1985 / 3289680 for an empty collection and 100 tickets to
+// spin with. Like the cheat above it lives only on this device, never touches her real collection
+// and is never backed up. Saving any other goals turns it off.
+const TEST = { regularGoal: 1985, bigGoal: 3289680 };
+const TEST_KEY = 'steppy:testmode';
+const TestMode = {
+  get() {
+    try {
+      return JSON.parse(localStorage.getItem(TEST_KEY) || 'null');
+    } catch {
+      return null;
+    }
+  },
+  on() {
+    return !!this.get();
+  },
+  put(v) {
+    try {
+      if (v) localStorage.setItem(TEST_KEY, JSON.stringify(v));
+      else localStorage.removeItem(TEST_KEY);
+    } catch {
+      /* ignore */
+    }
+  },
+};
+
+const ownedIds = () =>
+  Cheat.on() ? Gumballs.GUMBALLS.map((g) => g.id) : TestMode.on() ? TestMode.get().owned : state.meta.gumballs.owned;
+const machineUnlocked = () => Cheat.on() || TestMode.on() || state.meta.gumballs.unlocked;
+/** Tickets for the Theme Machine: real skip tickets, or test-mode tickets. */
+const machineTickets = () => (TestMode.on() ? TestMode.get().tickets : snapshot().skips.available);
 
 const defaultState = () => ({
   version: 1,
@@ -68,6 +97,7 @@ const defaultState = () => ({
     bigGoal: 10000,
     onboarded: false,
     theme: 'classic',
+    classicMode: 'auto', // Classic look: auto (follow the phone), light, dark or black (true black for OLED)
     // sunrise/sunset on the Today card: New York unless she taps "Use my location"
     sun: { show: true, mode: 'nyc', lat: 40.71, lon: -74.01 }, // also the weather location
     weather: { show: true },
@@ -106,7 +136,7 @@ function normalize(s) {
   return migrate({
     ...d,
     ...s,
-    settings: { ...d.settings, ...(s.settings || {}), sun: { ...d.settings.sun, ...(s.settings?.sun || {}) }, weather: { ...d.settings.weather, ...(s.settings?.weather || {}) } },
+    settings: { ...d.settings, ...(s.settings || {}), sun: { ...d.settings.sun, ...(s.settings?.sun || {}) }, classicMode: s.settings?.classicMode || 'auto', weather: { ...d.settings.weather, ...(s.settings?.weather || {}) } },
     meta: {
       ...d.meta,
       ...(s.meta || {}),
@@ -352,6 +382,9 @@ function applyTheme() {
   else delete root.dataset.style;
   if (t.head) root.dataset.head = t.head; // a heading font (see styles.css)
   else delete root.dataset.head;
+  const mode = t.id === 'classic' ? state.settings.classicMode || 'auto' : 'auto';
+  if (mode !== 'auto') root.dataset.mode = mode; // Classic: light / dark / black
+  else delete root.dataset.mode;
   // Gumball themes set their colours directly; other themes use the CSS in styles.css.
   for (const k of appliedVars) root.style.removeProperty(`--${k}`);
   appliedVars = [];
@@ -360,7 +393,7 @@ function applyTheme() {
     appliedVars = Object.keys(t.vars);
     root.style.colorScheme = t.dark ? 'dark' : 'light';
   } else root.style.removeProperty('color-scheme');
-  $('#theme-color')?.setAttribute('content', t.themeColor);
+  $('#theme-color')?.setAttribute('content', mode === 'black' ? '#000000' : mode === 'dark' ? '#1d1520' : t.themeColor);
   const logo = $('#logo-icon');
   if (t.iconTint) {
     tintedIcon(t.iconTint).then((url) => {
@@ -404,11 +437,24 @@ function renderAmbient(t) {
 
 /** The theme she's wearing. With the cheat on, holiday themes work any day. */
 function currentTheme(date) {
+  if (TestMode.on()) {
+    const pick = Themes.ALL_THEMES.find((t) => t.id === (TestMode.get().theme || state.settings.theme));
+    if (pick && (pick.gumball ? ownedIds().includes(pick.id) : true)) return pick;
+  }
   if (Cheat.on()) {
     const pick = Themes.ALL_THEMES.find((t) => t.id === (Cheat.theme() || state.settings.theme));
     if (pick) return pick;
   }
   return Themes.activeTheme(state.settings.theme, date, state.meta.themeBeforeHoliday, state.meta.unlockedThemes);
+}
+
+function classicModeHtml() {
+  const mode = state.settings.classicMode || 'auto';
+  const opt = (m, label) => `<button class="seg-btn ${mode === m ? 'on' : ''}" data-classic-mode="${m}" type="button">${label}</button>`;
+  return `
+    <div class="seg" role="group" aria-label="Classic look">
+      ${opt('auto', '📱 Auto')}${opt('light', '☀️ Light')}${opt('dark', '🌙 Dark')}${opt('black', '⚫ True Black')}
+    </div>`;
 }
 
 function themePickerHtml() {
@@ -422,6 +468,7 @@ function themePickerHtml() {
     <div class="theme-picker">
       ${(Cheat.on() ? Themes.THEMES : Themes.pickable(now, state.meta.unlockedThemes)).map((t) => chip(t.id, t.emoji, t.name, '')).join('')}
     </div>
+    ${current.id === 'classic' ? classicModeHtml() : ''}
     ${collectionHtml(current)}`;
 }
 
@@ -431,7 +478,7 @@ function themePickerHtml() {
 
 function checkMachineUnlock() {
   const gb = state.meta.gumballs;
-  if (gb.unlocked || Cheat.on()) return;
+  if (gb.unlocked || Cheat.on() || TestMode.on()) return;
   const { skips } = snapshot();
   // Unlock on her next earned ticket. Remember where "next" starts the first time we look,
   // so a ticket she already had doesn't count.
@@ -448,7 +495,7 @@ function checkMachineUnlock() {
 function renderMachineCard() {
   const el = $('#machine-card');
   const gb = state.meta.gumballs;
-  if (!gb.unlocked || gb.introSeen || Cheat.on()) {
+  if (!gb.unlocked || gb.introSeen || Cheat.on() || TestMode.on()) {
     el.innerHTML = '';
     return;
   }
@@ -503,12 +550,12 @@ function machineSvg() {
 function openMachine() {
   const gb = state.meta.gumballs;
   if (!machineUnlocked()) return;
-  if (!gb.introSeen && !Cheat.on()) {
+  if (!gb.introSeen && !Cheat.on() && !TestMode.on()) {
     gb.introSeen = true;
     save({ dirty: false });
     renderMachineCard();
   }
-  const { available } = snapshot().skips;
+  const available = machineTickets();
   const owned = ownedIds();
   const left = Gumballs.pool(owned).length;
   // Picking a collection (2 tickets) only appears once she's discovered more than one.
@@ -528,7 +575,7 @@ function openMachine() {
     <div class="center">
       <p class="eyebrow">Theme Machine</p>
       <h2>${left ? 'Spin for a new theme! 🍬' : 'You collected them all! 🏆'}</h2>
-      <div class="ticket-pill">🎟️ ${available} skip ticket${available === 1 ? '' : 's'}</div>
+      <div class="ticket-pill">${TestMode.on() ? '🧪 ' : '🎟️ '}${available} ${TestMode.on() ? 'test ' : 'skip '}ticket${available === 1 ? '' : 's'}</div>
     </div>
     <div class="machine-wrap" id="machine-wrap">${machineSvg()}</div>
     ${left ? spinBtn(Gumballs.SPIN_COST, 'Turn the knob') : '<p class="center muted">New gumballs get added over time. Check back soon! ✨</p>'}
@@ -548,16 +595,22 @@ async function doSpin(setId) {
   if (spinning) return;
   const gb = state.meta.gumballs;
   const cost = setId ? Gumballs.SET_SPIN_COST : Gumballs.SPIN_COST;
-  if (snapshot().skips.available < cost) return toast('Not enough skip tickets yet. Keep stepping! 👟');
+  if (machineTickets() < cost) return toast('Not enough skip tickets yet. Keep stepping! 👟');
   if (Cheat.on()) return toast('Cheat mode is on, so you already have everything! 🔓');
-  const id = Gumballs.spin(gb.owned, setId);
+  const owned = ownedIds();
+  const id = Gumballs.spin(owned, setId);
   if (!id) return toast('Nothing left in there, you’ve got them all! 🏆');
   const setOf = Gumballs.GUMBALLS.find((g) => g.id === id).set;
-  const newSet = !Gumballs.revealedSets(gb.owned).some((st) => st.id === setOf);
+  const newSet = !Gumballs.revealedSets(owned).some((st) => st.id === setOf);
   spinning = true;
-  gb.owned = [...gb.owned, id];
-  gb.spent += cost;
-  save();
+  if (TestMode.on()) {
+    const tm = TestMode.get();
+    TestMode.put({ ...tm, owned: [...tm.owned, id], tickets: tm.tickets - cost }); // device only
+  } else {
+    gb.owned = [...gb.owned, id];
+    gb.spent += cost;
+    save();
+  }
   renderStats();
   const t = Themes.byId(id);
 
@@ -749,6 +802,10 @@ async function lightningFlash() {
 
 /** Pick a theme. Remembers her non-holiday pick so an expired holiday can hand it back. */
 function chooseTheme(id) {
+  if (TestMode.on()) {
+    TestMode.put({ ...TestMode.get(), theme: id }); // test picks never touch her real theme
+    return render();
+  }
   if (Cheat.on()) {
     Cheat.setTheme(id); // cheat-mode picks never touch her real theme
     return render();
@@ -1024,13 +1081,17 @@ function renderStats() {
     </div>
     <div class="stat card skips ${machineUnlocked() ? 'tappable' : ''}" id="stat-skips" ${machineUnlocked() ? 'data-open-machine role="button" tabindex="0" aria-label="Open the Theme Machine"' : ''}>
       ${machineUnlocked() ? '<span class="stat-badge" aria-hidden="true">🍬</span>' : ''}
-      <div class="stat-emoji">🎟️</div>
-      <div class="stat-num">${skips.available}</div>
-      <div class="stat-label">skip day${skips.available === 1 ? '' : 's'}</div>
-      <div class="meter" title="${skips.progress}/${skips.pointsPerSkip} points to your next skip day">
+      <div class="stat-emoji">${TestMode.on() ? '🧪' : '🎟️'}</div>
+      <div class="stat-num">${TestMode.on() ? machineTickets() : skips.available}</div>
+      <div class="stat-label">${TestMode.on() ? 'test tickets' : `skip day${skips.available === 1 ? '' : 's'}`}</div>
+      ${
+        TestMode.on()
+          ? '<div class="stat-hint">test mode 🧪</div>'
+          : `<div class="meter" title="${skips.progress}/${skips.pointsPerSkip} points to your next skip day">
         <i style="width:${(skips.progress / skips.pointsPerSkip) * 100}%"></i>
       </div>
-      <div class="stat-hint">${skips.pointsPerSkip - skips.progress} pts to next</div>
+      <div class="stat-hint">${skips.pointsPerSkip - skips.progress} pts to next</div>`
+      }
     </div>`;
 }
 
@@ -1487,7 +1548,8 @@ function openDaySheet(key) {
 function openSettings() {
   const { name } = state.settings;
   const cheat = Cheat.on();
-  const { regularGoal, bigGoal } = cheat ? CHEAT : state.settings;
+  const testing = TestMode.on();
+  const { regularGoal, bigGoal } = cheat ? CHEAT : testing ? TEST : state.settings;
   openSheet(`
     <h2>Settings</h2>
     <form class="settings-form" data-settings-form>
@@ -1495,6 +1557,7 @@ function openSettings() {
       <label>👟 Daily goal (steps)<input name="regularGoal" type="number" inputmode="numeric" min="1" step="1" value="${regularGoal}" required /></label>
       <label>🌟 Big goal (steps)<input name="bigGoal" type="number" inputmode="numeric" min="1" step="1" value="${bigGoal}" required /></label>
       ${cheat ? '<p class="small cheat-note">🔓 Cheat mode is on, on this phone only. Save any other goals to turn it off.</p>' : ''}
+      ${testing ? '<p class="small cheat-note">🧪 Test mode is on, on this phone only: a separate collection and test tickets. Save these goals again for a fresh start, or any other goals to turn it off.</p>' : ''}
       <button class="btn primary" type="submit">Save</button>
     </form>
     <hr />
@@ -1551,11 +1614,31 @@ function unlockEverything() {
   });
 }
 
+function startTestMode() {
+  Cheat.set(false);
+  TestMode.put({ owned: [], tickets: 100, theme: null }); // a fresh start every time
+  closeSheet();
+  render();
+  fx.vibrate([30, 40, 30]);
+  showModal({
+    emoji: '🧪',
+    title: 'Test mode on!',
+    body: 'An empty gumball collection and <b>100 test tickets</b>, on this phone only. Her real collection and tickets aren’t touched, and none of this is backed up. Save any other goals to turn it off.',
+    cta: 'Let’s spin! 🍬',
+  });
+}
+
 function saveSettings(form) {
   const data = new FormData(form);
   const regularGoal = Math.round(Number(data.get('regularGoal')));
   const bigGoal = Math.round(Number(data.get('bigGoal')));
+  if (regularGoal === TEST.regularGoal && bigGoal === TEST.bigGoal) {
+    state.settings.name = String(data.get('name') || '').trim();
+    save();
+    return startTestMode();
+  }
   if (regularGoal === CHEAT.regularGoal && bigGoal === CHEAT.bigGoal) {
+    TestMode.put(null);
     if (Cheat.on()) {
       state.settings.name = String(data.get('name') || '').trim();
       save();
@@ -1566,8 +1649,9 @@ function saveSettings(form) {
   }
   if (!(regularGoal >= 1)) return toast('Enter a daily goal 👟');
   if (!(bigGoal > regularGoal)) return toast('Big goal should be bigger than the daily goal 🙂');
-  const wasCheating = Cheat.on();
-  if (wasCheating) Cheat.set(false);
+  const wasCheating = Cheat.on() || TestMode.on();
+  if (Cheat.on()) Cheat.set(false);
+  TestMode.put(null);
   const changed = regularGoal !== state.settings.regularGoal || bigGoal !== state.settings.bigGoal;
   state.settings.name = String(data.get('name') || '').trim();
   state.settings.regularGoal = regularGoal;
@@ -1579,7 +1663,7 @@ function saveSettings(form) {
   save();
   closeSheet();
   render();
-  toast(wasCheating ? 'Cheat mode off. Everything’s back to normal ✅' : 'Saved! ✅');
+  toast(wasCheating ? 'Cheat/test mode off. Everything’s back to normal ✅' : 'Saved! ✅');
 }
 
 async function exportBackup() {
@@ -1868,6 +1952,12 @@ document.addEventListener('click', (e) => {
     render();
     toast('No problem — I’ll check back in a week 💕');
     return;
+  }
+  if (t.dataset.classicMode) {
+    state.settings.classicMode = t.dataset.classicMode;
+    save();
+    render();
+    return openSettings();
   }
   if (t.dataset.sun) return setSun(t.dataset.sun);
   if (t.dataset.tryTheme) {
