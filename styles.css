@@ -75,7 +75,8 @@ p {
 .app {
   max-width: 520px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 28px);
+  /* extra top room: iOS 26 draws a soft blur just under the status bar, so keep the greeting clear of it */
+  padding: calc(env(safe-area-inset-top) + 34px) 16px calc(env(safe-area-inset-bottom) + 28px);
   display: flex;
   flex-direction: column;
   gap: 14px;
