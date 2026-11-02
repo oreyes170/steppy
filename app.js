@@ -119,6 +119,7 @@ function normalize(s) {
 
 /** One-off upgrades for data saved by older versions. */
 function migrate(s) {
+  if (s.settings.sun?.mode === 'nh') Object.assign(s.settings.sun, { lat: 44.05, lon: -71.13 });
   // v1.14: holidays are permanent once unlocked. Carry over what she's already seen.
   for (const key of s.meta.holidaysAnnounced || []) {
     const id = String(key).replace(/-\d{4}$/, '');
@@ -869,7 +870,7 @@ function sunSettingsHtml() {
     <p class="muted small">For the weather and sunrise & sunset on the Today card. Now: <b>${locationName()}</b>.</p>
     <div class="loc-row">
       ${place('nyc', '🗽 New York')}
-      ${place('nh', '🌲 New Hampshire')}
+      ${place('nh', '🌲 North Conway')}
       ${place('here', '📍 Use my location')}
     </div>
     <div class="row toggle-row">

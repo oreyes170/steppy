@@ -3,7 +3,7 @@
 
 export const PLACES = {
   nyc: { name: 'New York', lat: 40.71, lon: -74.01 },
-  nh: { name: 'New Hampshire', lat: 43.21, lon: -71.54 }, // Concord, NH
+  nh: { name: 'North Conway', lat: 44.05, lon: -71.13 }, // North Conway, NH
 };
 
 /** WMO weather codes → emoji + words. */

@@ -18,7 +18,7 @@ A cheerful, no-pressure step goal tracker, like StepBet without the money.
 - **Celebrations**: confetti for goal days. Big goal days get side cannons, emoji rain and a "BIG GOAL!" banner. Earned skip days get a flying ticket, and streak milestones get fireworks. Phones that support it also vibrate. All motion respects *Reduce Motion*.
 - **In-progress days**: entering today's steps below the goal keeps the day open (🚶 In progress) with a progress bar and a pep talk: steps to go, about how many minutes of walking that is (~100 steps/min), and a nudge based on time left until midnight. Yesterday's unfinished day gets a catch-up prompt; older ones become rest days.
 - **Live weather** on the Today card from [Open-Meteo](https://open-meteo.com) (free, no key): temperature, conditions, high/low, and a walking tip (rain coming, cold, great weather). Cached on the phone and refreshed every 30 minutes.
-- **Location** (Settings → 📍 Location) for weather and sunrise: New York (default), New Hampshire (Concord), or Use my location.
+- **Location** (Settings → 📍 Location) for weather and sunrise: New York (default), North Conway, NH, or Use my location.
 - **Sunrise & sunset** on the Today card, with daylight left, worked out on the phone (no internet). It's for New York by default; Settings → "Use my location" for exact local times.
 - Works offline, can be installed to the home screen, supports dark mode, and has backup export/import (Settings ⚙️).
 
