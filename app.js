@@ -534,7 +534,7 @@ async function doSpin(setId) {
   const set = Gumballs.setById(t.set);
   await showModal({
     emoji: '',
-    title: `${t.revealName}!`,
+    title: /[!?]$/.test(t.revealName) ? t.revealName : `${t.revealName}!`,
     html: `
       <div class="reveal-ball" style="background:${t.ball}">${t.emoji}</div>
       ${newSet ? `<p class="new-set">New collection discovered: <b>${set.emoji} ${set.name}</b>!</p>` : ''}

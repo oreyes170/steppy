@@ -243,3 +243,12 @@ test('restoring a backup never loses Theme Machine progress', () => {
   assert.deepEqual(both.owned.sort(), ['ts-lover', 'ts-red']);
   assert.equal(both.unlocked, true);
 });
+
+test('Broadway magnets 2026 collection is complete and separate', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('broadway-2026', []), { owned: 0, total: 10 });
+  assert.deepEqual(G.setProgress('taylor', []), { owned: 0, total: 12 });
+  assert.deepEqual(G.revealedSets(['bway26-heathers']).map((s) => s.id), ['broadway-2026']);
+  assert.equal(G.hiddenSetsRemain(['bway26-heathers']), true); // Taylor Swift eras still a secret
+  assert.ok(G.GUMBALLS.find((g) => g.id === 'bway26-allout').emojis.includes('🐎'));
+});

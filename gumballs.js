@@ -11,6 +11,9 @@
 //   emojis     3–5 emoji for confetti, big-goal rain and background decorations
 //   cheer      short line under "BIG GOAL!"
 //   pitch      one sentence describing it (shown when she wins it)
+//   motion     optional: 'fall' makes the background emoji drift down instead of float
+//   colors.blend  optional: second colour for the title/button gradient, when blending
+//                 primary into accent would go muddy (e.g. red into green)
 // Everything else (cards, borders, buttons, status colours, the header icon tint)
 // is worked out from those colours.
 // ──────────────────────────────────────────────────────────────────────────────
@@ -19,7 +22,10 @@ export const SPIN_COST = 1; // a random theme from any collection
 export const SET_SPIN_COST = 2; // a random theme from a collection she picks
 export const UNLOCK_AT = 3; // the machine appears the first time she has this many tickets
 
-export const SETS = [{ id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' }];
+export const SETS = [
+  { id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' },
+  { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
+];
 
 export const GUMBALLS = [
   {
@@ -94,6 +100,68 @@ export const GUMBALLS = [
     emojis: ['💃', '🪩', '✨', '🧡'], cheer: 'Showstopper! 🪩',
     pitch: 'Bright orange and mint, glitter and disco balls.',
   },
+
+  // ── 🧲 Broadway magnets · 2026: shows we saw together ──
+  {
+    id: 'bway26-schmigadoon', set: 'broadway-2026', name: 'Schmigadoon!', emoji: '🧺',
+    colors: { bg: '#eef6fd', primary: '#d63a3a', accent: '#5aa846', ink: '#2b2a3a', blend: '#f08a4b' },
+    emojis: ['🧺', '🌈', '🌸', '🏡'], cheer: 'A musical miracle! 🌈',
+    pitch: 'Sky blue, red gingham and green grass. A picnic in a magical town.',
+  },
+  {
+    id: 'bway26-allout', set: 'broadway-2026', name: 'All Out', emoji: '🏆',
+    colors: { bg: '#f7e7bd', primary: '#b8862b', accent: '#3a8fb7', ink: '#3b2414', blend: '#7a4a1e' },
+    emojis: ['🏆', '🐎', '🎤', '😂', '✨'], cheer: 'Going all out! 🏆',
+    pitch: 'Mustard gold and chocolate brown, with trophies, laughs and a horse.',
+  },
+  {
+    id: 'bway26-hellskitchen', set: 'broadway-2026', name: 'Hell’s Kitchen', emoji: '🎹',
+    colors: { bg: '#fff1d6', primary: '#e2701a', accent: '#2f5fae', ink: '#3a1c08', blend: '#f2a93b' },
+    emojis: ['🎹', '🗽', '🌆', '🎶'], cheer: 'Keys to the city! 🎹',
+    pitch: 'Sunset orange and denim blue, with pianos over the New York skyline.',
+  },
+  {
+    id: 'bway26-twostrangers', set: 'broadway-2026', name: 'Two Strangers', emoji: '🎂',
+    colors: { bg: '#eaf3fb', primary: '#3d7cc9', accent: '#f2a7b8', ink: '#1e2f45' },
+    emojis: ['🎂', '📦', '🏙️', '✈️'], cheer: 'Piece of cake! 🎂',
+    pitch: 'Sky blue and cake-box pink. Carrying a cake across New York.',
+  },
+  {
+    id: 'bway26-burnout', set: 'broadway-2026', name: 'Burnout Paradise', emoji: '🏃',
+    colors: { bg: '#fff8c4', primary: '#2b5cc9', accent: '#ff5fa2', ink: '#1d2340' },
+    emojis: ['🏃', '🎈', '🎉', '💦'], cheer: 'Keep running! 🏃',
+    pitch: 'Bright yellow, graffiti blue and tutu pink, with balloons and treadmills.',
+  },
+  {
+    id: 'bway26-ohmary', set: 'broadway-2026', name: 'Oh, Mary!', emoji: '🎩',
+    colors: { bg: '#f8eab0', primary: '#c8282b', accent: '#2a2a2a', ink: '#2a1a12' },
+    emojis: ['🎩', '🍸', '🎭', '🖤'], cheer: 'Oh, Mary! 🎩',
+    pitch: 'Vintage mustard, poster red and black, with top hats and cocktails.',
+  },
+  {
+    id: 'bway26-everybrilliantthing', set: 'broadway-2026', name: 'Every Brilliant Thing', emoji: '📝',
+    colors: { bg: '#e9ecf5', primary: '#3c4a7a', accent: '#f29a2e', ink: '#1e2440', blend: '#7083c4' },
+    emojis: ['📝', '☀️', '🍦', '✨'], motion: 'fall', cheer: 'Another brilliant thing! ✨',
+    pitch: 'Slate blue and orange tape, with little notes drifting down like a list of brilliant things.',
+  },
+  {
+    id: 'bway26-cats', set: 'broadway-2026', name: 'Cats: The Jellicle Ball', emoji: '🐈‍⬛',
+    colors: { bg: '#fff6a6', primary: '#1c1c1c', accent: '#a8a8a8', ink: '#1c1c1c' },
+    emojis: ['🐈‍⬛', '🪩', '💃', '✨'], cheer: 'A purr-fect day! 🐈‍⬛',
+    pitch: 'Highlighter yellow, black and disco silver. Time for the ball.',
+  },
+  {
+    id: 'bway26-heathers', set: 'broadway-2026', name: 'Heathers', emoji: '🎀',
+    colors: { bg: '#0e1a3a', primary: '#e0222f', accent: '#f5d03b', ink: '#f3f1ff' }, dark: true,
+    emojis: ['🎀', '❤️', '💚', '💛'], cheer: 'Totally iconic! 🎀',
+    pitch: 'Deep spotlight blue with red, green and yellow, one for each Heather.',
+  },
+  {
+    id: 'bway26-intheheights', set: 'broadway-2026', name: 'In the Heights', emoji: '🌉',
+    colors: { bg: '#fbf6ea', primary: '#e0402a', accent: '#f5d63a', ink: '#2a3e9e' },
+    emojis: ['🎆', '✨', '🌉', '⭐', '🍧'], cheer: 'Lighting up the sky! 🎆',
+    pitch: 'Cream paper, brushy red and royal blue, with fireworks over the bridge. (City Center)',
+  },
 ];
 
 // ---------- colour helpers ----------
@@ -149,7 +217,7 @@ export function cssVars({ colors: c, dark }) {
   return {
     ...v,
     primary: c.primary,
-    'primary-2': c.accent,
+    'primary-2': c.blend || c.accent,
     'primary-ink': luminance(c.primary) > 0.45 ? '#1b1b1b' : '#ffffff',
     regular: tint(status.regular),
     big: tint(status.big),
@@ -176,7 +244,7 @@ export function buildTheme(g) {
     confetti: [c.primary, c.accent, mix(c.primary, '#ffffff', 0.45), mix(c.accent, '#ffffff', 0.4), mix(c.primary, c.ink, 0.4)],
     confettiEmoji: g.emojis,
     rain: g.emojis,
-    ambient: { emojis: g.emojis, motion: 'float', count: 9 },
+    ambient: { emojis: g.emojis, motion: g.motion || 'float', count: g.motion === 'fall' ? 12 : 9 },
     greetingEmoji: g.emoji,
     bigSub: g.cheer,
     pitch: g.pitch,
