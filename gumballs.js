@@ -27,7 +27,8 @@
 
 export const SPIN_COST = 1; // a random theme from any collection
 export const SET_SPIN_COST = 2; // a random theme from a collection she picks
-export const UNLOCK_AT = 3; // the machine appears the first time she has this many tickets
+export const UNLOCK_AT = 3; // the machine appears if she ever holds this many tickets at once…
+// …or as soon as she earns her next ticket (see checkMachineUnlock in app.js)
 
 export const SETS = [
   { id: 'taylor', name: 'Taylor Swift eras', emoji: '🎤' },

@@ -40,7 +40,7 @@ The date rules are in `themes.js` (unit tested).
 
 ## The Theme Machine 🍬
 
-- **Unlocks** the first time she has **3 skip tickets** (the skip days), then stays unlocked. A "New unlocked!" card appears on the home screen, and tapping the 🎟️ counter opens the machine.
+- **Unlocks** as soon as she earns her next skip ticket (or holds 3 at once), then stays unlocked. A "New unlocked!" card appears on the home screen, and tapping the 🎟️ counter opens the machine.
 - **1 ticket**: a random new theme from any collection. **2 tickets**: a random new theme from a collection she's already discovered (this option only appears once she's discovered at least two collections). No repeats. Tickets spent here come off her skip days.
 - **Collections stay secret** until she wins something from them. Then the set appears in Settings with `?` spots for the rest. A "🔒 More collections are hiding…" note shows while undiscovered sets remain.
 - Collections: **🎤 Taylor Swift eras** (12 themes, plus a stowaway: The Black Parade 👀) **🧲 Broadway magnets · 2024** (7 shows), **🧲 Broadway magnets · 2025** (6 shows) **🧲 Broadway magnets · 2026** (10 shows), from the magnets on our fridge, **🍟 Treat yourself** (19 favourite spots; Chip City gets a candle-lit RIP when she wins it) **🏁 Mario Kart** (9 racers, with a 🚦 3-2-1-GO countdown before each reveal) **📱 For You Page** (9 memes; each one's quote shows when she wins it and on big-goal days) **📚 Bookworm** (Kindle, Bookshelf, The Library, Libby, Goodreads) and **🎲 So Random** (one-offs: Chunk the Giga Pet, Animal Crossing, Stitch, Bronx Zoo, and whatever comes next).

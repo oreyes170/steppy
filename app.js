@@ -432,7 +432,14 @@ function themePickerHtml() {
 function checkMachineUnlock() {
   const gb = state.meta.gumballs;
   if (gb.unlocked || Cheat.on()) return;
-  if (snapshot().skips.available >= Gumballs.UNLOCK_AT) {
+  const { skips } = snapshot();
+  // Unlock on her next earned ticket. Remember where "next" starts the first time we look,
+  // so a ticket she already had doesn't count.
+  if (gb.unlockAtEarned == null) {
+    gb.unlockAtEarned = Math.max(L.STARTER_SKIPS + 1, skips.earned + 1);
+    save({ dirty: false });
+  }
+  if (skips.earned >= gb.unlockAtEarned || skips.available >= Gumballs.UNLOCK_AT) {
     gb.unlocked = true;
     save();
   }
@@ -451,7 +458,7 @@ function renderMachineCard() {
       <div class="unlock-text">
         <p class="eyebrow">✨ New unlocked!</p>
         <h3>The Theme Machine</h3>
-        <p class="small muted">You’ve saved up ${n} skip tickets! Trade 1 for a gumball, and every gumball is a brand-new theme to collect. 🍬</p>
+        <p class="small muted">You’ve got ${n} skip ticket${n === 1 ? '' : 's'}! Trade 1 for a gumball, and every gumball is a brand-new theme to collect. 🍬</p>
         <button class="btn primary" data-open-machine>Take me there 🍬</button>
       </div>
       <div class="unlock-art">${machineSvg()}</div>
