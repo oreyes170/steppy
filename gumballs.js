@@ -40,6 +40,8 @@ export const SETS = [
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
   { id: 'fyp', name: 'For You Page', emoji: '📱' },
   { id: 'random', name: 'So Random', emoji: '🎲' },
+  { id: 'games', name: 'Co-op Mode', emoji: '🎮' },
+  { id: 'puzzles', name: 'Puzzle Break', emoji: '🧩' },
   { id: 'books', name: 'Bookworm', emoji: '📚' },
   { id: 'animals', name: 'Critters', emoji: '🐾' },
   { id: 'sports', name: 'Game Day', emoji: '🏟️' },
@@ -648,16 +650,16 @@ export const GUMBALLS = [
     pitch: 'Banana yellow and leaf green. Baseball, but make it a party.',
   },
 
-  // ── 🎲 So Random: puzzles ──
+  // ── 🧩 Puzzle Break (Wordle and Crossword keep their old 'rand-' ids) ──
   {
-    id: 'rand-wordle', set: 'random', name: 'Wordle', emoji: '🟩', ball: '#6aaa64',
+    id: 'rand-wordle', set: 'puzzles', name: 'Wordle', emoji: '🟩', ball: '#6aaa64',
     colors: { bg: '#ffffff', primary: '#538d4e', accent: '#c9b458', ink: '#121213', blend: '#6aaa64' },
     confetti: ['#6aaa64', '#c9b458', '#787c7e', '#ffffff', '#538d4e'],
     emojis: ['🟩', '🟨', '⬜', '🔤'], cheer: 'Magnificent! 🟩', note: '🟩🟩🟩🟩🟩 Got it!',
     pitch: 'Green, yellow and grey tiles. Five letters, six tries.',
   },
   {
-    id: 'rand-crossword', set: 'random', name: 'Crossword', emoji: '✏️', head: 'didot', ball: '#1a1a1a',
+    id: 'rand-crossword', set: 'puzzles', name: 'Crossword', emoji: '✏️', head: 'didot', ball: '#1a1a1a',
     colors: { bg: '#fafaf7', primary: '#111111', accent: '#8a8a8a', ink: '#111111', blend: '#4a4a4a' },
     confetti: ['#111111', '#ffffff', '#8a8a8a', '#d6d6d0', '#111111'],
     emojis: ['✏️', '📰', '🧩', '☕'], cheer: 'Puzzle solved! ✏️', note: '1 Across: you. (3 letters) ✏️',
@@ -692,6 +694,43 @@ export const GUMBALLS = [
     confetti: ['#d4a73a', '#c8322b', '#f4ead6', '#8a6a2a', '#ffffff'],
     emojis: ['✉️', '🏆', '⏱️', '🍉'], cheer: 'Five points! 🏆', note: 'Your task: hit your step goal. Your time starts now. ✉️',
     pitch: 'Dark wood, gold and a red wax seal. The tasks are absurd.',
+  },
+  {
+    id: 'puz-connections', set: 'puzzles', name: 'Connections', emoji: '🟪', ball: '#ba81c5',
+    colors: { bg: '#ffffff', primary: '#7a4a96', accent: '#a0c35a', ink: '#121212', blend: '#ba81c5' },
+    confetti: ['#f9df6d', '#a0c35a', '#b0c4ef', '#ba81c5'],
+    emojis: ['🟨', '🟩', '🟦', '🟪'], cheer: 'Perfect puzzle! 🟨🟩🟦🟪', note: 'One away… no wait, you got it! 🟪',
+    pitch: 'Yellow, green, blue and purple: four groups of four.',
+  },
+  {
+    id: 'puz-spellingbee', set: 'puzzles', name: 'Spelling Bee', emoji: '🐝', ball: '#f7da21',
+    colors: { bg: '#fffbea', primary: '#8a6d00', accent: '#9a9a9a', ink: '#1a1a1a', blend: '#d9b800' },
+    confetti: ['#f7da21', '#e6e6e6', '#1a1a1a', '#ffe97a', '#ffffff'],
+    emojis: ['🐝', '🍯', '🔠', '⭐'], cheer: 'Genius! 🐝', note: 'Queen Bee! 🐝',
+    pitch: 'Honeycomb yellow and grey. How many words can you make?',
+  },
+
+  // ── 🎮 Co-op Mode: games we played together ──
+  {
+    id: 'game-ittakestwo', set: 'games', name: 'It Takes Two', emoji: '💞',
+    colors: { bg: '#fdf0f6', primary: '#b0408a', accent: '#5aa86a', ink: '#3a1430', blend: '#e07ab8' },
+    confetti: ['#e07ab8', '#8a5ad8', '#5aa86a', '#ffd27a', '#ffffff'],
+    emojis: ['💞', '📖', '🔨', '🌸'], cheer: 'Teamwork! 💞', note: 'Player 2 has joined 💞',
+    pitch: 'Cozy pink and purple with leafy green. Better together.',
+  },
+  {
+    id: 'game-awayout', set: 'games', name: 'A Way Out', emoji: '🔓', ball: '#e0702a',
+    colors: { bg: '#11161c', primary: '#f08a3a', accent: '#6a8aa8', ink: '#eef2f6', blend: '#ffb06a' }, dark: true,
+    confetti: ['#f08a3a', '#6a8aa8', '#c9d2dc', '#3a4a5a', '#ffffff'],
+    emojis: ['🔓', '🚪', '🌲', '🚗'], cheer: 'We made it out! 🚪', note: 'Escape complete! 🔓',
+    pitch: 'Gritty steel blue and jumpsuit orange. You can’t do it alone.',
+  },
+  {
+    id: 'game-woollyworld', set: 'games', name: 'Yoshi’s Woolly World', emoji: '🧶', ball: '#7cc46a',
+    colors: { bg: '#f3fbef', primary: '#3f9a3a', accent: '#f08ab0', ink: '#1f3a1c', blend: '#8ad46a' },
+    confetti: ['#7cc46a', '#f08ab0', '#ffd27a', '#8ac8f0', '#ffffff'],
+    emojis: ['🧶', '🥚', '🦖', '🧵'], cheer: 'Yarn-tastic! 🧶', note: 'Knit together with love 🧶',
+    pitch: 'Soft yarn greens and pastels, all stitched by hand.',
   },
 ];
 
@@ -802,7 +841,9 @@ export function setProgress(setId, owned) {
   return { owned: inSet.filter((g) => owned.includes(g.id)).length, total: inSet.length };
 }
 
-export const hiddenSetsRemain = (owned) => revealedSets(owned).length < SETS.length;
+// only collections that actually have themes in them count (So Random can be empty between additions)
+export const hiddenSetsRemain = (owned) =>
+  revealedSets(owned).length < SETS.filter((s) => GUMBALLS.some((g) => g.set === s.id)).length;
 
 /** Themes she can still win (optionally from one collection). */
 export function pool(owned, setId = null) {

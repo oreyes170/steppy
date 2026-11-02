@@ -261,7 +261,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 97);
+  assert.equal(G.GUMBALLS.length, 102);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -325,7 +325,7 @@ test('For You Page memes show their quote when won', async () => {
 
 test('So Random collection', async () => {
   const G = await import('../gumballs.js');
-  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 2 });
+  assert.deepEqual(G.setProgress('random', []), { owned: 0, total: 0 });
   assert.equal(G.setById('random').name, 'So Random');
 });
 
@@ -420,4 +420,12 @@ test('Critters and Couch Time collections; Taylor renamed', async () => {
   assert.equal(G.setById('taylor').name, 'The Eras Walking Tour');
   assert.deepEqual(G.revealedSets(['rand-chunk']).map((s) => s.id), ['animals']);
   assert.match(G.GUMBALL_THEMES.find((t) => t.id === 'treat-maddogbeans').note, /Where it all started/);
+});
+
+test('Co-op Mode and Puzzle Break; empty sets never count as hidden', async () => {
+  const G = await import('../gumballs.js');
+  assert.deepEqual(G.setProgress('games', []), { owned: 0, total: 3 });
+  assert.deepEqual(G.setProgress('puzzles', []), { owned: 0, total: 4 });
+  const oneOfEach = G.SETS.map((s) => G.GUMBALLS.find((g) => g.set === s.id)?.id).filter(Boolean);
+  assert.equal(G.hiddenSetsRemain(oneOfEach), false); // So Random is empty, so it doesn't count
 });
