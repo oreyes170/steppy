@@ -211,7 +211,7 @@ test('gumball machine: no repeats, set spins stay in the set, sets hidden until 
   assert.equal(G.spin(owned), null, 'nothing left once she owns everything');
   assert.deepEqual(G.revealedSets([]), []);
   assert.deepEqual(G.revealedSets(['ts-1989']).map((s) => s.id), ['taylor']);
-  assert.deepEqual(G.setProgress('taylor', ['ts-1989', 'ts-red']), { owned: 2, total: 12 });
+  assert.deepEqual(G.setProgress('taylor', ['ts-1989', 'ts-red']), { owned: 2, total: 13 });
   for (let i = 0; i < 20; i++) {
     const id = G.spin(['ts-red'], 'taylor');
     assert.equal(G.GUMBALLS.find((g) => g.id === id).set, 'taylor');
@@ -249,7 +249,7 @@ test('restoring a backup never loses Theme Machine progress', () => {
 test('Broadway magnets 2026 collection is complete and separate', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2026', []), { owned: 0, total: 10 });
-  assert.deepEqual(G.setProgress('taylor', []), { owned: 0, total: 12 });
+  assert.deepEqual(G.setProgress('taylor', []), { owned: 0, total: 13 });
   assert.deepEqual(G.revealedSets(['bway26-heathers']).map((s) => s.id), ['broadway-2026']);
   assert.equal(G.hiddenSetsRemain(['bway26-heathers']), true); // Taylor Swift eras still a secret
   assert.ok(G.GUMBALLS.find((g) => g.id === 'bway26-allout').emojis.includes('🐎'));
@@ -258,7 +258,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 63);
+  assert.equal(G.GUMBALLS.length, 64);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -303,4 +303,11 @@ test('holidays and events are permanent once unlocked', async () => {
   const d = T.byId('doomsday');
   assert.equal(d.dark, true);
   assert.equal(d.vars.primary, '#6fcf5a');
+});
+
+test('The Black Parade sneaks into the Taylor Swift eras', async () => {
+  const G = await import('../gumballs.js');
+  const t = G.GUMBALL_THEMES.find((x) => x.id === 'ts-blackparade');
+  assert.equal(t.set, 'taylor');
+  assert.match(t.note, /how did that get here/);
 });

@@ -14,6 +14,7 @@
 //   motion     optional: 'fall' makes the background emoji drift down instead of float
 //   confetti   optional: exact confetti colours (otherwise made from the theme colours)
 //   ball       optional: gumball colour (otherwise the main colour)
+//   note       optional: an extra line shown under the title when she wins it
 //   rip        optional: true for a place that's closed. Winning it gets a quiet candle-lit moment
 //   colors.blend  optional: second colour for the title/button gradient, when blending
 //                 primary into accent would go muddy (e.g. red into green)
@@ -107,6 +108,14 @@ export const GUMBALLS = [
     colors: { bg: '#fff3e8', primary: '#ec6417', accent: '#3fc4a2', ink: '#3d1d08' },
     emojis: ['💃', '🪩', '✨', '🧡'], cheer: 'Showstopper! 🪩',
     pitch: 'Bright orange and mint, glitter and disco balls.',
+  },
+  {
+    // A stowaway in the Taylor Swift eras. 👀
+    id: 'ts-blackparade', set: 'taylor', name: 'The Black Parade', revealName: 'The Black Parade era', emoji: '🥁', ball: '#1a1a1a',
+    colors: { bg: '#0d0d0d', primary: '#e8e8e8', accent: '#8a8a8a', ink: '#f2f2f2', blend: '#b0b0b0' }, dark: true,
+    emojis: ['🥁', '🎺', '💀', '🖤'], cheer: 'Marching on! 🥁',
+    note: 'Hey… how did that get here? 👀',
+    pitch: 'Black, bone white and smoky grey, with a marching band.',
   },
 
   // ── 🧲 Broadway magnets · 2024: shows we saw together (Sunset Blvd. is further down) ──
@@ -525,6 +534,7 @@ export function buildTheme(g) {
     bigSub: g.cheer,
     pitch: g.pitch,
     rip: !!g.rip,
+    note: g.note || '',
   };
 }
 

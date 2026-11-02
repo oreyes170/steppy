@@ -548,6 +548,7 @@ async function doSpin(setId) {
     html: `
       <div class="reveal-ball ${t.rip ? 'rip' : ''}" style="background:${t.ball}">${t.emoji}</div>
       ${t.rip ? '<p class="rip-line">Rest in peace</p>' : ''}
+      ${t.note ? `<p class="reveal-note">${t.note}</p>` : ''}
       ${newSet ? `<p class="new-set">New collection discovered: <b>${set.emoji} ${set.name}</b>!</p>` : ''}
       <p>${t.pitch}</p>
       <div class="reveal-swatches">${t.confetti

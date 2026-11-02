@@ -1313,6 +1313,18 @@ html[data-theme='christmas'] {
   transform: rotate(12deg);
 }
 .reveal-ball.rip { box-shadow: inset -14px -18px 0 rgba(0, 0, 0, 0.14), 0 0 0 6px rgba(255, 214, 120, 0.35), 0 0 40px rgba(255, 196, 90, 0.45); }
+.modal-card .reveal-note {
+  color: var(--text) !important;
+  font-weight: 800;
+  font-size: 17px;
+  margin: -2px 0 10px !important;
+  animation: note-wiggle 0.6s ease 0.5s 2;
+}
+@keyframes note-wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
 .modal-card .rip-line {
   font-style: italic;
   letter-spacing: 0.12em;
