@@ -106,10 +106,11 @@ export const GUMBALLS = [
     pitch: 'Midnight blue and lavender, with moons, stars and clocks.',
   },
   {
-    id: 'ts-ttpd', head: 'typewriter', set: 'taylor', name: 'The Tortured Poets Department', revealName: 'The Tortured Poets Department era', emoji: '✒️',
-    colors: { bg: '#f5f1e9', primary: '#5e564e', accent: '#b8ab97', ink: '#2f2b27' },
+    id: 'ts-ttpd', head: 'typewriter', style: 'mono', set: 'taylor', name: 'The Tortured Poets Department', revealName: 'The Tortured Poets Department era', emoji: '✒️',
+    colors: { bg: '#f6f6f4', primary: '#1a1a1a', accent: '#8a8a8a', ink: '#111111', blend: '#4a4a4a' },
+    confetti: ['#111111', '#ffffff', '#8a8a8a', '#d0d0d0', '#4a4a4a'],
     emojis: ['🤍', '✒️', '📜', '🕊️'], cheer: 'Poetic! ✒️',
-    pitch: 'Parchment and ink, with quills and scrolls.',
+    pitch: 'Fully black and white, like ink on a typed page.',
   },
   {
     id: 'ts-showgirl', head: 'bodoni', set: 'taylor', name: 'The Life of a Showgirl', revealName: 'The Life of a Showgirl era', emoji: '🪩',
@@ -342,7 +343,7 @@ export const GUMBALLS = [
     pitch: 'Domino blue and red. Pizza’s here!',
   },
   {
-    id: 'treat-olivegarden', set: 'treats', name: 'Olive Garden', emoji: '🫒',
+    id: 'treat-olivegarden', set: 'treats', name: 'Olive Garden', emoji: '🍝',
     colors: { bg: '#f5f1e4', primary: '#5c7a29', accent: '#7a1f2b', ink: '#2e2a18', blend: '#8fa848' },
     emojis: ['🫒', '🍝', '🥖', '🍷'], cheer: 'Breadstick-tacular! 🥖',
     pitch: 'Olive green, burgundy and warm tan. Unlimited breadsticks energy.',
@@ -621,6 +622,20 @@ export const GUMBALLS = [
     confetti: ['#f47b20', '#ffffff', '#2a6fd6', '#ffc28a', '#ffd84a'],
     emojis: ['🏀', '🐰', '🥕', '🪐', '🚀'], cheer: 'Out of this world! 🪐', note: 'Tune Squad, assemble! 🐰🏀',
     pitch: 'Tune Squad orange and white with a dash of blue. Basketball from outer space.',
+  },
+  {
+    id: 'sport-globetrotters', set: 'sports', name: 'Harlem Globetrotters', emoji: '🌍', ball: '#d21f32',
+    colors: { bg: '#f5f8ff', primary: '#d21f32', accent: '#1f4fbf', ink: '#14203f', blend: '#ff5a6a' },
+    confetti: ['#d21f32', '#ffffff', '#1f4fbf', '#ff8a96', '#7aa2ff'],
+    emojis: ['🏀', '🌍', '⭐', '🤹'], cheer: 'Trick shot! 🏀✨', note: 'Showtime! 🌍🏀',
+    pitch: 'Stars-and-stripes red, white and royal blue. Pure showtime.',
+  },
+  {
+    id: 'sport-bananas', set: 'sports', name: 'Savannah Bananas', emoji: '🍌', ball: '#ffd21f',
+    colors: { bg: '#fffbe0', primary: '#9a7400', accent: '#2f8f3a', ink: '#2a2408', blend: '#e0b300' },
+    confetti: ['#ffd21f', '#2f8f3a', '#ffffff', '#ffe98a', '#1a1a1a'],
+    emojis: ['🍌', '⚾', '🕺', '🎉'], cheer: 'Home run, bananas! 🍌', note: 'Banana Ball time! 🍌⚾',
+    pitch: 'Banana yellow and leaf green. Baseball, but make it a party.',
   },
 ];
 

@@ -1176,6 +1176,16 @@ html[data-style='kindle'] .btn.primary {
 }
 html[data-style='kindle'] .eyebrow { letter-spacing: 0.12em; }
 
+/* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */
+html[data-style='mono'] .app,
+html[data-style='mono'] .fx,
+html[data-style='mono'] .emoji-drop,
+html[data-style='mono'] .banner-pop,
+html[data-style='mono'] .ambient,
+html[data-style='mono'] .toast {
+  filter: grayscale(1);
+}
+
 /* ambient decorations (falling leaves, snow, floating bats) */
 .ambient {
   position: fixed;
