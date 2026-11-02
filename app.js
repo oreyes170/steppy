@@ -61,7 +61,15 @@ const machineUnlocked = () => Cheat.on() || state.meta.gumballs.unlocked;
 
 const defaultState = () => ({
   version: 1,
-  settings: { name: '', regularGoal: 7000, bigGoal: 10000, onboarded: false, theme: 'classic' },
+  settings: {
+    name: '',
+    regularGoal: 7000,
+    bigGoal: 10000,
+    onboarded: false,
+    theme: 'classic',
+    // sunrise/sunset on the Today card: New York unless she taps "Use my location"
+    sun: { show: true, mode: 'nyc', lat: 40.71, lon: -74.01 },
+  },
   days: {}, // { 'YYYY-MM-DD': { status: 'regular'|'big'|'missed'|'skip', steps?: number } }
   meta: {
     startedOn: null,
@@ -96,7 +104,7 @@ function normalize(s) {
   return migrate({
     ...d,
     ...s,
-    settings: { ...d.settings, ...(s.settings || {}) },
+    settings: { ...d.settings, ...(s.settings || {}), sun: { ...d.settings.sun, ...(s.settings?.sun || {}) } },
     meta: {
       ...d.meta,
       ...(s.meta || {}),
@@ -744,6 +752,73 @@ async function runAnnouncements() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Sunrise & sunset (worked out on the phone, no internet needed)
+// ---------------------------------------------------------------------------
+
+const clock = (d) => d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+
+function sunLine() {
+  const sun = state.settings.sun;
+  if (!sun?.show) return '';
+  const now = new Date();
+  const times = L.sunTimes(now, sun.lat, sun.lon);
+  if (!times) return '';
+  const { sunrise, sunset } = times;
+  const extra =
+    now < sunrise
+      ? `sunrise in ${L.formatDuration(sunrise - now)}`
+      : now < sunset
+        ? `${L.formatDuration(sunset - now)} of daylight left`
+        : 'the sun’s down 🌙';
+  return `<p class="sun-line">🌅 ${clock(sunrise)} · 🌇 ${clock(sunset)} <span>· ${extra}</span></p>`;
+}
+
+function sunSettingsHtml() {
+  const sun = state.settings.sun;
+  const where = sun.mode === 'here' ? 'your location' : 'New York';
+  return `
+    <h3>🌅 Sunrise & sunset</h3>
+    <p class="muted small">${sun.show ? `Shown on the Today card, for <b>${where}</b>.` : 'Hidden.'}</p>
+    <div class="row">
+      ${
+        sun.show
+          ? sun.mode === 'here'
+            ? '<button class="btn ghost" data-sun="nyc" type="button">Use New York</button>'
+            : '<button class="btn ghost" data-sun="here" type="button">📍 Use my location</button>'
+          : ''
+      }
+      <button class="btn ghost" data-sun="${sun.show ? 'hide' : 'show'}" type="button">${sun.show ? 'Hide' : 'Show'}</button>
+    </div>`;
+}
+
+function setSun(action) {
+  const sun = state.settings.sun;
+  if (action === 'hide' || action === 'show') {
+    sun.show = action === 'show';
+  } else if (action === 'nyc') {
+    Object.assign(sun, { mode: 'nyc', lat: 40.71, lon: -74.01 });
+  } else if (action === 'here') {
+    if (!navigator.geolocation) return toast('Location isn’t available on this device.');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        // rounded to ~1 km: plenty for sunrise times, and less precise to store
+        Object.assign(sun, { mode: 'here', lat: +pos.coords.latitude.toFixed(2), lon: +pos.coords.longitude.toFixed(2) });
+        save();
+        render();
+        openSettings();
+        toast('Sunrise & sunset now use your location 🌅');
+      },
+      () => toast('Couldn’t get your location. You can allow it in Settings → Privacy → Location.'),
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 3600000 },
+    );
+    return;
+  }
+  save();
+  render();
+  openSettings();
+}
+
 function quickButtons(key) {
   return `
     <div class="quick">
@@ -776,6 +851,7 @@ function renderToday() {
           <p class="eyebrow">Today</p>
           <h2>${info.short}${d.steps ? ` · ${fmt(d.steps)} steps` : ''}</h2>
           <p class="muted">${sub}</p>
+          ${sunLine()}
         </div>
       </div>
       <button class="link-btn" data-open-day="${t}">Change</button>`;
@@ -785,6 +861,7 @@ function renderToday() {
       <p class="eyebrow">Today · ${prettyDate(t, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
       <h2>How did your steps go?</h2>
       <p class="muted">Goal <b>${fmt(regularGoal)}</b> · Big goal <b>${fmt(bigGoal)}</b></p>
+      ${sunLine()}
       ${quickButtons(t)}
       <button class="link-btn" data-open-day="${t}">Enter step count or use a skip day →</button>`;
   }
@@ -1265,6 +1342,8 @@ function openSettings() {
       <button class="btn primary" type="submit">Save</button>
     </form>
     <hr />
+    ${sunSettingsHtml()}
+    <hr />
     ${themePickerHtml()}
     <hr />
     <h3>Backup</h3>
@@ -1602,6 +1681,7 @@ document.addEventListener('click', (e) => {
     toast('No problem — I’ll check back in a week 💕');
     return;
   }
+  if (t.dataset.sun) return setSun(t.dataset.sun);
   if (t.dataset.tryTheme) {
     chooseTheme(t.dataset.tryTheme);
     closeModal();
@@ -1820,6 +1900,9 @@ async function handleGoogleReturn(r) {
 // ---------------------------------------------------------------------------
 
 $('#app-version').textContent = `v${APP_VERSION}`;
+setInterval(() => {
+  if (document.visibilityState === 'visible' && $('#sheet').hidden && $('#modal').hidden) renderToday();
+}, 60000);
 render();
 (async () => {
   const ret = Drive.enabled() ? Drive.fromRedirect() : null;

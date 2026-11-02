@@ -1003,6 +1003,18 @@ html[data-theme='christmas'] {
   }
 }
 
+/* sunrise & sunset line on the Today card */
+.sun-line {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 6px;
+}
+.sun-line span {
+  color: var(--muted);
+  font-weight: 600;
+}
+
 /* ================= heading fonts =================
    A theme can set `head` to give headings (and the Steppy title) their own font.
    Body text always stays in the normal, readable font. Fonts without a local file

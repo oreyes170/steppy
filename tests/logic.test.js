@@ -334,3 +334,18 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['halloween'], 'chalk');
   assert.equal(Object.keys(heads).length, 14);
 });
+
+test('sunrise and sunset for New York match published times (±3 min)', () => {
+  const near = (actual, iso) => assert.ok(Math.abs(actual - new Date(iso)) < 3 * 60000, `${actual.toISOString()} vs ${iso}`);
+  const lat = 40.7128, lng = -74.006;
+  // Use dates built in UTC terms so the test works in any timezone.
+  const june = L.sunTimes(new Date(2026, 5, 21), lat, lng);
+  near(june.sunrise, '2026-06-21T09:25:00Z'); // 5:25 AM EDT
+  near(june.sunset, '2026-06-22T00:31:00Z'); // 8:31 PM EDT
+  const dec = L.sunTimes(new Date(2026, 11, 21), lat, lng);
+  near(dec.sunrise, '2026-12-21T12:16:00Z'); // 7:16 AM EST
+  near(dec.sunset, '2026-12-21T21:32:00Z'); // 4:32 PM EST
+  assert.equal(L.sunTimes(new Date(2026, 5, 21), 89, 0), null, 'midnight sun: no sunset');
+  assert.equal(L.formatDuration(72 * 60000), '1h 12m');
+  assert.equal(L.formatDuration(5 * 60000), '5m');
+});

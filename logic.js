@@ -275,3 +275,47 @@ export function mergeGumballs(a = {}, b = {}) {
     spent: Math.max(a.spent || 0, b.spent || 0),
   };
 }
+
+// ---------- sunrise & sunset ----------
+// The standard NOAA/SunCalc solar position formulas. Runs on the phone, no internet.
+
+const RAD = Math.PI / 180;
+const DAY_MS = 86400000;
+const J1970 = 2440588;
+const J2000 = 2451545;
+const OBLIQUITY = RAD * 23.4397;
+
+const toDays = (date) => date.valueOf() / DAY_MS - 0.5 + J1970 - J2000;
+const fromJulian = (j) => new Date((j + 0.5 - J1970) * DAY_MS);
+
+/**
+ * Sunrise and sunset for the calendar day of `date` at latitude/longitude (degrees).
+ * Returns { sunrise, sunset } as Dates, or null when the sun doesn't rise or set
+ * (polar day/night).
+ */
+export function sunTimes(date, lat, lng) {
+  const noon = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+  const lw = RAD * -lng;
+  const phi = RAD * lat;
+  const d = toDays(noon);
+  const n = Math.round(d - 0.0009 - lw / (2 * Math.PI));
+  const ds = 0.0009 + lw / (2 * Math.PI) + n;
+  const M = RAD * (357.5291 + 0.98560028 * ds);
+  const C = RAD * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M));
+  const L = M + C + RAD * 102.9372 + Math.PI;
+  const dec = Math.asin(Math.sin(OBLIQUITY) * Math.sin(L));
+  const transit = (ha) => J2000 + 0.0009 + (ha + lw) / (2 * Math.PI) + n + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L);
+  const cosH = (Math.sin(RAD * -0.833) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec));
+  if (cosH < -1 || cosH > 1) return null;
+  const jNoon = transit(0);
+  const jSet = transit(Math.acos(cosH));
+  return { sunrise: fromJulian(jNoon - (jSet - jNoon)), sunset: fromJulian(jSet) };
+}
+
+/** "1h 12m" style duration. */
+export function formatDuration(ms) {
+  const mins = Math.max(0, Math.round(ms / 60000));
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h ? `${h}h ${m}m` : `${m}m`;
+}

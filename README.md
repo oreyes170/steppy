@@ -16,6 +16,7 @@ A cheerful, no-pressure step goal tracker, like StepBet without the money.
 
   "Not now" snoozes the coach for a week.
 - **Celebrations**: confetti for goal days. Big goal days get side cannons, emoji rain and a "BIG GOAL!" banner. Earned skip days get a flying ticket, and streak milestones get fireworks. Phones that support it also vibrate. All motion respects *Reduce Motion*.
+- **Sunrise & sunset** on the Today card, with daylight left, worked out on the phone (no internet). It's for New York by default; Settings → "Use my location" for exact local times.
 - Works offline, can be installed to the home screen, supports dark mode, and has backup export/import (Settings ⚙️).
 
 All data stays on the device (`localStorage`). There's no account and no server.
