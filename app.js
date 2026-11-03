@@ -606,6 +606,9 @@ async function doSpin(setId) {
   const id = Gumballs.spin(owned, setId);
   if (!id) return toast('Nothing left in there, you’ve got them all! 🏆');
   const setOf = Gumballs.GUMBALLS.find((g) => g.id === id).set;
+  // The first collection is never announced as one (so it seems like the only one);
+  // the second gets a surprise line, and later ones the usual "new collection".
+  const foundBefore = Gumballs.revealedSets(owned).length;
   const newSet = !Gumballs.revealedSets(owned).some((st) => st.id === setOf);
   spinning = true;
   if (TestMode.on()) {
@@ -654,7 +657,8 @@ async function doSpin(setId) {
       <div class="reveal-ball ${t.rip ? 'rip' : ''}" style="background:${t.ball}">${t.emoji}</div>
       ${t.rip ? '<p class="rip-line">Rest in peace</p>' : ''}
       ${t.note ? `<p class="reveal-note">${t.note}</p>` : ''}
-      ${newSet ? `<p class="new-set">New collection discovered: <b>${set.emoji} ${set.name}</b>!</p>` : ''}
+      ${newSet && foundBefore === 1 ? `<p class="new-set">Surprise! There’s more in here: <b>${set.emoji} ${set.name}</b>! 👀</p>` : ''}
+      ${newSet && foundBefore >= 2 ? `<p class="new-set">New collection discovered: <b>${set.emoji} ${set.name}</b>!</p>` : ''}
       <p>${t.pitch}</p>
       <div class="reveal-swatches">${t.confetti
         .slice(0, 4)
@@ -723,7 +727,7 @@ function collectionHtml(current) {
   return `
     <h3 class="collection-head"><span>Gumball collection</span>${owned.length ? `<span class="small muted">${owned.length} found</span>` : ''}</h3>
     ${body}
-    ${sets.length && Gumballs.hiddenSetsRemain(owned) ? '<div class="hidden-sets">🔒 More collections are hiding in the machine…</div>' : ''}
+    ${sets.length >= 2 && Gumballs.hiddenSetsRemain(owned) ? '<div class="hidden-sets">🔒 More collections are hiding in the machine…</div>' : ''}
     <button class="btn ${owned.length ? 'ghost' : 'primary'} wide" data-open-machine type="button">🍬 ${owned.length ? 'Visit the Theme Machine' : `Spin the Theme Machine · ${Gumballs.SPIN_COST} 🎟️`}</button>`;
 }
 

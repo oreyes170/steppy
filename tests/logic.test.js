@@ -261,7 +261,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 111);
+  assert.equal(G.GUMBALLS.length, 110);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -336,7 +336,7 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 25);
+  assert.equal(Object.keys(heads).length, 24);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {
@@ -416,7 +416,7 @@ test('Game Day collection', async () => {
 test('Critters and Couch Time collections; Taylor renamed', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('animals', []), { owned: 0, total: 5 });
-  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 11 });
+  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 10 });
   // WandaVision: grayscale base, red only for big goals
   const wv = G.GUMBALL_THEMES.find((t) => t.id === 'tv-wandavision');
   assert.equal(wv.vars.big, '#c8203a');
@@ -434,4 +434,16 @@ test('Co-op Mode and Puzzle Break; empty sets never count as hidden', async () =
   assert.equal(G.GUMBALL_THEMES.find((t) => t.id === 'game-mariokart').intro, 'race');
   const oneOfEach = G.SETS.map((s) => G.GUMBALLS.find((g) => g.set === s.id)?.id).filter(Boolean);
   assert.equal(G.hiddenSetsRemain(oneOfEach), false); // So Random is empty, so it doesn't count
+});
+
+test('first spin is always a Taylor era (not the Black Parade); VisionQuest is held back', async () => {
+  const G = await import('../gumballs.js');
+  for (let i = 0; i < 50; i++) {
+    const id = G.spin([], null, () => i / 50);
+    assert.ok(id.startsWith('ts-') && id !== 'ts-blackparade', id);
+  }
+  // after the first, anything goes
+  const later = new Set(Array.from({ length: 50 }, (_, i) => G.spin(['ts-red'], null, () => i / 50).split('-')[0]));
+  assert.ok(later.size > 1);
+  assert.ok(!G.GUMBALLS.some((g) => g.id === 'tv-visionquest'));
 });

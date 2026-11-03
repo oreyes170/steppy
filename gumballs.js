@@ -48,7 +48,8 @@ export const SETS = [
   { id: 'tv', name: 'Couch Time', emoji: '📺' },
 ];
 
-export const GUMBALLS = [
+// `held: true` keeps a theme out of the machine (and out of the app) until it's released.
+const ALL_GUMBALLS = [
   {
     id: 'ts-debut', set: 'taylor', name: 'Debut', revealName: 'The Debut era', emoji: '🦋',
     colors: { bg: '#e8f5f0', primary: '#2f9e8f', accent: '#e9b949', ink: '#1f3b35' },
@@ -735,10 +736,10 @@ export const GUMBALLS = [
     pitch: 'Midnight purple with a witchy green glow.',
   },
   {
-    id: 'tv-visionquest', set: 'tv', name: 'VisionQuest', emoji: '👓', head: 'pixel', style: 'edith', ball: '#c23ab8', iconTint: '#1a8a9a',
+    id: 'tv-visionquest', held: true, set: 'tv', name: 'VisionQuest', emoji: '👓', head: 'pixel', style: 'edith', ball: '#c23ab8', iconTint: '#1a8a9a',
     colors: { bg: '#2a0f4a', primary: '#3ad6e0', accent: '#e0553a', ink: '#f6e8ff', blend: '#ff7ad9' }, dark: true,
     confetti: ['#3ad6e0', '#ff7ad9', '#e0553a', '#8a5cff', '#ffffff'],
-    emojis: ['👓', '💾', '✨', '💜'], cheer: 'E.D.I.T.H. approves! 👓', note: 'E.D.I.T.H. is online. Today’s mission: your steps. 👓',
+    emojis: ['👓', '✈️', '💾', '✨', '💜'], cheer: 'E.D.I.T.H. approves! 👓', note: 'E.D.I.T.H. is online. Today’s mission: your steps. 👓',
     pitch: 'E.D.I.T.H.’s screen: glowing magenta pixels and streams of tiny 0s and 1s, with her cyan suit and red hair.',
   },
   {
@@ -896,6 +897,7 @@ export function buildTheme(g) {
   };
 }
 
+export const GUMBALLS = ALL_GUMBALLS.filter((g) => !g.held);
 export const GUMBALL_THEMES = GUMBALLS.map(buildTheme);
 
 // ---------- machine rules ----------
@@ -921,9 +923,18 @@ export function pool(owned, setId = null) {
   return GUMBALLS.filter((g) => !owned.includes(g.id) && (!setId || g.set === setId));
 }
 
+/** Her very first gumball is always a Taylor era (never the Black Parade stowaway), so the
+ *  machine looks Eras-only until a second collection turns up as a surprise. */
+export const FIRST_SET = 'taylor';
+function firstPool(owned, setId) {
+  if (owned.length || setId) return null;
+  const p = pool(owned, FIRST_SET).filter((g) => g.id !== 'ts-blackparade');
+  return p.length ? p : null;
+}
+
 /** Pick the next gumball. Never a repeat. Returns a gumball id, or null if none are left. */
 export function spin(owned, setId = null, rand = Math.random) {
-  const p = pool(owned, setId);
+  const p = firstPool(owned, setId) || pool(owned, setId);
   if (!p.length) return null;
   return p[Math.floor(rand() * p.length)].id;
 }
