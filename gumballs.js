@@ -735,11 +735,11 @@ export const GUMBALLS = [
     pitch: 'Midnight purple with a witchy green glow.',
   },
   {
-    id: 'tv-visionquest', set: 'tv', name: 'VisionQuest', emoji: '💎', ball: '#d6c24a',
-    colors: { bg: '#eef1f4', primary: '#9a1f3a', accent: '#c9a72a', ink: '#1a1f26', blend: '#d6c24a' },
-    confetti: ['#9a1f3a', '#d6c24a', '#e8ecef', '#6b7a88', '#ffffff'],
-    emojis: ['💎', '🤖', '✨', '🧠'], cheer: 'Fully synthesized! 💎', note: 'White Vision is back, one step at a time. 💎',
-    pitch: 'Synthezoid white and silver, with maroon and a golden gem.',
+    id: 'tv-visionquest', set: 'tv', name: 'VisionQuest', emoji: '👓', head: 'pixel', style: 'edith', ball: '#c23ab8', iconTint: '#1a8a9a',
+    colors: { bg: '#2a0f4a', primary: '#3ad6e0', accent: '#e0553a', ink: '#f6e8ff', blend: '#ff7ad9' }, dark: true,
+    confetti: ['#3ad6e0', '#ff7ad9', '#e0553a', '#8a5cff', '#ffffff'],
+    emojis: ['👓', '💾', '✨', '💜'], cheer: 'E.D.I.T.H. approves! 👓', note: 'E.D.I.T.H. is online. Today’s mission: your steps. 👓',
+    pitch: 'E.D.I.T.H.’s screen: glowing magenta pixels and streams of tiny 0s and 1s, with her cyan suit and red hair.',
   },
   {
     id: 'tv-colin', set: 'tv', name: 'Colin from Accounts', emoji: '🐕', ball: '#c49a5a',

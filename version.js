@@ -1,3 +1,3 @@
 // Bump this with every release. The offline cache in sw.js must use the same number
 // (a test checks), so installed copies pick up the new version.
-export const APP_VERSION = '1.38.2';
+export const APP_VERSION = '1.39.0';

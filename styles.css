@@ -1403,6 +1403,32 @@ html[data-style='tamagotchi'] .goal-pill {
 }
 html[data-style='tamagotchi'] .link-btn { color: #1e3a9a; }
 
+/* 👓 E.D.I.T.H. (VisionQuest): a glowing magenta screen made of tiny characters, with scanlines. */
+html[data-style='edith'] body {
+  background-color: #2a0f4a;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='64'%3E%3Cg font-family='monospace' font-size='9' fill='%23ffb6f0' opacity='.38'%3E%3Ctext x='2' y='9'%3E0D1D00D1%3C/text%3E%3Ctext x='50' y='9'%3E1D0D1D0%3C/text%3E%3Ctext x='2' y='25'%3ED101D0DD%3C/text%3E%3Ctext x='50' y='25'%3E0D1DD10%3C/text%3E%3Ctext x='2' y='41'%3E1DD0D10D%3C/text%3E%3Ctext x='50' y='41'%3E*%2B*%2B*%2B*%3C/text%3E%3Ctext x='2' y='57'%3E0D10DD01%3C/text%3E%3Ctext x='50' y='57'%3E%2F%2F%2F%2F%2F%2F%2F%3C/text%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 25% 20%, #e04ab8 0%, #9a2e9e 35%, #4a1a7a 70%, #2a0f4a 100%);
+  background-size: 100% 3px, 96px 64px, 100% 100%;
+  background-attachment: fixed;
+}
+html[data-style='edith'] .card,
+html[data-style='edith'] .sheet,
+html[data-style='edith'] .modal-card {
+  background-color: rgba(30, 10, 54, 0.88);
+  border: 2px solid rgba(58, 214, 224, 0.55);
+  box-shadow: 0 0 0 1px rgba(255, 122, 217, 0.25), 0 0 22px rgba(255, 122, 217, 0.35);
+}
+html[data-style='edith'] h1 {
+  background: none;
+  -webkit-text-fill-color: #3ad6e0;
+  color: #3ad6e0;
+  text-shadow: 3px 3px 0 #1a0a30, 0 0 14px rgba(58, 214, 224, 0.6);
+}
+html[data-style='edith'] .greeting { color: #ffe0f6; }
+html[data-style='edith'] .logo-icon { box-shadow: 0 0 18px rgba(58, 214, 224, 0.55); }
+
 /* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */
 html[data-style='mono'] .app,
 html[data-style='mono'] .fx,
