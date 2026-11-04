@@ -8,7 +8,7 @@ A cheerful, no-pressure step goal tracker, like StepBet without the money.
 - **Two goals**: a daily goal and a big goal.
 - **Streaks**: shows the current and best streak. Days in a streak are linked together on the calendar, and there's a fireworks celebration at 3, 7, 14, 21, 30, 50, 100… days.
 - **Skip days**: you start with one free. Goal days earn 1 point and big goal days earn 2; every 10 points earns another skip day. A skip day keeps the streak alive. If you mark a day as missed and it breaks a streak, Steppy offers to use a skip day instead.
-- **Bonus tickets**: entering a step count that's 2× her goal earns a bonus skip ticket, 3× earns two, and so on. The big goal counts separately, so 21,000 steps with goals of 7,000 / 10,000 is 3× + 2× = **3 extra tickets** (her popup just says "3 tickets!"). The bonus is saved on the day using that day's goals, so changing goals later never changes it. Raising a day's steps tops up the bonus.
+- **Extra points**: entering a step count that's 2× her goal earns an extra point toward her next skip day, 3× earns two, and so on. The big goal counts separately, so 21,000 steps with goals of 7,000 / 10,000 is the usual 2 points + 3 extra = **5 points**. Extra points are saved on the day using that day's goals, so changing goals later never changes them. Raising a day's steps tops them up.
 - **Goal coach**: looks at the last 14 days (only days since the goals last changed, and only once there are at least 7 logged days) and suggests:
   - raising both goals if the big goal happens 60%+ of the time
   - raising the daily goal if it's hit 85%+ of the time

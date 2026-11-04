@@ -98,18 +98,19 @@ export function nextMilestone(streak) {
 export function skipInfo(days, spent = 0) {
   let points = 0;
   let used = 0;
-  let bonus = 0;
+  let extra = 0;
   for (const v of Object.values(days)) {
     if (v.status === STATUS.SKIP) used++;
     else {
       points += POINTS[v.status] ?? 0;
-      if (v.status === STATUS.REGULAR || v.status === STATUS.BIG) bonus += Math.max(0, Math.floor(v.bonus) || 0);
+      if (v.status === STATUS.REGULAR || v.status === STATUS.BIG) extra += Math.max(0, Math.floor(v.extra) || 0);
     }
   }
-  const earned = STARTER_SKIPS + Math.floor(points / POINTS_PER_SKIP) + bonus;
+  points += extra;
+  const earned = STARTER_SKIPS + Math.floor(points / POINTS_PER_SKIP);
   return {
     earned,
-    bonus,
+    extra,
     used,
     spent,
     available: Math.max(0, earned - used - spent),
@@ -121,15 +122,15 @@ export function skipInfo(days, spent = 0) {
 // ---------- steps ----------
 
 /**
- * Bonus skip tickets for going way past a goal: one for every extra multiple of each goal
+ * Extra points for going way past a goal: one for every extra multiple of each goal
  * (2× the goal = +1, 3× = +2, …), counted for the daily goal and the big goal separately.
- * Saved on the day when it's logged, so changing goals later never changes old bonuses.
+ * Saved on the day when it's logged, so changing goals later never changes old days.
  */
 export function goalMultiples(steps, { regularGoal, bigGoal }) {
   const x = (goal) => (goal > 0 && steps > 0 ? Math.floor(steps / goal) : 0);
   return { regular: x(regularGoal), big: x(bigGoal) };
 }
-export function bonusTickets(steps, goals) {
+export function extraPoints(steps, goals) {
   const m = goalMultiples(steps, goals);
   return Math.max(0, m.regular - 1) + Math.max(0, m.big - 1);
 }

@@ -1306,9 +1306,9 @@ async function setDay(key, status, steps) {
   else {
     const entry = { status };
     if (Number.isFinite(steps) && steps > 0) entry.steps = Math.round(steps);
-    // bonus tickets for doubling (tripling…) a goal, worked out with today's goals
-    const bonus = entry.steps && (status === 'regular' || status === 'big') ? L.bonusTickets(entry.steps, state.settings) : 0;
-    if (bonus) entry.bonus = bonus;
+    // extra points for doubling (tripling…) a goal, worked out with today's goals
+    const extra = entry.steps && (status === 'regular' || status === 'big') ? L.extraPoints(entry.steps, state.settings) : 0;
+    if (extra) entry.extra = extra;
     state.days[key] = entry;
   }
   if (!state.meta.startedOn || key < state.meta.startedOn) state.meta.startedOn = key;
@@ -1324,8 +1324,8 @@ async function setDay(key, status, steps) {
   }
   if (!status) return;
   const after = snapshot();
-  // same status as before: only carry on if she just earned more bonus tickets (e.g. updated her steps)
-  if (status === old?.status && after.skips.bonus <= before.skips.bonus) return;
+  // same status as before: only carry on if she just earned more extra points (e.g. updated her steps)
+  if (status === old?.status && after.skips.extra <= before.skips.extra) return;
   const improved = RANK[status] > (old ? RANK[old.status] : -1);
   celebrating = true; // hold month/holiday popups and stray messages until we're done
   try {
@@ -1370,6 +1370,18 @@ async function celebrateDay({ key, status, steps, old, before, after, improved, 
     }
   }
 
+  // 1b. Extra points for doubling (tripling…) a goal: "21,000 steps is 3× your goal and 2× your big goal!"
+  // If they also earn a ticket, this goes in the ticket popup; otherwise it's a toast.
+  const extraGained = after.skips.extra - before.skips.extra;
+  let extraLine = '';
+  if (extraGained > 0) {
+    const m = L.goalMultiples(steps || 0, state.settings);
+    const times = [m.regular >= 2 ? `${m.regular}× your goal` : '', m.big >= 2 ? `${m.big}× your big goal` : ''].filter(Boolean).join(' and ');
+    extraLine = `${fmt(Math.round(steps))} steps is ${times}! +${extraGained} ${old?.extra ? 'more ' : ''}point${extraGained === 1 ? '' : 's'}`;
+    fx.pulse($('#stat-skips'));
+    if (after.skips.earned === before.skips.earned) toast(`${extraLine} toward your next ticket ⭐`, { duration: 4500 });
+  }
+
   // 2. Streak milestone / personal best
   let milestone = L.crossedMilestone(before.streak, after.streak);
   if (milestone) {
@@ -1401,36 +1413,14 @@ async function celebrateDay({ key, status, steps, old, before, after, improved, 
   // 3. Earned a skip day (last, since it may lead to the Theme Machine)
   if (after.skips.earned > before.skips.earned) {
     const gained = after.skips.earned - before.skips.earned;
-    const bonusGained = Math.max(0, after.skips.bonus - before.skips.bonus);
     for (let i = 0; i < Math.min(gained, 3); i++) await fx.flyTo('🎟️', null, $('#stat-skips'));
     const justUnlocked = !machineWasUnlocked && machineUnlocked();
-    // "21,000 steps is 3× your goal and 2× your big goal!"
-    const m = L.goalMultiples(steps || 0, state.settings);
-    const timesLine = bonusGained
-      ? `<b>${fmt(Math.round(steps))} steps</b> is ${[m.regular >= 2 ? `${m.regular}× your goal` : '', m.big >= 2 ? `${m.big}× your big goal` : ''].filter(Boolean).join(' and ')}! `
-      : '';
-    const more = old?.bonus ? ' more' : ''; // she bumped up a day that already had a bonus
-    const bonusLine = bonusGained
-      ? timesLine.trim()
-      : '';
-    if (bonusGained && !justUnlocked) {
-      fx.vibrate([40, 30, 40, 30, 40]);
-      await showModal({
-        emoji: '🎟️',
-        title: gained === 1 ? (more ? 'Another ticket!' : 'You earned a ticket!') : `${gained}${more} tickets!`,
-        body: `${bonusLine} You have <b>${after.skips.available}</b> now.`,
-        cta: 'Woohoo!',
-        big: true,
-        fx: () => fx.fireworks(4, { colors: ['#a78bfa', '#ffc75f', '#ff6f91', '#ffffff'], emojis: ['🎟️'] }),
-      });
-      return;
-    }
     if (justUnlocked) {
       // one popup for both, instead of a skip-day popup plus a separate unlock announcement
       await showModal({
         emoji: '🍬',
-        title: bonusGained ? `${gained} tickets, and a surprise!` : 'New skip day, and a surprise!',
-        body: `${bonusLine ? bonusLine + ' And you' : 'You earned a skip day <b>and</b>'} <b>unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
+        title: 'New skip day, and a surprise!',
+        body: `${extraLine ? `${extraLine} ⭐ ` : ''}You earned a skip day <b>and unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
         cta: null,
         html: `<div class="row modal-row">
             <button class="btn primary" data-open-machine type="button">Take me there 🍬</button>
@@ -1441,8 +1431,8 @@ async function celebrateDay({ key, status, steps, old, before, after, improved, 
     } else {
       await showModal({
         emoji: '🎟️',
-        title: 'You earned a skip day!',
-        body: `Save it for a busy or lazy day — it keeps your streak alive. You have <b>${after.skips.available}</b> now.`,
+        title: gained > 1 ? `You earned ${gained} skip days!` : 'You earned a skip day!',
+        body: `${extraLine ? `${extraLine} ⭐<br>` : ''}Save it for a busy or lazy day — it keeps your streak alive. You have <b>${after.skips.available}</b> now.`,
         cta: 'Nice!',
         fx: () => fx.confetti({ count: 80, colors: ['#a78bfa', '#c4b5fd', '#f0abfc', '#ffffff'] }),
       });

@@ -44,7 +44,7 @@ test('milestones', () => {
 });
 
 test('skip days: starter skip, big days count double, used skips subtract', () => {
-  assert.deepEqual(L.skipInfo({}), { earned: 1, bonus: 0, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
+  assert.deepEqual(L.skipInfo({}), { earned: 1, extra: 0, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
   const s = L.skipInfo(days('rrrrrrrrbb')); // 8 + 4 = 12 points
   assert.equal(s.earned, 2);
   assert.equal(s.progress, 2);
@@ -52,20 +52,23 @@ test('skip days: starter skip, big days count double, used skips subtract', () =
   assert.equal(used.available, 0);
 });
 
-test('bonus tickets for doubling, tripling… each goal', () => {
+test('extra points for doubling, tripling… each goal', () => {
   const g = { regularGoal: 7000, bigGoal: 10000 };
-  assert.equal(L.bonusTickets(13999, g), 0);
-  assert.equal(L.bonusTickets(14000, g), 1); // 2× goal
-  assert.equal(L.bonusTickets(20000, g), 2); // 2× goal + 2× big goal
-  assert.equal(L.bonusTickets(21000, g), 3); // 3× goal + 2× big goal
-  assert.equal(L.bonusTickets(30000, g), 5); // 4× goal + 3× big goal
-  assert.equal(L.bonusTickets(0, g), 0);
+  assert.equal(L.extraPoints(13999, g), 0);
+  assert.equal(L.extraPoints(14000, g), 1); // 2× goal
+  assert.equal(L.extraPoints(20000, g), 2); // 2× goal + 2× big goal
+  assert.equal(L.extraPoints(21000, g), 3); // 3× goal + 2× big goal
+  assert.equal(L.extraPoints(30000, g), 5); // 4× goal + 3× big goal
+  assert.equal(L.extraPoints(0, g), 0);
   assert.deepEqual(L.goalMultiples(21000, g), { regular: 3, big: 2 });
-  // saved bonuses add straight to earned tickets; skip days and junk never count
-  const d = { '2026-11-01': { status: 'big', steps: 21000, bonus: 3 }, '2026-11-02': { status: 'skip', bonus: 4 }, '2026-11-03': { status: 'regular', bonus: 'x' } };
+  // saved extra points add to the day's points; skip days and junk never count
+  const d = { '2026-11-01': { status: 'big', steps: 21000, extra: 3 }, '2026-11-02': { status: 'skip', extra: 4 }, '2026-11-03': { status: 'regular', extra: 'x' } };
   const s = L.skipInfo(d);
-  assert.equal(s.bonus, 3);
-  assert.equal(s.earned, 1 + 0 + 3);
+  assert.equal(s.extra, 3);
+  assert.equal(s.progress, 2 + 3 + 1); // big (2) + extra (3) + regular (1)
+  assert.equal(s.earned, 1);
+  // enough extra points tip over into a ticket
+  assert.equal(L.skipInfo({ a: { status: 'big', extra: 8 } }).earned, 2);
 });
 
 test('classifySteps', () => {
