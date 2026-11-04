@@ -1411,13 +1411,13 @@ async function celebrateDay({ key, status, steps, old, before, after, improved, 
       : '';
     const more = old?.bonus ? ' more' : ''; // she bumped up a day that already had a bonus
     const bonusLine = bonusGained
-      ? `${timesLine}That’s <b>${bonusGained}${more} bonus ticket${bonusGained === 1 ? '' : 's'}</b>${gained > bonusGained ? ', plus a skip day for your points' : ''}.`
+      ? timesLine.trim()
       : '';
     if (bonusGained && !justUnlocked) {
       fx.vibrate([40, 30, 40, 30, 40]);
       await showModal({
         emoji: '🎟️',
-        title: bonusGained === 1 ? (more ? 'Another bonus ticket!' : 'Bonus ticket!') : `${bonusGained}${more} bonus tickets!`,
+        title: gained === 1 ? (more ? 'Another ticket!' : 'You earned a ticket!') : `${gained}${more} tickets!`,
         body: `${bonusLine} You have <b>${after.skips.available}</b> now.`,
         cta: 'Woohoo!',
         big: true,
@@ -1429,7 +1429,7 @@ async function celebrateDay({ key, status, steps, old, before, after, improved, 
       // one popup for both, instead of a skip-day popup plus a separate unlock announcement
       await showModal({
         emoji: '🍬',
-        title: bonusGained ? 'Bonus tickets, and a surprise!' : 'New skip day, and a surprise!',
+        title: bonusGained ? `${gained} tickets, and a surprise!` : 'New skip day, and a surprise!',
         body: `${bonusLine ? bonusLine + ' And you' : 'You earned a skip day <b>and</b>'} <b>unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
         cta: null,
         html: `<div class="row modal-row">
