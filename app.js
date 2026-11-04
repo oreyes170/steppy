@@ -1306,6 +1306,9 @@ async function setDay(key, status, steps) {
   else {
     const entry = { status };
     if (Number.isFinite(steps) && steps > 0) entry.steps = Math.round(steps);
+    // bonus tickets for doubling (tripling…) a goal, worked out with today's goals
+    const bonus = entry.steps && (status === 'regular' || status === 'big') ? L.bonusTickets(entry.steps, state.settings) : 0;
+    if (bonus) entry.bonus = bonus;
     state.days[key] = entry;
   }
   if (!state.meta.startedOn || key < state.meta.startedOn) state.meta.startedOn = key;
@@ -1319,8 +1322,10 @@ async function setDay(key, status, steps) {
     toast(`${fmt(Math.round(steps || 0))} steps saved! ${fmt(e.left)} to go, about ${L.formatDuration(e.minutes * 60000)} of walking 💪`, { duration: 4500 });
     return;
   }
-  if (!status || status === old?.status) return;
+  if (!status) return;
   const after = snapshot();
+  // same status as before: only carry on if she just earned more bonus tickets (e.g. updated her steps)
+  if (status === old?.status && after.skips.bonus <= before.skips.bonus) return;
   const improved = RANK[status] > (old ? RANK[old.status] : -1);
   celebrating = true; // hold month/holiday popups and stray messages until we're done
   try {
@@ -1335,13 +1340,14 @@ async function setDay(key, status, steps) {
   }
 }
 
-async function celebrateDay({ key, status, steps, before, after, improved, machineWasUnlocked }) {
+async function celebrateDay({ key, status, steps, old, before, after, improved, machineWasUnlocked }) {
   // 1. The day itself
   if (status === 'big' && improved) {
     fx.vibrate([30, 40, 30, 40, 80]);
     fx.cannons();
     fx.emojiRain(theme.rain);
-    fx.banner('BIG GOAL!', theme.bigSub || pick(MSG.big));
+    const xBig = L.goalMultiples(steps || 0, state.settings).big;
+    fx.banner(xBig >= 2 ? `${xBig}× BIG GOAL!` : 'BIG GOAL!', theme.bigSub || pick(MSG.big));
     await wait(2500); // let the banner finish before anything else appears
   } else if (status === 'regular' && improved) {
     fx.vibrate(40);
@@ -1394,14 +1400,37 @@ async function celebrateDay({ key, status, steps, before, after, improved, machi
 
   // 3. Earned a skip day (last, since it may lead to the Theme Machine)
   if (after.skips.earned > before.skips.earned) {
-    await fx.flyTo('🎟️', null, $('#stat-skips'));
+    const gained = after.skips.earned - before.skips.earned;
+    const bonusGained = Math.max(0, after.skips.bonus - before.skips.bonus);
+    for (let i = 0; i < Math.min(gained, 3); i++) await fx.flyTo('🎟️', null, $('#stat-skips'));
     const justUnlocked = !machineWasUnlocked && machineUnlocked();
+    // "21,000 steps is 3× your goal and 2× your big goal!"
+    const m = L.goalMultiples(steps || 0, state.settings);
+    const timesLine = bonusGained
+      ? `<b>${fmt(Math.round(steps))} steps</b> is ${[m.regular >= 2 ? `${m.regular}× your goal` : '', m.big >= 2 ? `${m.big}× your big goal` : ''].filter(Boolean).join(' and ')}! `
+      : '';
+    const more = old?.bonus ? ' more' : ''; // she bumped up a day that already had a bonus
+    const bonusLine = bonusGained
+      ? `${timesLine}That’s <b>${bonusGained}${more} bonus ticket${bonusGained === 1 ? '' : 's'}</b>${gained > bonusGained ? ', plus a skip day for your points' : ''}.`
+      : '';
+    if (bonusGained && !justUnlocked) {
+      fx.vibrate([40, 30, 40, 30, 40]);
+      await showModal({
+        emoji: '🎟️',
+        title: bonusGained === 1 ? (more ? 'Another bonus ticket!' : 'Bonus ticket!') : `${bonusGained}${more} bonus tickets!`,
+        body: `${bonusLine} You have <b>${after.skips.available}</b> now.`,
+        cta: 'Woohoo!',
+        big: true,
+        fx: () => fx.fireworks(4, { colors: ['#a78bfa', '#ffc75f', '#ff6f91', '#ffffff'], emojis: ['🎟️'] }),
+      });
+      return;
+    }
     if (justUnlocked) {
       // one popup for both, instead of a skip-day popup plus a separate unlock announcement
       await showModal({
         emoji: '🍬',
-        title: 'New skip day, and a surprise!',
-        body: `You earned a skip day <b>and unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
+        title: bonusGained ? 'Bonus tickets, and a surprise!' : 'New skip day, and a surprise!',
+        body: `${bonusLine ? bonusLine + ' And you' : 'You earned a skip day <b>and</b>'} <b>unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
         cta: null,
         html: `<div class="row modal-row">
             <button class="btn primary" data-open-machine type="button">Take me there 🍬</button>

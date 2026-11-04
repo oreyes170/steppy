@@ -44,12 +44,28 @@ test('milestones', () => {
 });
 
 test('skip days: starter skip, big days count double, used skips subtract', () => {
-  assert.deepEqual(L.skipInfo({}), { earned: 1, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
+  assert.deepEqual(L.skipInfo({}), { earned: 1, bonus: 0, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
   const s = L.skipInfo(days('rrrrrrrrbb')); // 8 + 4 = 12 points
   assert.equal(s.earned, 2);
   assert.equal(s.progress, 2);
   const used = L.skipInfo(days('ssr'));
   assert.equal(used.available, 0);
+});
+
+test('bonus tickets for doubling, tripling… each goal', () => {
+  const g = { regularGoal: 7000, bigGoal: 10000 };
+  assert.equal(L.bonusTickets(13999, g), 0);
+  assert.equal(L.bonusTickets(14000, g), 1); // 2× goal
+  assert.equal(L.bonusTickets(20000, g), 2); // 2× goal + 2× big goal
+  assert.equal(L.bonusTickets(21000, g), 3); // 3× goal + 2× big goal
+  assert.equal(L.bonusTickets(30000, g), 5); // 4× goal + 3× big goal
+  assert.equal(L.bonusTickets(0, g), 0);
+  assert.deepEqual(L.goalMultiples(21000, g), { regular: 3, big: 2 });
+  // saved bonuses add straight to earned tickets; skip days and junk never count
+  const d = { '2026-11-01': { status: 'big', steps: 21000, bonus: 3 }, '2026-11-02': { status: 'skip', bonus: 4 }, '2026-11-03': { status: 'regular', bonus: 'x' } };
+  const s = L.skipInfo(d);
+  assert.equal(s.bonus, 3);
+  assert.equal(s.earned, 1 + 0 + 3);
 });
 
 test('classifySteps', () => {
@@ -334,10 +350,11 @@ test('heading fonts are assigned to the right themes', async () => {
   const heads = Object.fromEntries(T.ALL_THEMES.filter((t) => t.head).map((t) => [t.id, t.head]));
   assert.equal(heads['ts-ttpd'], 'typewriter');
   assert.equal(heads['bway25-sunsetblvd'], 'helvetica');
+  assert.equal(heads['sport-uconn'], 'varsity');
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 25);
+  assert.equal(Object.keys(heads).length, 28);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {
