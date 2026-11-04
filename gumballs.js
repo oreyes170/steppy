@@ -260,10 +260,11 @@ const ALL_GUMBALLS = [
     pitch: 'Slate blue and orange tape, with little notes drifting down like a list of brilliant things.',
   },
   {
-    id: 'bway26-cats', set: 'broadway-2026', name: 'Cats: The Jellicle Ball', emoji: '🐈‍⬛',
+    id: 'bway26-cats', set: 'broadway-2026', name: 'Cats: The Jellicle Ball', emoji: '🪩', style: 'disco', ball: '#b9bec8',
     colors: { bg: '#fff6a6', primary: '#1c1c1c', accent: '#a8a8a8', ink: '#1c1c1c' },
-    emojis: ['🐈‍⬛', '🪩', '💃', '✨'], cheer: 'A purr-fect day! 🐈‍⬛',
-    pitch: 'Highlighter yellow, black and disco silver. Time for the ball.',
+    confetti: ['#c8ccd4', '#ffffff', '#1c1c1c', '#f2e600', '#8a8f99'],
+    emojis: ['🪩', '🐈‍⬛', '🪩', '💃', '✨'], cheer: 'A purr-fect day! 🪩',
+    pitch: 'Highlighter yellow, black and a giant mirror ball throwing light everywhere. Time for the ball.',
   },
   {
     id: 'bway26-heathers', set: 'broadway-2026', name: 'Heathers', emoji: '🎀',
