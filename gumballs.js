@@ -706,6 +706,14 @@ const ALL_GUMBALLS = [
     pitch: 'Dark wood, gold and a red wax seal. The tasks are absurd.',
   },
   {
+    id: 'tv-dwts', set: 'tv', name: 'Dancing with the Stars', emoji: '🪩', style: 'ballroom', head: 'didot', ball: '#b9bec8',
+    colors: { bg: '#0d0f2a', primary: '#d9b45a', accent: '#8f9cff', ink: '#f4f0ff', blend: '#f3dc96' }, dark: true,
+    confetti: ['#d9b45a', '#c8ccd4', '#ffffff', '#8f9cff', '#f3dc96'],
+    emojis: ['🪩', '💃', '🕺', '✨', '🏆'], cheer: 'Perfect 10s across the board! 🪩',
+    note: 'The mirror ball is spinning. Grab a partner and hit the floor. 💃',
+    pitch: 'A midnight ballroom with gold, sequins and the mirror ball spinning overhead.',
+  },
+  {
     id: 'tv-savedbythebell', set: 'tv', name: 'Saved by the Bell', emoji: '🔔', ball: '#f2c230',
     colors: { bg: '#fff6e0', primary: '#d6338a', accent: '#1aa6a6', ink: '#2a1840', blend: '#7a3fd0' },
     confetti: ['#d6338a', '#1aa6a6', '#f2c230', '#7a3fd0', '#ffffff'],

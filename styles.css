@@ -1431,7 +1431,7 @@ html[data-style='edith'] .logo-icon { box-shadow: 0 0 18px rgba(58, 214, 224, 0.
 
 /* 🪩 disco (Cats: The Jellicle Ball): a mirror ball peeking in, drifting light spots, a mirror-tile title. */
 /* the settings button becomes the mirror ball, hanging on a wire */
-html[data-style='disco'] .settings-btn {
+html:is([data-style='disco'], [data-style='ballroom']) .settings-btn {
   position: relative;
   overflow: visible;
   border-radius: 50%;
@@ -1445,19 +1445,19 @@ html[data-style='disco'] .settings-btn {
   box-shadow: inset -6px -8px 14px rgba(20, 20, 30, 0.45), 0 0 18px rgba(255, 255, 255, 0.95), 0 0 34px rgba(255, 255, 255, 0.6);
   animation: disco-spin 2.4s linear infinite;
 }
-html[data-style='disco'] .settings-btn svg { opacity: 1; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff); }
-html[data-style='disco'] .settings-btn::before {
+html:is([data-style='disco'], [data-style='ballroom']) .settings-btn svg { opacity: 1; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff); }
+html:is([data-style='disco'], [data-style='ballroom']) .settings-btn::before {
   content: '';
   position: absolute;
   bottom: 100%;
   left: calc(50% - 1px);
   width: 2px;
   height: 200px;
-  background: #1c1c1c;
+  background: var(--disco-wire, #1c1c1c);
   pointer-events: none;
 }
 /* light spots thrown around the room */
-html[data-style='disco'] body::after {
+html:is([data-style='disco'], [data-style='ballroom']) body::after {
   content: '';
   position: fixed;
   inset: -40%;
@@ -1475,7 +1475,7 @@ html[data-style='disco'] body::after {
 }
 @keyframes disco-spin { to { background-position: 0 0, 0 6px, 6px 0, 0 0; } }
 @keyframes disco-sweep { to { transform: rotate(360deg); } }
-html[data-style='disco'] h1 {
+html:is([data-style='disco'], [data-style='ballroom']) h1 {
   background:
     repeating-linear-gradient(90deg, rgba(30, 30, 30, 0.35) 0 1px, transparent 1px 7px),
     repeating-linear-gradient(0deg, rgba(30, 30, 30, 0.35) 0 1px, transparent 1px 7px),
@@ -1485,15 +1485,35 @@ html[data-style='disco'] h1 {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(2px 2px 0 #1c1c1c);
+  filter: drop-shadow(2px 2px 0 var(--disco-wire, #1c1c1c));
   animation: disco-shine 3.5s linear infinite;
 }
 @keyframes disco-shine { to { background-position: 0 0, 0 0, -200% 0; } }
-html[data-style='disco'] .card { border: 2px solid #1c1c1c; box-shadow: 4px 4px 0 #1c1c1c, 0 0 0 4px rgba(255, 255, 255, 0.6); }
+html:is([data-style='disco'], [data-style='ballroom']) .card { border: 2px solid #1c1c1c; box-shadow: 4px 4px 0 #1c1c1c, 0 0 0 4px rgba(255, 255, 255, 0.6); }
 @media (prefers-reduced-motion: reduce) {
-  html[data-style='disco'] .settings-btn,
-  html[data-style='disco'] body::after,
-  html[data-style='disco'] h1 { animation: none; }
+  html:is([data-style='disco'], [data-style='ballroom']) .settings-btn,
+  html:is([data-style='disco'], [data-style='ballroom']) body::after,
+  html:is([data-style='disco'], [data-style='ballroom']) h1 { animation: none; }
+}
+
+/* 🪩 ballroom (Dancing with the Stars): the same mirror ball, on a midnight dance floor with gold. */
+html[data-style='ballroom'] { --disco-wire: #d9b45a; }
+html[data-style='ballroom'] body {
+  background-image: radial-gradient(ellipse at 50% -10%, rgba(120, 140, 255, 0.35), transparent 60%),
+    radial-gradient(ellipse at 50% 110%, rgba(217, 180, 90, 0.25), transparent 55%);
+  background-attachment: fixed;
+}
+html[data-style='ballroom'] .card { border: 2px solid #d9b45a; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 24px rgba(217, 180, 90, 0.25); }
+html[data-style='ballroom'] .greeting { color: #e9e2ff; }
+html[data-style='ballroom'] body::after { opacity: 0.45; }
+html[data-style='ballroom'] h1 {
+  background:
+    repeating-linear-gradient(90deg, rgba(40, 25, 0, 0.35) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(0deg, rgba(40, 25, 0, 0.35) 0 1px, transparent 1px 7px),
+    linear-gradient(100deg, #8a6a20 0%, #f3dc96 20%, #ffffff 28%, #b08a34 45%, #f6e3a8 62%, #ffffff 70%, #8a6a20 100%);
+  background-size: 7px 7px, 7px 7px, 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 /* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */
