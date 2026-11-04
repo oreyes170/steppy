@@ -382,6 +382,8 @@ function applyTheme() {
   else delete root.dataset.style;
   if (t.head) root.dataset.head = t.head; // a heading font (see styles.css)
   else delete root.dataset.head;
+  const h1 = document.querySelector('.title-row h1');
+  if (h1) h1.textContent = t.title || 'Steppy';
   const mode = t.id === 'classic' ? state.settings.classicMode || 'auto' : 'auto';
   if (mode !== 'auto') root.dataset.mode = mode; // Classic: light / dark / black
   else delete root.dataset.mode;

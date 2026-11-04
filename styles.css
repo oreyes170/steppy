@@ -1169,6 +1169,20 @@ html[data-head] .banner-text {
   letter-spacing: var(--head-spacing, normal);
 }
 html[data-head] h1 { font-size: min(var(--head-h1, 32px), 9.5vw); }
+/* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
+html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
+html[data-head='helvetica'] h1 {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  background: none;
+  -webkit-text-fill-color: #e0182d;
+  color: #e0182d;
+  font-size: min(30px, 7.2vw);
+}
+/* the longer title needs the room: the version pill drops below it when it doesn't fit */
+html[data-head='helvetica'] .title-row { flex-wrap: wrap; row-gap: 2px; }
+html[data-head='helvetica'] .brand { min-width: 0; }
 html[data-head='typewriter'] { --head-font: 'American Typewriter', 'Courier New', monospace; --head-weight: 600; }
 html[data-head='hand'] { --head-font: 'Noteworthy', 'Bradley Hand', 'Segoe Print', cursive; --head-weight: 700; }
 html[data-theme='gumball'][data-head='hand'] h1 { font-family: 'Bradley Hand', 'Noteworthy', cursive; }

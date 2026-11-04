@@ -198,7 +198,7 @@ const ALL_GUMBALLS = [
   },
   {
     // Seen in 2024. The id keeps '25' on purpose: ids never change once she might own one.
-    id: 'bway25-sunsetblvd', head: 'didot', set: 'broadway-2024', name: 'Sunset Blvd.', emoji: '🎬',
+    id: 'bway25-sunsetblvd', head: 'helvetica', title: 'STEPPY BLVD.', set: 'broadway-2024', name: 'Sunset Blvd.', emoji: '🎬',
     colors: { bg: '#0b0b0b', primary: '#d7192e', accent: '#f2f2f2', ink: '#f5f5f5', blend: '#ff5a6a' }, dark: true,
     emojis: ['🎬', '🎞️', '🌴', '❤️'], cheer: 'Ready for your close-up! 🎬',
     pitch: 'Stark black and blood red. Lights, camera, Hollywood.',
@@ -903,6 +903,7 @@ export function buildTheme(g) {
     note: g.note || '',
     style: g.style || '',
     head: g.head || '',
+    title: g.title || '', // replaces the "Steppy" title while it's on
   };
 }
 
