@@ -1229,6 +1229,27 @@ html[data-style='mindplay'] body {
   background-attachment: fixed;
 }
 html[data-style='mindplay'] .card { border: 1px solid rgba(212, 166, 58, 0.35); }
+/* ✉️ Taskmaster: red studio backdrop, black-suit cards edged in throne gold, white stamped title */
+html[data-style='taskmaster'] body {
+  background-color: #a50e1e;
+  background-image: radial-gradient(ellipse 90% 60% at 50% 15%, #d61a2c 0%, #b8111f 45%, #8a0a16 100%);
+  background-attachment: fixed;
+}
+html[data-style='taskmaster'] .card { background: #141414; border: 2px solid #d6a93e; box-shadow: 0 8px 24px rgba(60, 0, 6, 0.55); }
+html[data-style='taskmaster'] .greeting { color: #ffe9ea; }
+html[data-style='taskmaster'] h1 {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+  text-shadow: 0 2px 0 rgba(90, 0, 10, 0.5);
+  /* worn rubber-stamp texture */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html[data-style='taskmaster'] .version { background: rgba(0, 0, 0, 0.35); color: #fff; -webkit-text-fill-color: #fff; }
 /* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
 html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
 html[data-head='helvetica'] h1 {

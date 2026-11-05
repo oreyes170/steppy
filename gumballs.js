@@ -700,11 +700,12 @@ const ALL_GUMBALLS = [
     pitch: 'Pastel bunting, a white tent and lots of cake.',
   },
   {
-    id: 'tv-taskmaster', set: 'tv', name: 'Taskmaster', emoji: '✉️', head: 'deco', ball: '#c8322b',
-    colors: { bg: '#141210', primary: '#d4a73a', accent: '#c8322b', ink: '#f4ead6', blend: '#f0cf7a' }, dark: true,
-    confetti: ['#d4a73a', '#c8322b', '#f4ead6', '#8a6a2a', '#ffffff'],
-    emojis: ['✉️', '🏆', '⏱️', '🍉'], cheer: 'Five points! 🏆', note: 'Your task: hit your step goal. Your time starts now. ✉️',
-    pitch: 'Dark wood, gold and a red wax seal. The tasks are absurd.',
+    id: 'tv-taskmaster', set: 'tv', name: 'Taskmaster', emoji: '✉️', head: 'typewriter', style: 'taskmaster', ball: '#c8102e', iconTint: '#8a0c1c',
+    colors: { bg: '#141414', primary: '#d6a93e', accent: '#c8102e', ink: '#f6f1e8', blend: '#f2d27e', wash: '#8a0c1c',
+      status: { regular: '#e0485a', big: '#d6a93e', skip: '#9a9a9a' } }, dark: true,
+    confetti: ['#d6a93e', '#c8102e', '#ffffff', '#141414', '#f2d27e'],
+    emojis: ['✉️', '👑', '🏆', '⏱️'], cheer: 'Five points! 🏆', note: 'Your task: hit your step goal. Your time starts now. ✉️',
+    pitch: 'A red studio, black suits and two gold thrones. The tasks are absurd.',
   },
   {
     id: 'tv-dwts', set: 'tv', name: 'Dancing with the Stars', emoji: '🪩', style: 'ballroom', head: 'didot', ball: '#b9bec8',
