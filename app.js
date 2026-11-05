@@ -644,14 +644,19 @@ async function doSpin(setId) {
     drop.style.background = t.ball;
     wrap.appendChild(drop);
   }
-  await wait(fx.reducedMotion() ? 0 : 1000);
-  // remember where the gumball landed: it flies out of the machine toward her from there
   const dropEl = wrap?.querySelector('.gumball-drop');
-  const from = dropEl?.getBoundingClientRect();
-  const flying = !!(from && from.width && !fx.reducedMotion());
-  if (flying) dropEl.style.visibility = 'hidden';
+  const flying = !!(dropEl && !fx.reducedMotion());
+  // Flying: get the reveal ready while the ball is still rolling out, so the flight can take
+  // over the moment it lands, in one smooth movement. Otherwise, let it sit for a beat.
+  await wait(fx.reducedMotion() ? 0 : flying ? 700 : 1000);
   const set = Gumballs.setById(t.set);
   const race = set?.intro === 'race' || t.intro === 'race';
+  let from = dropEl; // the flight starts from wherever the ball is when it takes over
+  if (flying && race) {
+    await Promise.all(dropEl.getAnimations().map((a) => a.finished));
+    from = dropEl.getBoundingClientRect(); // the machine closes for the countdown, so remember the spot
+    dropEl.style.visibility = 'hidden';
+  }
   // the machine stays put while the ball flies out of it, and drops away behind the burst
   // (unless there's a race countdown first)
   if (!flying || race) {
@@ -706,7 +711,16 @@ async function flyGumballIn(t, from, celebrate, onBurst) {
   const root = document.documentElement;
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   const target = document.querySelector('#modal .reveal-ball')?.getBoundingClientRect();
-  if (!target) {
+  // `from` is the ball in the machine (take over when it finishes rolling out) or a saved spot
+  const dropEl = from instanceof Element ? from : null;
+  if (dropEl) {
+    // the roll-out's springy easing comes to rest at ~760ms of its 900ms: take over right then
+    const roll = dropEl.getAnimations()[0];
+    if (roll && roll.playState === 'running') await wait(Math.max(0, 760 - roll.currentTime));
+    from = dropEl.getBoundingClientRect();
+  }
+  if (!target || !from.width) {
+    if (dropEl) dropEl.style.visibility = 'hidden';
     onBurst();
     root.classList.remove('reveal-incoming');
     celebrate();
@@ -722,6 +736,7 @@ async function flyGumballIn(t, from, celebrate, onBurst) {
     background: t.ball,
   });
   document.body.appendChild(ball);
+  if (dropEl) dropEl.style.visibility = 'hidden'; // same frame as the flyer appears: no blink
   const dx = from.left + from.width / 2 - (target.left + target.width / 2);
   const dy = from.top + from.height / 2 - (target.top + target.height / 2);
   const s = from.width / target.width;
@@ -734,7 +749,7 @@ async function flyGumballIn(t, from, celebrate, onBurst) {
       { transform: 'translate(0, 0) scale(1.08) rotate(330deg)', offset: 0.9 },
       { transform: 'translate(0, 0) scale(1) rotate(360deg)' },
     ],
-    { duration: 900, easing: 'cubic-bezier(.45, 0, .35, 1)', fill: 'forwards' },
+    { duration: 900, easing: 'cubic-bezier(.3, .15, .35, 1)', fill: 'forwards' },
   ).finished;
   fx.vibrate([15, 40, 15]);
   // a nervous wobble before it pops
