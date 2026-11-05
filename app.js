@@ -645,14 +645,33 @@ async function doSpin(setId) {
     wrap.appendChild(drop);
   }
   await wait(fx.reducedMotion() ? 0 : 1000);
-  closeSheet();
-  await wait(260);
+  // remember where the gumball landed: it flies out of the machine toward her from there
+  const dropEl = wrap?.querySelector('.gumball-drop');
+  const from = dropEl?.getBoundingClientRect();
+  const flying = !!(from && from.width && !fx.reducedMotion());
+  if (flying) dropEl.style.visibility = 'hidden';
+  const set = Gumballs.setById(t.set);
+  const race = set?.intro === 'race' || t.intro === 'race';
+  // the machine stays put while the ball flies out of it, and drops away behind the burst
+  // (unless there's a race countdown first)
+  if (!flying || race) {
+    closeSheet();
+    await wait(260);
+  }
   sheet.classList.remove('is-spinning');
   spinning = false;
-
-  const set = Gumballs.setById(t.set);
-  if (set?.intro === 'race' || t.intro === 'race') await raceCountdown();
-  await showModal({
+  if (race) await raceCountdown();
+  const celebrate = () => {
+    if (t.rip) {
+      fx.emojiRain(['🍪', '🕯️', '🍪', '🤍'], 14); // a quiet moment instead of a party
+      return;
+    }
+    fx.confetti({ count: 140, colors: t.confetti, emojis: t.confettiEmoji });
+    fx.vibrate([40, 30, 80]);
+  };
+  // Open the reveal now but keep it invisible, so the flying ball knows exactly where to land.
+  if (flying) document.documentElement.classList.add('reveal-incoming');
+  const revealed = showModal({
     emoji: '',
     title: t.rip ? `${t.name} 🕯️` : /[!?]$/.test(t.revealName) ? t.revealName : `${t.revealName}!`,
     html: `
@@ -671,16 +690,82 @@ async function doSpin(setId) {
         <button class="btn ghost" data-close-modal>Save for later</button>
       </div>`,
     cta: null,
-    fx: () => {
-      if (t.rip) {
-        fx.emojiRain(['🍪', '🕯️', '🍪', '🤍'], 14); // a quiet moment instead of a party
-        return;
-      }
-      fx.confetti({ count: 140, colors: t.confetti, emojis: t.confettiEmoji });
-      fx.vibrate([40, 30, 80]);
-    },
+    fx: flying ? null : celebrate,
   });
+  if (flying) await flyGumballIn(t, from, celebrate, () => !$('#sheet').hidden && closeSheet());
+  await revealed;
   if (Themes.byId(state.settings.theme).id !== t.id) toast(`${t.name} is in your collection 🍬`);
+}
+
+/**
+ * The gumball leaves the machine and flies toward her, growing as it comes closer, until it
+ * sits exactly where the reveal's ball will be. It wobbles, then bursts open and the reveal
+ * appears around it. (Chip City's RIP gets a soft glow instead of a burst.)
+ */
+async function flyGumballIn(t, from, celebrate, onBurst) {
+  const root = document.documentElement;
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const target = document.querySelector('#modal .reveal-ball')?.getBoundingClientRect();
+  if (!target) {
+    onBurst();
+    root.classList.remove('reveal-incoming');
+    celebrate();
+    return;
+  }
+  const ball = document.createElement('div');
+  ball.className = 'gumball-flyer';
+  Object.assign(ball.style, {
+    left: `${target.left}px`,
+    top: `${target.top}px`,
+    width: `${target.width}px`,
+    height: `${target.height}px`,
+    background: t.ball,
+  });
+  document.body.appendChild(ball);
+  const dx = from.left + from.width / 2 - (target.left + target.width / 2);
+  const dy = from.top + from.height / 2 - (target.top + target.height / 2);
+  const s = from.width / target.width;
+  // up out of the chute, then a long swoop toward the screen
+  await ball.animate(
+    [
+      { transform: `translate(${dx}px, ${dy}px) scale(${s}) rotate(0deg)` },
+      { transform: `translate(${dx * 0.9}px, ${dy - 40}px) scale(${s * 1.3}) rotate(-30deg)`, offset: 0.18 },
+      { transform: `translate(${dx * 0.35}px, ${dy * 0.35}px) scale(${0.55}) rotate(160deg)`, offset: 0.65 },
+      { transform: 'translate(0, 0) scale(1.08) rotate(330deg)', offset: 0.9 },
+      { transform: 'translate(0, 0) scale(1) rotate(360deg)' },
+    ],
+    { duration: 900, easing: 'cubic-bezier(.45, 0, .35, 1)', fill: 'forwards' },
+  ).finished;
+  fx.vibrate([15, 40, 15]);
+  // a nervous wobble before it pops
+  await ball.animate(
+    [
+      { transform: 'rotate(0) scale(1)' },
+      { transform: 'rotate(-9deg) scale(1.04, 0.97)' },
+      { transform: 'rotate(8deg) scale(0.97, 1.04)' },
+      { transform: 'rotate(-6deg) scale(1.06)' },
+      { transform: 'rotate(0) scale(1.12)' },
+    ],
+    { duration: 380, easing: 'ease-in-out', fill: 'forwards' },
+  ).finished;
+  // 💥 burst: a flash, a shockwave in the ball's colour, and the theme's confetti from the centre
+  const cx = target.left + target.width / 2;
+  const cy = target.top + target.height / 2;
+  for (const cls of t.rip ? ['reveal-flash soft'] : ['reveal-flash', 'reveal-ring']) {
+    const el = document.createElement('div');
+    el.className = cls;
+    Object.assign(el.style, { left: `${cx}px`, top: `${cy}px`, '--c': t.ball });
+    el.addEventListener('animationend', () => el.remove());
+    document.body.appendChild(el);
+  }
+  ball.remove();
+  onBurst();
+  root.classList.remove('reveal-incoming');
+  if (t.rip) celebrate();
+  else {
+    fx.confetti({ count: 180, x: cx, y: cy, spread: 2, power: 0.85, colors: t.confetti, emojis: t.confettiEmoji });
+    fx.vibrate([60, 30, 90]);
+  }
 }
 
 /** 🚦 3… 2… 1… GO! before revealing a Mario Kart gumball. */
@@ -1562,7 +1647,7 @@ function closeSheet() {
   const sheet = $('#sheet');
   if (sheet.hidden) return;
   sheet.classList.remove('open');
-  $('#backdrop').classList.remove('open');
+  if ($('#modal').hidden) $('#backdrop').classList.remove('open'); // a popup on top keeps the dimming
   const gen = ++sheetGen;
   setTimeout(() => {
     if (gen !== sheetGen) return;
