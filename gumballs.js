@@ -36,6 +36,8 @@ export const SETS = [
   { id: 'broadway-2024', name: 'Broadway magnets · 2024', emoji: '🧲' },
   { id: 'broadway-2025', name: 'Broadway magnets · 2025', emoji: '🧲' },
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
+  { id: 'live', name: 'Live & in Person', emoji: '🎙️' },
+  { id: 'concerts', name: 'Encore', emoji: '🎸' },
   { id: 'treats', name: 'Treat yourself', emoji: '🍟' },
   // intro: 'race' plays a 🚦 3-2-1-GO countdown before the reveal
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
@@ -529,6 +531,13 @@ const ALL_GUMBALLS = [
     emojis: ['🐱', '🐾', '🍼', '💕'], cheer: 'Wee wee wee! 🐱', note: 'Wee wee wee! 🐱',
     pitch: 'Soft kitten peach and little pink nose.',
   },
+  {
+    id: 'fyp-chillybean', set: 'fyp', name: 'Chilly bean potato', emoji: '🥔', ball: '#a9dcf2',
+    colors: { bg: '#eef8fd', primary: '#2f86c4', accent: '#a9dcf2', ink: '#1b3244', blend: '#6cc2ec' },
+    confetti: ['#2f86c4', '#a9dcf2', '#ffffff', '#c9a26a', '#6cc2ec'],
+    emojis: ['🥔', '🥶', '❄️', '🧊'], motion: 'fall', cheer: 'Chilly bean potato! 🥶', note: 'Chilly bean potato! 🥔🥶',
+    pitch: 'Frosty blue, snowflakes falling and one very cold little potato.',
+  },
   // ── 🎲 So Random: one-offs that don't fit anywhere else ──
   // (Kindle, Bookshelf, The Library and Libby live in 📚 Bookworm; ids keep their old 'rand-' prefix)
   {
@@ -811,6 +820,80 @@ const ALL_GUMBALLS = [
     confetti: ['#d8202a', '#1a1a1a', '#ffffff', '#ffd23f', '#3fa0ff', '#2fbf6a', '#b06aff'],
     emojis: ['🏁', '🍄', '🍌', '🐢', '⭐'], cheer: 'First place! 🏆', note: 'Ready, set, GO! 🏁',
     pitch: 'Racing red and checkered flags, with a rainbow road of confetti.',
+  },
+
+  // ── 🎙️ Live & in Person: podcasts and shows we've seen live ──
+  {
+    id: 'live-mfm', set: 'live', name: 'My Favorite Murder', emoji: '🔦', head: 'typewriter', ball: '#1c1c1c',
+    colors: { bg: '#141414', primary: '#e8476a', accent: '#f2c94c', ink: '#f4f0ec', blend: '#ff7a96' }, dark: true,
+    confetti: ['#e8476a', '#f2c94c', '#ffffff', '#5a5a5a', '#ff7a96'],
+    emojis: ['🔦', '🕵️‍♀️', '🐈', '🎙️'], cheer: 'Case closed! 🔦', note: 'Our favorite murder podcast, live! 🔦',
+    pitch: 'True-crime black with a flashlight glow, crime-scene yellow and a hot pink twist.',
+  },
+  {
+    id: 'live-blankcheck', set: 'live', name: 'Blank Check', emoji: '🎬', head: 'slab', ball: '#2f7a4f',
+    colors: { bg: '#eef6ee', primary: '#2f7a4f', accent: '#1e3a6a', ink: '#1b2a22', blend: '#5aa874' },
+    confetti: ['#2f7a4f', '#1e3a6a', '#cfe6d4', '#ffffff', '#5aa874'],
+    emojis: ['🎬', '📝', '🍿', '💚'], cheer: 'Cash that blank check! 💸', note: 'Where it all started: our very first date! 🎬💚',
+    pitch: 'Bank-check mint and fountain-pen navy, with a bucket of popcorn.',
+  },
+  {
+    id: 'live-hdtgm', set: 'live', name: 'How Did This Get Made?', emoji: '📼', head: 'sign', ball: '#29b8ff',
+    colors: { bg: '#0a1430', primary: '#29c4ff', accent: '#ff3d7f', ink: '#eef6ff', blend: '#7ae0ff' }, dark: true,
+    confetti: ['#ff3d7f', '#29d4ff', '#ffe14a', '#ffffff', '#9a5cff'],
+    emojis: ['📼', '🍿', '🤦', '🎞️'], cheer: 'How did you do that?! 📼', note: 'A truly terrible movie, live. We loved every minute. 📼',
+    pitch: 'Late-night VHS glow: electric blue, a flash of hot pink and a lot of questions.',
+  },
+  {
+    id: 'live-ringling', set: 'live', name: 'Ringling', emoji: '🎪', head: 'sign', ball: '#ff2bd6',
+    colors: { bg: '#0d0a1f', primary: '#ff2bd6', accent: '#2bffe6', ink: '#ffffff', blend: '#ffe62b' }, dark: true,
+    confetti: ['#ff2bd6', '#2bffe6', '#ffe62b', '#7a5cff', '#ffffff'],
+    emojis: ['🎪', '🤸', '✨', '🎉'], cheer: 'Center ring! 🎪', note: 'Neon, acrobats and a whole lot of wow. 🎪',
+    pitch: 'The new neon circus: glowing pink, cyan and yellow under the big top.',
+  },
+
+  // ── 🎸 Encore: concerts we've been to ──
+  {
+    id: 'concert-noahkahan', set: 'concerts', name: 'Noah Kahan', emoji: '🌲', head: 'hand', ball: '#4f6b3a',
+    colors: { bg: '#f3efe6', primary: '#4f6b3a', accent: '#b5562a', ink: '#2a2a20', blend: '#7a9a5a' },
+    confetti: ['#4f6b3a', '#b5562a', '#e6d8b8', '#7a9a5a', '#3a4a6a'],
+    emojis: ['🌲', '🎸', '🍁', '🏔️'], cheer: 'New England strong! 🌲', note: 'The Great Divide tour! 🌲🎸',
+    pitch: 'Flannel, pine green and a chilly Vermont autumn.',
+  },
+  {
+    id: 'concert-shakira', set: 'concerts', name: 'Shakira', emoji: '💃', ball: '#ff3fa4',
+    colors: { bg: '#2a0a3a', primary: '#ff3fa4', accent: '#8a3fff', ink: '#fff0fa', blend: '#ff8ad1' }, dark: true,
+    confetti: ['#ff3fa4', '#8a3fff', '#ffd23a', '#ffffff', '#3fd0ff'],
+    emojis: ['💃', '🐺', '💜', '✨'], cheer: '¡Qué bárbara! 💃', note: 'Las Mujeres Ya No Lloran tour! 💃',
+    pitch: 'Hot pink and violet stage lights. Dance break!',
+  },
+  {
+    id: 'concert-maggierogers', set: 'concerts', name: 'Maggie Rogers', emoji: '🌼', head: 'script', ball: '#b8402e',
+    colors: { bg: '#fbf3ea', primary: '#b8402e', accent: '#3a5a8a', ink: '#2a1c18', blend: '#e07a52' },
+    confetti: ['#b8402e', '#3a5a8a', '#f2d7a8', '#ffffff', '#e07a52'],
+    emojis: ['🌼', '🎤', '🤠', '❤️'], cheer: 'Encore! 🎤', note: 'Maggie Rogers, live! 🌼',
+    pitch: 'Sunbaked red, worn denim and wildflowers.',
+  },
+  {
+    id: 'concert-poorunfortunatesouls', set: 'concerts', name: 'Poor Unfortunate Souls', emoji: '🧜‍♀️', ball: '#2fd0c0',
+    colors: { bg: '#0c2a3a', primary: '#2fd0c0', accent: '#9a4fd0', ink: '#e8fbff', blend: '#7ae8dc' }, dark: true,
+    confetti: ['#2fd0c0', '#9a4fd0', '#ffffff', '#ffb0d8', '#7ae8dc'],
+    emojis: ['🧜‍♀️', '🐚', '🔱', '🫧'], motion: 'float', cheer: 'Making waves! 🌊', note: 'A Disney cover band, all dressed as mermaids! 🧜‍♀️',
+    pitch: 'Deep sea teal and sea-witch purple, with bubbles rising.',
+  },
+  {
+    id: 'concert-greenday', set: 'concerts', name: 'Green Day', emoji: '💣', head: 'helvetica', ball: '#d41a1a',
+    colors: { bg: '#0e0e0e', primary: '#d41a1a', accent: '#ffffff', ink: '#f2f2f2', blend: '#ff4a4a' }, dark: true,
+    confetti: ['#d41a1a', '#ffffff', '#1a1a1a', '#ff4a4a', '#8a8a8a'],
+    emojis: ['💣', '❤️', '🎸', '🖤'], cheer: 'Rock on! 🎸', note: 'American Idiot, 20 years later! ❤️💣',
+    pitch: 'Black, white and blood red. Turn it up.',
+  },
+  {
+    id: 'concert-blink182', set: 'concerts', name: 'blink-182', emoji: '🐰', ball: '#e0307a',
+    colors: { bg: '#fff3f8', primary: '#e0307a', accent: '#1a1a1a', ink: '#1a1a1a', blend: '#ff6fa8' },
+    confetti: ['#e0307a', '#1a1a1a', '#ffffff', '#ff6fa8', '#3fd0ff'],
+    emojis: ['🐰', '🎸', '🤘', '💗'], cheer: 'Pop punk power! 🤘', note: 'The One More Time tour! 🎸',
+    pitch: 'Pop-punk pink and black. Skate shoes on.',
   },
 ];
 
