@@ -1250,6 +1250,15 @@ html[data-style='taskmaster'] h1 {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.1'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 html[data-style='taskmaster'] .version { background: rgba(0, 0, 0, 0.35); color: #fff; -webkit-text-fill-color: #fff; }
+/* 🚇 transit signage: plain bold Helvetica in the theme's text colour, no gradient */
+html[data-head='transit'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
+html[data-head='transit'] h1 {
+  background: none;
+  -webkit-text-fill-color: var(--text);
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 /* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
 html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
 html[data-head='helvetica'] h1 {

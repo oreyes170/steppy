@@ -38,6 +38,7 @@ export const SETS = [
   { id: 'broadway-2026', name: 'Broadway magnets · 2026', emoji: '🧲' },
   { id: 'live', name: 'Live & in Person', emoji: '🎙️' },
   { id: 'concerts', name: 'Encore', emoji: '🎸' },
+  { id: 'transit', name: 'All Aboard', emoji: '🚆' },
   { id: 'treats', name: 'Treat yourself', emoji: '🍟' },
   // intro: 'race' plays a 🚦 3-2-1-GO countdown before the reveal
   { id: 'mariokart', name: 'Mario Kart', emoji: '🏁', intro: 'race' },
@@ -911,6 +912,46 @@ const ALL_GUMBALLS = [
     confetti: ['#e0307a', '#1a1a1a', '#ffffff', '#ff6fa8', '#3fd0ff'],
     emojis: ['🐰', '🎸', '🤘', '💗'], cheer: 'Pop punk power! 🤘', note: 'The One More Time tour! 🎸',
     pitch: 'Pop-punk pink and black. Skate shoes on.',
+  },
+  // ── 🚆 All Aboard: how we get around ──
+  {
+    id: 'transit-subway', set: 'transit', name: 'NYC Subway', emoji: '🚇', head: 'transit', ball: '#0039a6', iconTint: '#2a2a2a',
+    colors: { bg: '#111111', primary: '#fccc0a', accent: '#ee352e', ink: '#ffffff', blend: '#ffe066', wash: '#555555',
+      status: { regular: '#00933c', big: '#ff6319', skip: '#0039a6' } }, dark: true,
+    confetti: ['#ee352e', '#00933c', '#0039a6', '#fccc0a', '#ff6319', '#b933ad'],
+    emojis: ['🚇', '🟢', '🔴', '🟡', '🔵'], cheer: 'Express train to big goal! 🚇', note: 'Next stop: your step goal! 🚇',
+    pitch: 'Station black and white, with every route-bullet colour on the map.',
+  },
+  {
+    id: 'transit-ferry', set: 'transit', name: 'NYC Ferry', emoji: '⛴️', head: 'slab', ball: '#1f6fb2',
+    colors: { bg: '#eef6fb', primary: '#1f6fb2', accent: '#f28c28', ink: '#14324a', blend: '#4fa6dc' },
+    confetti: ['#1f6fb2', '#4fa6dc', '#f28c28', '#ffffff', '#bfe0f2'],
+    emojis: ['⛴️', '🌊', '🌉', '☀️'], cheer: 'Full steam ahead! ⛴️', note: 'Wind in our hair on the East River. ⛴️',
+    pitch: 'East River blue, white wake and a bright orange life ring.',
+  },
+  {
+    id: 'transit-lirr', set: 'transit', name: 'LIRR', revealName: 'Long Island Rail Road', emoji: '🚆', head: 'transit', ball: '#1f3a7a',
+    colors: { bg: '#f1f3f7', primary: '#1f3a7a', accent: '#f2b705', ink: '#141c2e', blend: '#4a6ab8',
+      status: { regular: '#4a6ab8', big: '#f2b705', skip: '#9aa3b5' } },
+    confetti: ['#1f3a7a', '#f2b705', '#b8bfcc', '#ffffff', '#4a6ab8'],
+    emojis: ['🚆', '🌊', '🏖️', '🎟️'], cheer: 'Right on time! 🚆', note: 'Change at Jamaica! 🚆',
+    pitch: 'Navy and brushed silver, with a flash of platform yellow.',
+  },
+  {
+    id: 'transit-metronorth', set: 'transit', name: 'Metro-North', emoji: '🚉', head: 'transit', ball: '#1a4f8a',
+    colors: { bg: '#f4f1ec', primary: '#1a4f8a', accent: '#c0392b', ink: '#1c2430', blend: '#3f7cc0',
+      status: { regular: '#3f7cc0', big: '#c0392b', skip: '#a3a9b0' } },
+    confetti: ['#1a4f8a', '#c0392b', '#e6a23c', '#ffffff', '#3f7cc0'],
+    emojis: ['🚉', '🍂', '🏞️', '☕'], cheer: 'Next stop: big goal! 🚉', note: 'Up the Hudson we go! 🍂🚉',
+    pitch: 'Hudson River blue and autumn red, with fall leaves out the window.',
+  },
+  {
+    id: 'transit-amtrak', set: 'transit', name: 'Amtrak', emoji: '🚄', ball: '#00537e',
+    colors: { bg: '#f0f5f8', primary: '#00537e', accent: '#d0202e', ink: '#102a3a', blend: '#2f86b8',
+      status: { regular: '#2f86b8', big: '#d0202e', skip: '#9aaab4' } },
+    confetti: ['#00537e', '#d0202e', '#ffffff', '#2f86b8', '#c8d4dc'],
+    emojis: ['🚄', '🧳', '🗺️', '🎫'], cheer: 'Full speed ahead! 🚄', note: 'All aboard! 🚄',
+    pitch: 'Amtrak navy with a red and white stripe, ready for a long trip.',
   },
 ];
 
