@@ -1028,6 +1028,7 @@ function renderToday() {
         <button class="btn primary" data-open-day="${t}">Update steps</button>
         <button class="btn regular-btn" data-log="regular" data-key="${t}">👟 Hit my goal</button>
       </div>
+      ${pasteLink()}
       <button class="link-btn" data-log="missed" data-key="${t}">Call it a rest day 🌙</button>`;
     return;
   }
@@ -1052,7 +1053,8 @@ function renderToday() {
           ${skyLines()}
         </div>
       </div>
-      <button class="link-btn" data-open-day="${t}">Change</button>`;
+      <button class="link-btn" data-open-day="${t}">Change</button>
+      ${d.status === 'skip' ? '' : pasteLink()}`;
   } else {
     el.className = 'card today-card';
     el.innerHTML = `
@@ -1061,8 +1063,75 @@ function renderToday() {
       <p class="muted">Goal <b>${fmt(regularGoal)}</b> · Big goal <b>${fmt(bigGoal)}</b></p>
       ${skyLines()}
       ${quickButtons(t)}
-      <button class="link-btn" data-open-day="${t}">Enter step count or use a skip day →</button>`;
+      <button class="link-btn" data-open-day="${t}">Enter step count or use a skip day →</button>
+      ${pasteLink()}`;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Apple Health, by way of a Shortcut: the Shortcut copies today's step count, and
+// "Paste from Health" reads the clipboard and logs it. (A web app can't read Health
+// itself, and a link from Shortcuts would open Safari, not the Home Screen app.)
+// ---------------------------------------------------------------------------
+/** "8,423" / "8423 steps" / "8423.7" → 8424. Null if there's no number. */
+function stepsFromText(text) {
+  const m = String(text || '').match(/\d[\d,]*(?:\.\d+)?/);
+  if (!m) return null;
+  const n = Math.round(parseFloat(m[0].replace(/,/g, '')));
+  return n > 0 && n < 1000000 ? n : null;
+}
+
+/** The Today card's paste link, once she's used it (so it never confuses her before she sets it up). */
+const pasteLink = () =>
+  state.meta.usedHealthPaste ? '<button class="link-btn paste-link" data-paste-steps type="button">📋 Paste steps from Health</button>' : '';
+
+async function pasteSteps() {
+  let text = '';
+  try {
+    text = await navigator.clipboard.readText();
+  } catch {
+    /* not allowed or not supported */
+  }
+  const steps = stepsFromText(text);
+  if (!steps) {
+    return toast('Nothing to paste yet. Run your “Steppy steps” Shortcut first, then tap Paste 📋', { duration: 4500 });
+  }
+  const key = todayKey();
+  const d = state.days[key];
+  if (!state.meta.usedHealthPaste) {
+    state.meta.usedHealthPaste = true;
+    save();
+  }
+  if (d?.steps === steps) {
+    closeSheet();
+    return toast(`Already up to date: ${fmt(steps)} steps ✓`);
+  }
+  let status = L.classifySteps(steps, state.settings);
+  if (status === 'missed') status = 'progress'; // today isn't over yet
+  if (status === 'progress' && d?.status === 'skip') {
+    closeSheet();
+    return toast('Today is a skip day, so it stays safe 🎟️');
+  }
+  return setDay(key, status, steps);
+}
+
+function healthSettingsHtml() {
+  return `
+    <details class="health-help">
+      <summary><h3>🍎 Steps from Apple Health</h3></summary>
+      <p class="muted small">Make a Shortcut once that copies today’s steps from Health. Then tap <b>📋 Paste steps from Health</b> in Steppy.</p>
+      <ol class="small health-steps">
+        <li>Open the <b>Shortcuts</b> app, tap <b>+</b> and name it <b>Steppy steps</b>.</li>
+        <li>Add <b>Find Health Samples</b>. Set it to find samples where <b>Type</b> is <b>Steps</b>, then add a filter: <b>Start Date</b> is <b>Today</b>. Set <b>Group By</b> to <b>Day</b> (so Watch and phone steps aren’t counted twice).</li>
+        <li>Add <b>Calculate Statistics</b>: <b>Sum</b> of Health Samples.</li>
+        <li>Add <b>Round Number</b> (to Ones Place).</li>
+        <li>Add <b>Copy to Clipboard</b> with the Rounded Number.</li>
+        <li>Add <b>Show Notification</b>: “Copied my steps! Open Steppy and tap Paste 👟”.</li>
+        <li>Tap the name at the top, then <b>Add to Home Screen</b>. The first run asks to allow Health access. Say yes.</li>
+      </ol>
+      <p class="muted small">To log: tap <b>Steppy steps</b>, open Steppy, tap <b>📋 Paste steps from Health</b>, then <b>Paste</b>. Want a nudge? In Shortcuts → <b>Automation</b> → <b>+</b> → <b>Time of Day</b> (say 8 PM, daily, Run Immediately) → Steppy steps.</p>
+      <button class="btn ghost wide" data-paste-steps type="button">📋 Try it: paste steps</button>
+    </details>`;
 }
 
 function renderCatchup() {
@@ -1569,6 +1638,7 @@ function openDaySheet(key) {
         <input id="steps-input" type="number" inputmode="numeric" min="0" step="1" placeholder="e.g. 8,200" value="${d?.steps ?? ''}" />
         <button class="btn primary" type="submit">Save</button>
       </div>
+      ${key === todayKey() ? '<button class="link-btn" data-paste-steps type="button">📋 Paste steps from Health</button>' : ''}
       <p class="muted small">We’ll figure out which goal you hit. Step counts also help the goal coach.</p>
     </form>
     <div class="sheet-buttons">
@@ -1603,6 +1673,7 @@ function openSettings() {
     </form>
     <hr />
     ${sunSettingsHtml()}
+    ${healthSettingsHtml()}
     <hr />
     ${themePickerHtml()}
     <hr />
@@ -1932,6 +2003,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.log) return setDay(t.dataset.key, t.dataset.log, readStepsInput(t.dataset.key));
   if (t.dataset.day) return openDaySheet(t.dataset.day);
   if (t.dataset.openDay) return openDaySheet(t.dataset.openDay);
+  if ('pasteSteps' in t.dataset) return pasteSteps();
   if ('clearDay' in t.dataset) return setDay(t.dataset.clearDay, null);
   if ('openSettings' in t.dataset || t.id === 'settings-btn') return openSettings();
   if ('closeModal' in t.dataset) return closeModal();
