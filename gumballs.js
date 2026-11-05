@@ -210,10 +210,11 @@ const ALL_GUMBALLS = [
     pitch: 'Midnight black and burnished gold, with wands, owls and broomsticks.',
   },
   {
-    id: 'bway25-mindplay', head: 'script', set: 'broadway-2025', name: 'Mindplay', emoji: '🔮',
-    colors: { bg: '#1c1029', primary: '#9b6bd6', accent: '#e2b858', ink: '#f2e9ff', blend: '#c9a2ff' }, dark: true,
-    emojis: ['🔮', '🧠', '🃏', '👁️'], cheer: 'I knew you’d do it! 🔮',
-    pitch: 'Deep plum, mysterious violet and candlelight gold. Vinny already knows what you’re thinking.',
+    id: 'bway25-mindplay', head: 'condensed', style: 'mindplay', set: 'broadway-2025', name: 'Mindplay', emoji: '🧠', ball: '#d4a63a', iconTint: '#3a3a3a',
+    colors: { bg: '#0d0d0d', primary: '#d4a63a', accent: '#8a8a8a', ink: '#f2f2f2', blend: '#f0d27a', wash: '#808080' }, dark: true,
+    confetti: ['#d4a63a', '#f0d27a', '#ffffff', '#8a8a8a', '#2a2a2a'],
+    emojis: ['🧠', '💭', '👁️', '✨'], cheer: 'Called it! 🧠', note: 'Vinny already knew you’d hit your goal. 🧠',
+    pitch: 'Black-and-white noir in a single spotlight, with gold lettering. What are you thinking?',
   },
 
   // ── 🧲 Broadway magnets · 2026: shows we saw together ──
