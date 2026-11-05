@@ -669,6 +669,14 @@ const ALL_GUMBALLS = [
     emojis: ['🍌', '⚾', '🕺', '🎉'], cheer: 'Home run, bananas! 🍌', note: 'Banana Ball time! 🍌⚾',
     pitch: 'Banana yellow and leaf green. Baseball, but make it a party.',
   },
+  {
+    id: 'sport-liberty', set: 'sports', name: 'New York Liberty', emoji: '🗽', ball: '#6ecdb2',
+    colors: { bg: '#0f1412', primary: '#6ecdb2', accent: '#c8743a', ink: '#eefaf6', blend: '#a8ead6',
+      status: { regular: '#6ecdb2', big: '#c8743a', skip: '#8a9a94' } }, dark: true,
+    confetti: ['#6ecdb2', '#c8743a', '#ffffff', '#1a1a1a', '#a8ead6'],
+    emojis: ['🗽', '🏀', '🐘', '🏆'], cheer: 'Nothing but net! 🏀', note: 'Go Libs! 🗽🏀',
+    pitch: 'Seafoam green, black and a touch of copper, straight from Brooklyn.',
+  },
 
   // ── 🎮 Game Night: NYT games (ids keep their old 'rand-'/'puz-' prefixes) ──
   {
