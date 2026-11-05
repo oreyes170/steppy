@@ -1129,13 +1129,17 @@ html[data-theme='christmas'] {
 /* location picker in Settings */
 .loc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 /* 🍎 Apple Health Shortcut instructions (collapsed until tapped) */
-.health-help { margin-top: 18px; }
+.health-section { margin-top: 18px; }
+.health-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.health-head h3 { margin: 0; }
+.health-toggle { flex: 0 0 auto; padding: 8px 14px; }
+.health-toggle.on { background: var(--regular-soft); }
+.health-help { margin-top: 8px; }
 .paste-link { display: block; margin-top: 6px; }
 .health-help summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
 .health-help summary::-webkit-details-marker { display: none; }
 .health-help summary::after { content: '›'; font-size: 22px; color: var(--muted); transition: transform 0.2s; }
 .health-help[open] summary::after { transform: rotate(90deg); }
-.health-help summary h3 { margin: 0; }
 .health-steps { padding-left: 20px; margin: 10px 0; line-height: 1.5; }
 .health-steps li { margin-bottom: 6px; }
 .health-help .btn { margin-top: 6px; }

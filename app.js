@@ -1081,9 +1081,10 @@ function stepsFromText(text) {
   return n > 0 && n < 1000000 ? n : null;
 }
 
-/** The Today card's paste link, once she's used it (so it never confuses her before she sets it up). */
+/** Off until she turns it on in Settings, so nothing about it shows before then. */
+const healthOn = () => !!state.settings.health;
 const pasteLink = () =>
-  state.meta.usedHealthPaste ? '<button class="link-btn paste-link" data-paste-steps type="button">📋 Paste steps from Health</button>' : '';
+  healthOn() ? '<button class="link-btn paste-link" data-paste-steps type="button">📋 Paste steps from Health</button>' : '';
 
 async function pasteSteps() {
   let text = '';
@@ -1098,10 +1099,6 @@ async function pasteSteps() {
   }
   const key = todayKey();
   const d = state.days[key];
-  if (!state.meta.usedHealthPaste) {
-    state.meta.usedHealthPaste = true;
-    save();
-  }
   if (d?.steps === steps) {
     closeSheet();
     return toast(`Already up to date: ${fmt(steps)} steps ✓`);
@@ -1115,23 +1112,41 @@ async function pasteSteps() {
   return setDay(key, status, steps);
 }
 
-function healthSettingsHtml() {
+function healthSettingsHtml(justTurnedOn = false) {
+  const on = healthOn();
   return `
-    <details class="health-help">
-      <summary><h3>🍎 Steps from Apple Health</h3></summary>
-      <p class="muted small">Make a Shortcut once that copies today’s steps from Health. Then tap <b>📋 Paste steps from Health</b> in Steppy.</p>
-      <ol class="small health-steps">
-        <li>Open the <b>Shortcuts</b> app, tap <b>+</b> and name it <b>Steppy steps</b>.</li>
-        <li>Add <b>Find Health Samples</b>. Set it to find samples where <b>Type</b> is <b>Steps</b>, then add a filter: <b>Start Date</b> is <b>Today</b>. Set <b>Group By</b> to <b>Day</b> (so Watch and phone steps aren’t counted twice).</li>
-        <li>Add <b>Calculate Statistics</b>: <b>Sum</b> of Health Samples.</li>
-        <li>Add <b>Round Number</b> (to Ones Place).</li>
-        <li>Add <b>Copy to Clipboard</b> with the Rounded Number.</li>
-        <li>Add <b>Show Notification</b>: “Copied my steps! Open Steppy and tap Paste 👟”.</li>
-        <li>Tap the name at the top, then <b>Add to Home Screen</b>. The first run asks to allow Health access. Say yes.</li>
-      </ol>
-      <p class="muted small">To log: tap <b>Steppy steps</b>, open Steppy, tap <b>📋 Paste steps from Health</b>, then <b>Paste</b>. Want a nudge? In Shortcuts → <b>Automation</b> → <b>+</b> → <b>Time of Day</b> (say 8 PM, daily, Run Immediately) → Steppy steps.</p>
-      <button class="btn ghost wide" data-paste-steps type="button">📋 Try it: paste steps</button>
-    </details>`;
+    <div class="health-section">
+      <div class="health-head">
+        <h3>🍎 Steps from Apple Health</h3>
+        <button class="btn ghost health-toggle ${on ? 'on' : ''}" data-health="${on ? 'off' : 'on'}" type="button">${on ? '✓ On' : 'Turn on'}</button>
+      </div>
+      ${
+        on
+          ? `<details class="health-help" ${justTurnedOn ? 'open' : ''}>
+        <summary class="small"><b>How to set up the Shortcut</b></summary>
+        <ol class="small health-steps">
+          <li>Open the <b>Shortcuts</b> app, tap <b>+</b> and name it <b>Steppy steps</b>.</li>
+          <li>Add <b>Find Health Samples</b>. Set it to find samples where <b>Type</b> is <b>Steps</b>, then add a filter: <b>Start Date</b> is <b>Today</b>. Set <b>Group By</b> to <b>Day</b> (so Watch and phone steps aren’t counted twice).</li>
+          <li>Add <b>Calculate Statistics</b>: <b>Sum</b> of Health Samples.</li>
+          <li>Add <b>Round Number</b> (to Ones Place).</li>
+          <li>Add <b>Copy to Clipboard</b> with the Rounded Number.</li>
+          <li>Add <b>Show Notification</b>: “Copied my steps! Open Steppy and tap Paste 👟”.</li>
+          <li>Tap the name at the top, then <b>Add to Home Screen</b>. The first run asks to allow Health access. Say yes.</li>
+        </ol>
+        <p class="muted small">To log: tap <b>Steppy steps</b>, open Steppy, tap <b>📋 Paste steps from Health</b>, then <b>Paste</b>. Want a nudge? In Shortcuts → <b>Automation</b> → <b>+</b> → <b>Time of Day</b> (say 8 PM, daily, Run Immediately) → Steppy steps.</p>
+        <button class="btn ghost wide" data-paste-steps type="button">📋 Try it: paste steps</button>
+      </details>`
+          : '<p class="muted small">Paste your step count from the Health app instead of typing it. It needs a quick one-time Shortcut, and the steps show when you turn it on.</p>'
+      }
+    </div>`;
+}
+
+function setHealth(on) {
+  state.settings.health = on;
+  save();
+  render();
+  const el = document.querySelector('.health-section');
+  if (el) el.outerHTML = healthSettingsHtml(on); // update in place, so Settings doesn't jump to the top
 }
 
 function renderCatchup() {
@@ -1638,7 +1653,7 @@ function openDaySheet(key) {
         <input id="steps-input" type="number" inputmode="numeric" min="0" step="1" placeholder="e.g. 8,200" value="${d?.steps ?? ''}" />
         <button class="btn primary" type="submit">Save</button>
       </div>
-      ${key === todayKey() ? '<button class="link-btn" data-paste-steps type="button">📋 Paste steps from Health</button>' : ''}
+      ${key === todayKey() && healthOn() ? '<button class="link-btn" data-paste-steps type="button">📋 Paste steps from Health</button>' : ''}
       <p class="muted small">We’ll figure out which goal you hit. Step counts also help the goal coach.</p>
     </form>
     <div class="sheet-buttons">
@@ -2073,6 +2088,7 @@ document.addEventListener('click', (e) => {
     return openSettings();
   }
   if (t.dataset.sun) return setSun(t.dataset.sun);
+  if (t.dataset.health) return setHealth(t.dataset.health === 'on');
   if (t.dataset.tryTheme) {
     chooseTheme(t.dataset.tryTheme);
     closeModal();
