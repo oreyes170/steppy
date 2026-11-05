@@ -1602,14 +1602,12 @@ html[data-style='ballroom'] .card { border: 2px solid #d9b45a; box-shadow: 0 0 0
 html[data-style='ballroom'] .greeting { color: #e9e2ff; }
 /* calmer than Cats (no dizzy spins): the light spots sit still behind solid cards,
    the mirror ball turns slowly and the title doesn't shimmer */
-/* Cats, a little calmer: the light spots drift slowly behind the cards (not over them),
-   and the mirror ball and title shimmer take their time */
-html[data-style='disco'] body::after { z-index: 0; animation-duration: 90s; }
+/* Cats and Dancing with the Stars: the light spots drift very slowly, behind the cards
+   (not over them), and the mirror ball takes its time. The title shimmer stays. */
+html:is([data-style='disco'], [data-style='ballroom']) body::after { z-index: 0; animation-duration: 240s; }
 html[data-style='disco'] .settings-btn { animation-duration: 5s; }
-html[data-style='disco'] h1 { animation-duration: 7s; }
-html[data-style='ballroom'] body::after { opacity: 0.45; inset: 0; z-index: 0; animation: none; }
+html[data-style='ballroom'] body::after { opacity: 0.45; }
 html[data-style='ballroom'] .settings-btn { animation-duration: 8s; }
-html[data-style='ballroom'] h1 { animation: none; }
 html[data-style='ballroom'] .card { background: #161a3a; }
 html[data-style='ballroom'] h1 {
   background:
