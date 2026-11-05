@@ -1591,32 +1591,44 @@ html:is([data-style='disco'], [data-style='ballroom']) .card { border: 2px solid
   html:is([data-style='disco'], [data-style='ballroom']) h1 { animation: none; }
 }
 
-/* 🪩 ballroom (Dancing with the Stars): the same mirror ball, on a midnight dance floor with gold. */
-html[data-style='ballroom'] { --disco-wire: #d9b45a; }
+/* 🪩 ballroom (Dancing with the Stars): the mirror ball over a purple-and-blue starry stage,
+   with heavy lowercase chrome lettering like the show's logo. */
+html[data-style='ballroom'] { --disco-wire: #c9cede; }
 html[data-style='ballroom'] body {
-  background-image: radial-gradient(ellipse at 50% -10%, rgba(120, 140, 255, 0.35), transparent 60%),
-    radial-gradient(ellipse at 50% 110%, rgba(217, 180, 90, 0.25), transparent 55%);
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(140, 100, 255, 0.55), transparent 60%),
+    radial-gradient(ellipse at 10% 60%, rgba(61, 123, 255, 0.28), transparent 50%),
+    radial-gradient(ellipse at 95% 85%, rgba(197, 107, 255, 0.28), transparent 50%);
   background-attachment: fixed;
 }
-html[data-style='ballroom'] .card { border: 2px solid #d9b45a; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 24px rgba(217, 180, 90, 0.25); }
-html[data-style='ballroom'] .greeting { color: #e9e2ff; }
-/* calmer than Cats (no dizzy spins): the light spots sit still behind solid cards,
-   the mirror ball turns slowly and the title doesn't shimmer */
-/* Cats and Dancing with the Stars: the light spots drift very slowly, behind the cards
-   (not over them), and the mirror ball takes its time. The title shimmer stays. */
+html[data-style='ballroom'] .card {
+  background: #1b1150;
+  border: 2px solid rgba(154, 107, 255, 0.75);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 0 26px rgba(122, 76, 255, 0.4);
+}
+html[data-style='ballroom'] .greeting { color: #e6defc; }
+/* the light spots drift very slowly behind the cards (Cats too); the mirror balls take their time */
 html:is([data-style='disco'], [data-style='ballroom']) body::after { z-index: 0; animation-duration: 240s; }
 html[data-style='disco'] .settings-btn { animation-duration: 5s; }
 html[data-style='ballroom'] body::after { opacity: 0.45; }
 html[data-style='ballroom'] .settings-btn { animation-duration: 8s; }
-html[data-style='ballroom'] .card { background: #161a3a; }
-html[data-style='ballroom'] h1 {
+/* heavy, tight lowercase Helvetica in shiny chrome (the shimmer stays) */
+html[data-head='dwts'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; }
+html[data-head='dwts'] h1 {
+  text-transform: lowercase;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  font-size: min(38px, 10vw);
   background:
-    repeating-linear-gradient(90deg, rgba(40, 25, 0, 0.35) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(0deg, rgba(40, 25, 0, 0.35) 0 1px, transparent 1px 7px),
-    linear-gradient(100deg, #8a6a20 0%, #f3dc96 20%, #ffffff 28%, #b08a34 45%, #f6e3a8 62%, #ffffff 70%, #8a6a20 100%);
-  background-size: 7px 7px, 7px 7px, 200% 100%;
+    linear-gradient(transparent, transparent),
+    linear-gradient(transparent, transparent),
+    linear-gradient(100deg, #9aa0b4 0%, #ffffff 18%, #d6dae6 30%, #7e8498 46%, #f4f6fb 60%, #ffffff 68%, #8a90a4 100%);
+  background-size: 100% 100%, 100% 100%, 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #3a2a8a) drop-shadow(0 0 10px rgba(154, 107, 255, 0.6));
 }
 
 /* ✒️ mono: fully black and white (The Tortured Poets Department). Only while it's on. */

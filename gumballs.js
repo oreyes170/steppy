@@ -708,12 +708,13 @@ const ALL_GUMBALLS = [
     pitch: 'A red studio, black suits and two gold thrones. The tasks are absurd.',
   },
   {
-    id: 'tv-dwts', set: 'tv', name: 'Dancing with the Stars', emoji: '🪩', style: 'ballroom', head: 'didot', ball: '#b9bec8',
-    colors: { bg: '#0d0f2a', primary: '#d9b45a', accent: '#8f9cff', ink: '#f4f0ff', blend: '#f3dc96' }, dark: true,
-    confetti: ['#d9b45a', '#c8ccd4', '#ffffff', '#8f9cff', '#f3dc96'],
+    id: 'tv-dwts', set: 'tv', name: 'Dancing with the Stars', emoji: '🪩', style: 'ballroom', head: 'dwts', ball: '#7a4cff',
+    colors: { bg: '#120a36', primary: '#9a6bff', accent: '#3d7bff', ink: '#f2eeff', blend: '#4f8bff',
+      status: { regular: '#3d7bff', big: '#c56bff', skip: '#8a8fb0' } }, dark: true,
+    confetti: ['#9a6bff', '#3d7bff', '#e0d6ff', '#ffffff', '#ff6bd8'],
     emojis: ['🪩', '💃', '🕺', '✨', '🏆'], cheer: 'Perfect 10s across the board! 🪩',
     note: 'The mirror ball is spinning. Grab a partner and hit the floor. 💃',
-    pitch: 'A midnight ballroom with gold, sequins and the mirror ball spinning overhead.',
+    pitch: 'A purple and blue ballroom full of stars, chrome lettering and the mirror ball spinning overhead.',
   },
   {
     id: 'tv-savedbythebell', set: 'tv', name: 'Saved by the Bell', emoji: '🔔', ball: '#f2c230',
