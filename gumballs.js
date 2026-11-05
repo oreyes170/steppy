@@ -410,6 +410,15 @@ const ALL_GUMBALLS = [
     emojis: ['🤠', '🌮', '🌵', '🫘', '🐶'], cheer: 'Yeehaw! 🤠', note: 'Where it all started 💕🤠',
     pitch: 'Chili red, turquoise and desert tan. Tacos with a little cowboy swagger.',
   },
+  {
+    id: 'treat-qcspa', set: 'treats', name: 'QC Spa', revealName: 'QC Spa on Governors Island', emoji: '🧖‍♀️', head: 'didot', ball: '#8ab8ad',
+    colors: { bg: '#f3f1ea', primary: '#4f7f74', accent: '#c9a27a', ink: '#2a332f', blend: '#7fb3c4',
+      status: { regular: '#7fb3c4', big: '#c9a27a', skip: '#a8b5ae' } },
+    confetti: ['#4f7f74', '#c9a27a', '#7fb3c4', '#ffffff', '#dfe8e2'],
+    emojis: ['🧖‍♀️', '♨️', '🌿', '🫧', '🗽'], cheer: 'Relaxed and unstoppable! 🧖‍♀️',
+    note: 'Our spa day on Governors Island. Deep breath in… 🌿',
+    pitch: 'Warm stone, eucalyptus and cedar, steam rising off the pools and Lady Liberty across the water.',
+  },
   // ── 🏁 Mario Kart racers ──
   {
     id: 'mk-mario', set: 'mariokart', name: 'Mario', emoji: '⭐',
