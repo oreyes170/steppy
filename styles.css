@@ -1344,6 +1344,35 @@ html[data-style='bakeoff'] {
   --regular-soft: #d6ebf8 !important;
   --missed-soft: #ece3cc !important;
 }
+/* 🔔 Saved by the Bell: Memphis pattern (zigzag bands, squiggles, triangles), white cards with
+   chunky shadows, and a tilted chunky yellow title like the logo's "BELL" */
+html[data-head='bayside'] { --head-font: 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif; --head-weight: 700; }
+html[data-head='bayside'] h1 {
+  background: none;
+  -webkit-text-fill-color: #ffe23a;
+  color: #ffe23a;
+  font-size: min(36px, 9.5vw);
+  transform: rotate(-4deg);
+  transform-origin: left center;
+  text-shadow:
+    -2px -2px 0 #1a1030, 2px -2px 0 #1a1030, -2px 2px 0 #1a1030, 2px 2px 0 #1a1030,
+    0 -2px 0 #1a1030, 0 2px 0 #1a1030, -2px 0 0 #1a1030, 2px 0 0 #1a1030,
+    5px 5px 0 #1aa6a6;
+}
+html[data-style='bayside'] body {
+  background-color: #e8798c;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Crect x='0' y='30' width='240' height='44' fill='%236a2fb8'/%3E%3Cpath d='M0 52 l15 -12 l15 12 l15 -12 l15 12 l15 -12 l15 12 l15 -12 l15 12 l15 -12 l15 12 l15 -12 l15 12 l15 -12 l15 12 l15 -12 l15 12' stroke='%23ff2f8f' stroke-width='7' fill='none' stroke-linejoin='round'/%3E%3Cpath d='M40 130 c10 -20 30 -20 30 0 s-20 20 -10 30 s30 10 30 -10' stroke='%23ffe23a' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M170 120 l26 6 l-18 20 z' fill='%231aa6a6'/%3E%3Cpath d='M150 200 l8 -8 m4 4 l8 -8 m4 4 l8 -8' stroke='%231a1030' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M20 205 l6 -10 l6 10 l6 -10 l6 10' stroke='%23ffffff' stroke-width='3' fill='none'/%3E%3Ccircle cx='215' cy='190' r='7' fill='%23ffe23a'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+html[data-style='bayside'] .card { background: #ffffff; border: 3px solid #1a1030; box-shadow: 6px 6px 0 #6a2fb8; }
+html[data-style='bayside'] .greeting { color: #ffffff; text-shadow: 0 1px 0 #1a1030; }
+html[data-style='bayside'] .version { background: #1a1030; color: #ffe23a; -webkit-text-fill-color: #ffe23a; }
+html[data-style='bayside'] {
+  --big-soft: #fff1a6 !important;
+  --regular-soft: #c6f0ee !important;
+  --skip-soft: #e3d4f7 !important;
+  --missed-soft: #f2e8ee !important;
+}
 /* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
 html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
 html[data-head='helvetica'] h1 {

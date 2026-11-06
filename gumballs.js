@@ -747,11 +747,12 @@ const ALL_GUMBALLS = [
     pitch: 'A purple and blue ballroom full of stars, chrome lettering and the mirror ball spinning overhead.',
   },
   {
-    id: 'tv-savedbythebell', set: 'tv', name: 'Saved by the Bell', emoji: '🔔', ball: '#f2c230',
-    colors: { bg: '#fff6e0', primary: '#d6338a', accent: '#1aa6a6', ink: '#2a1840', blend: '#7a3fd0' },
+    id: 'tv-savedbythebell', set: 'tv', name: 'Saved by the Bell', emoji: '🔔', head: 'bayside', style: 'bayside', ball: '#f2c230', iconTint: '#6a2fb8',
+    colors: { bg: '#fff4ef', primary: '#d6338a', accent: '#1aa6a6', ink: '#2a1840', blend: '#7a3fd0',
+      status: { regular: '#1aa6a6', big: '#f2c230', skip: '#7a3fd0' } },
     confetti: ['#d6338a', '#1aa6a6', '#f2c230', '#7a3fd0', '#ffffff'],
-    emojis: ['🔔', '📟', '🏫', '📼'], cheer: 'Straight A’s! 🔔', note: 'The bell rang. Class is out. Go walk. 🔔',
-    pitch: 'Bayside in the 90s: hot pink, teal and squiggly yellow.',
+    emojis: ['🔔', '📱', '🏫', '💅'], cheer: 'Straight A’s! 🔔', note: 'Back at Bayside, 2020 edition! 🔔',
+    pitch: 'Bayside in the <s>90s</s> 2020: hot pink, purple zigzags, teal and squiggly yellow.',
   },
   {
     id: 'tv-pluribus', set: 'tv', name: 'Pluribus', emoji: '🌵', ball: '#e0a040',
