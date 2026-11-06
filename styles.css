@@ -1303,6 +1303,47 @@ html[data-style='island'] {
   --line: #e2cfa8 !important;
 }
 html[data-style='island'] .version { background: rgba(255, 255, 255, 0.6); }
+/* 🎂 Bake Off: blue sky and Union Jack bunting over the tent, a red polka-dot tablecloth,
+   cream recipe-book pages with handwritten headings, and a white geometric title */
+html[data-head='bakeoff'] { --head-font: 'Noteworthy', 'Bradley Hand', 'Segoe Print', cursive; --head-weight: 700; }
+html[data-head='bakeoff'] h1 {
+  font-family: 'Futura', 'Century Gothic', 'Trebuchet MS', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: min(34px, 9vw);
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 40, 90, 0.35);
+}
+html[data-style='bakeoff'] body {
+  background-color: #c8202a;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='66' height='30'%3E%3Cpath d='M0 3 Q33 9 66 3' stroke='%23ffffff' stroke-width='1.5' fill='none'/%3E%3Cpath d='M3 4 L19 6 L11 26 Z' fill='%23c8202a'/%3E%3Cpath d='M25 6 L41 6 L33 27 Z' fill='%23ffffff'/%3E%3Cpath d='M47 6 L63 4 L55 26 Z' fill='%231f4f9a'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 120px 34px at 18% 120px, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(ellipse 150px 40px at 82% 200px, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #3f95e0 0, #9fd2f4 calc(env(safe-area-inset-top) + 250px), #7a1016 calc(env(safe-area-inset-top) + 250px), #c8202a calc(env(safe-area-inset-top) + 262px), transparent calc(env(safe-area-inset-top) + 262px)),
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 5px, transparent 6px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 5px, transparent 6px);
+  background-size: 66px 30px, 100% 400px, 100% 400px, 100% 100%, 36px 36px, 36px 36px;
+  background-position: 0 calc(env(safe-area-inset-top) + 4px), 0 0, 0 0, 0 0, 0 0, 18px 18px;
+  background-repeat: repeat-x, no-repeat, no-repeat, no-repeat, repeat, repeat;
+}
+html[data-style='bakeoff'] .greeting { color: #ffffff; text-shadow: 0 1px 4px rgba(0, 40, 90, 0.35); }
+html[data-style='bakeoff'] .version { background: rgba(255, 255, 255, 0.3); color: #fff; -webkit-text-fill-color: #fff; }
+/* recipe-book pages: cream paper, a soft vignette and a shadow on the tablecloth */
+html[data-style='bakeoff'] .card {
+  background: radial-gradient(ellipse at center, #fbf6e6 55%, #efe4c4 100%);
+  border: 1px solid #e0d2ab;
+  box-shadow: 0 8px 18px rgba(70, 0, 6, 0.4);
+}
+html[data-style='bakeoff'] .eyebrow { color: #b3202a; }
+html[data-style='bakeoff'] {
+  --big-soft: #f7d4cc !important;
+  --regular-soft: #d6ebf8 !important;
+  --missed-soft: #ece3cc !important;
+}
 /* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
 html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
 html[data-head='helvetica'] h1 {

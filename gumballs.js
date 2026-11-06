@@ -722,10 +722,12 @@ const ALL_GUMBALLS = [
   },
   {
     id: 'tv-bakeoff', set: 'tv', name: 'Bake Off', revealName: 'The Great British Bake Off', emoji: '🎂',
-    colors: { bg: '#fdf6f0', primary: '#d8577a', accent: '#5aaac8', ink: '#3a1f2a', blend: '#f08aa8' },
-    confetti: ['#f4a7bd', '#9fd3e8', '#fff1a8', '#c8e6c0', '#ffffff', '#d8577a'],
-    emojis: ['🎂', '🧁', '🍰', '⛺', '🇬🇧'], cheer: 'Star Baker! ⭐', note: 'On your marks, get set… BAKE! 🧁',
-    pitch: 'Pastel bunting, a white tent and lots of cake.',
+    head: 'bakeoff', style: 'bakeoff', ball: '#5aa9e6', iconTint: '#2a64b0',
+    colors: { bg: '#f8f1de', primary: '#2a64b0', accent: '#c8202a', ink: '#2b2420', blend: '#5aa9e6',
+      status: { regular: '#5aa9e6', big: '#e04848', skip: '#b9ad8e' } },
+    confetti: ['#c8202a', '#ffffff', '#2a64b0', '#5aa9e6', '#f8f1de'],
+    emojis: ['🎂', '🧁', '🥧', '🍰', '🇬🇧'], cheer: 'Star Baker! ⭐', note: 'The tent is open and the ovens are on. 🧁',
+    pitch: 'Blue skies and bunting over the tent, a red polka-dot tablecloth and hand-drawn recipe pages.',
   },
   {
     id: 'tv-taskmaster', set: 'tv', name: 'Taskmaster', emoji: '✉️', head: 'typewriter', style: 'taskmaster', ball: '#c8102e', iconTint: '#8a0c1c',
