@@ -176,10 +176,12 @@ const ALL_GUMBALLS = [
 
   // ── 🧲 Broadway magnets · 2025: shows we saw together ──
   {
-    id: 'bway25-roblake', set: 'broadway-2025', name: 'Rob Lake Magic', emoji: '🐸',
-    colors: { bg: '#fdf1ee', primary: '#c8202f', accent: '#4cb944', ink: '#3a1215', blend: '#ef5b5b' },
+    id: 'bway25-roblake', set: 'broadway-2025', name: 'Rob Lake Magic', emoji: '🐸', ball: '#1846b8', iconTint: '#1846b8',
+    colors: { bg: '#0f2f8a', primary: '#ffd23a', accent: '#4cb944', ink: '#fff8e0', blend: '#ffe680',
+      status: { regular: '#4cb944', big: '#ffd23a', skip: '#8aa6ff' } }, dark: true,
+    confetti: ['#ffd23a', '#1846b8', '#ffffff', '#4cb944', '#ffe680'],
     emojis: ['🐸', '🎩', '🪄', '🃏', '✨'], cheer: 'Pure magic! 🪄',
-    pitch: 'Theater-curtain red, Muppet green and spotlight gold. Magic, with special guests.',
+    pitch: 'Deep magician blue with bright yellow lettering. Magic, with special guests.',
   },
   {
     id: 'bway25-outsiders', set: 'broadway-2025', name: 'The Outsiders', emoji: '🌅',
