@@ -1377,6 +1377,18 @@ html[data-style='bayside'] {
   --skip-soft: #e3d4f7 !important;
   --missed-soft: #f2e8ee !important;
 }
+/* ❓ Pop Culture Jeopardy!: gold condensed capitals on board blue, with a hard black drop shadow */
+html[data-head='gameboard'] { --head-font: 'Avenir Next Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif; --head-weight: 800; }
+html[data-head='gameboard'] h1 {
+  text-transform: uppercase;
+  background: none;
+  -webkit-text-fill-color: #f2b62a;
+  color: #f2b62a;
+  font-size: min(38px, 10vw);
+  letter-spacing: 0.02em;
+  text-shadow: 3px 3px 0 #000;
+}
+html[data-head='gameboard'] h2 { text-transform: uppercase; letter-spacing: 0.02em; }
 /* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
 html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
 html[data-head='helvetica'] h1 {

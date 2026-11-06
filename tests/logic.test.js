@@ -280,7 +280,7 @@ test('Broadway magnets 2026 collection is complete and separate', async () => {
 test('Broadway magnets 2025 collection', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('broadway-2025', []), { owned: 0, total: 6 });
-  assert.equal(G.GUMBALLS.length, 129);
+  assert.equal(G.GUMBALLS.length, 132);
   const sunset = G.GUMBALL_THEMES.find((t) => t.id === 'bway25-sunsetblvd');
   assert.equal(sunset.dark, true);
   assert.equal(sunset.vars.bg, '#0b0b0b');
@@ -360,7 +360,7 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 43);
+  assert.equal(Object.keys(heads).length, 46);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {
@@ -440,7 +440,7 @@ test('Game Day collection', async () => {
 test('Critters and Couch Time collections; Taylor renamed', async () => {
   const G = await import('../gumballs.js');
   assert.deepEqual(G.setProgress('animals', []), { owned: 0, total: 5 });
-  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 11 });
+  assert.deepEqual(G.setProgress('tv', []), { owned: 0, total: 14 });
   // WandaVision: grayscale base, red only for big goals
   const wv = G.GUMBALL_THEMES.find((t) => t.id === 'tv-wandavision');
   assert.equal(wv.vars.big, '#c8203a');
