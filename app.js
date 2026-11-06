@@ -105,6 +105,7 @@ const defaultState = () => ({
     weather: { show: true },
   },
   days: {}, // { 'YYYY-MM-DD': { status: 'regular'|'big'|'missed'|'skip', steps?: number } }
+  workouts: {}, // { 'YYYY-MM-DD': true|false }: did she work out? (separate from steps)
   meta: {
     startedOn: null,
     goalsChangedOn: null,
@@ -151,6 +152,7 @@ function normalize(s) {
 
 /** One-off upgrades for data saved by older versions. */
 function migrate(s) {
+  if (!s.workouts || typeof s.workouts !== 'object') s.workouts = {};
   if (s.settings.sun?.mode === 'nh') Object.assign(s.settings.sun, { lat: 44.05, lon: -71.13 });
   // v1.14: holidays are permanent once unlocked. Carry over what she's already seen.
   for (const key of s.meta.holidaysAnnounced || []) {
@@ -263,7 +265,7 @@ function snapshot() {
   return {
     streak: L.currentStreak(state.days, t),
     best: L.bestStreak(state.days),
-    skips: L.skipInfo(state.days, state.meta.gumballs.spent),
+    skips: L.skipInfo(state.days, state.meta.gumballs.spent, state.workouts),
   };
 }
 
@@ -973,6 +975,8 @@ async function runAnnouncements() {
       await shown.done;
       await wait(350);
     }
+    const workouts = maybeAnnounceWorkouts();
+    if (workouts) await workouts;
   } finally {
     announcing = false;
   }
@@ -1146,6 +1150,7 @@ function renderToday() {
         <button class="btn primary" data-open-day="${t}">Update steps</button>
         <button class="btn regular-btn" data-log="regular" data-key="${t}">👟 Hit my goal</button>
       </div>
+      ${workoutRow(t)}
       ${pasteLink()}
       <button class="link-btn" data-log="missed" data-key="${t}">Call it a rest day 🌙</button>`;
     return;
@@ -1171,6 +1176,7 @@ function renderToday() {
           ${skyLines()}
         </div>
       </div>
+      ${workoutRow(t)}
       <button class="link-btn" data-open-day="${t}">Change</button>
       ${d.status === 'skip' ? '' : pasteLink()}`;
   } else {
@@ -1181,6 +1187,7 @@ function renderToday() {
       <p class="muted">Goal <b>${fmt(regularGoal)}</b> · Big goal <b>${fmt(bigGoal)}</b></p>
       ${skyLines()}
       ${quickButtons(t)}
+      ${workoutRow(t)}
       <button class="link-btn" data-open-day="${t}">Enter step count or use a skip day →</button>
       ${pasteLink()}`;
   }
@@ -1265,6 +1272,114 @@ function setHealth(on) {
   render();
   const el = document.querySelector('.health-section');
   if (el) el.outerHTML = healthSettingsHtml(on); // update in place, so Settings doesn't jump to the top
+}
+
+// ---------------------------------------------------------------------------
+// 💪 Workouts: a simple yes/no per day, off until she turns it on in Settings.
+// 5 in a week (Sunday to Saturday) earns a skip ticket. Revealed on Sunday, Nov 8, 2026.
+// ---------------------------------------------------------------------------
+const WORKOUTS_FROM = '2026-11-08';
+const workoutsLive = () => todayKey() >= WORKOUTS_FROM;
+const workoutsOn = () => workoutsLive() && !!state.settings.workouts;
+
+function workoutChip(key) {
+  const on = state.workouts[key] === true;
+  return `<button class="wo-chip ${on ? 'on' : ''}" data-workout="${key}" type="button">${on ? '💪 Worked out ✓' : '💪 Worked out?'}</button>`;
+}
+
+/** The Today card's row: the button, and this week's progress toward 5. */
+function workoutRow(key) {
+  if (!workoutsOn()) return '';
+  const n = L.workoutsInWeek(state.workouts, key);
+  const goal = L.WORKOUTS_PER_TICKET;
+  return `
+    <div class="wo-row">
+      ${workoutChip(key)}
+      <div class="wo-week"><b>${Math.min(n, goal)} of ${goal}</b> this week${n >= goal ? ' 🎉' : ''}
+        <div class="wo-dots">${Array.from({ length: goal }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div>
+      </div>
+    </div>`;
+}
+
+async function toggleWorkout(key, chipEl) {
+  const before = snapshot();
+  const was = state.workouts[key] === true;
+  state.workouts[key] = !was; // false (not deleted) so an un-tick also wins when backups merge
+  save();
+  render();
+  // the day editor's chip, if it's open
+  document.querySelectorAll(`.sheet [data-workout="${key}"]`).forEach((b) => (b.outerHTML = workoutChip(key)));
+  if (was) return;
+  fx.vibrate(30);
+  const r = chipEl?.getBoundingClientRect();
+  if (r) fx.confetti({ count: 36, x: r.left + r.width / 2, y: r.top, spread: 1.2, power: 0.6, emojis: ['💪', '🏋️‍♀️', '🔥'] });
+  const after = snapshot();
+  if (after.skips.earned > before.skips.earned) {
+    const machineWasUnlocked = machineUnlocked();
+    await wait(500);
+    await fx.flyTo('🎟️', null, $('#stat-skips'));
+    checkMachineUnlock();
+    const unlockedNow = !machineWasUnlocked && machineUnlocked();
+    const name = state.settings.name.trim();
+    await showModal({
+      emoji: '💪',
+      title: '5 workouts this week!',
+      body: `You did it${name ? `, ${esc(name)}` : ''}! That earns you a <b>skip ticket</b> 🎟️ You have <b>${after.skips.available}</b> now.${
+        unlockedNow ? ' And you <b>unlocked the Theme Machine!</b> Your first spin is free 🎁' : ''
+      }`,
+      html: '<div class="wo-emojis">🏋️‍♀️ 🧘‍♀️ 🚴‍♀️ 🏃‍♀️ 🥊</div>',
+      cta: 'Yay!',
+      big: true,
+      fx: () => fx.fireworks(4, { colors: ['#ff9a5a', '#ff6f91', '#ffc75f', '#ffffff'], emojis: ['💪', '🏋️‍♀️', '🎟️'] }),
+    });
+    render();
+  } else {
+    const n = L.workoutsInWeek(state.workouts, key);
+    if (n < L.WORKOUTS_PER_TICKET) toast(`💪 Nice! ${n} of ${L.WORKOUTS_PER_TICKET} this week`);
+  }
+}
+
+function workoutSettingsHtml() {
+  if (!workoutsLive()) return '';
+  const on = !!state.settings.workouts;
+  return `
+    <div class="health-section workout-section">
+      <div class="health-head">
+        <h3>💪 Workouts</h3>
+        <button class="btn ghost health-toggle ${on ? 'on' : ''}" data-workouts="${on ? 'off' : 'on'}" type="button">${on ? '✓ On' : 'Turn on'}</button>
+      </div>
+      <p class="muted small">Tap <b>💪 Worked out?</b> on days you work out. Work out <b>5 days in a week</b> (Sunday to Saturday) and you earn a skip ticket 🎟️</p>
+    </div>`;
+}
+
+function setWorkouts(on) {
+  state.settings.workouts = on;
+  save();
+  render();
+  const el = document.querySelector('.workout-section');
+  if (el) el.outerHTML = workoutSettingsHtml(); // in place, so Settings doesn't jump to the top
+}
+
+/** Sunday's one-time "New: workouts!" popup. */
+function maybeAnnounceWorkouts() {
+  if (!state.settings.onboarded || modalBusy() || !workoutsLive()) return null;
+  if (state.meta.workoutsAnnounced || state.settings.workouts) return null;
+  state.meta.workoutsAnnounced = true;
+  save({ dirty: false });
+  return showModal({
+    emoji: '💪',
+    title: 'New: workout tracking!',
+    html: `
+      <p>On days you work out, tap <b>💪 Worked out?</b> on the Today card. Work out <b>5 days in a week</b> (Sunday to Saturday) and you earn a <b>skip ticket</b> 🎟️</p>
+      <div class="wo-emojis">🏋️‍♀️ 🧘‍♀️ 🚴‍♀️ 🏃‍♀️ 🥊</div>
+      <div class="row modal-row">
+        <button class="btn primary" data-workouts-start type="button">Turn it on 💪</button>
+        <button class="btn ghost" data-close-modal type="button">Not now</button>
+      </div>
+      <p class="muted small modal-foot">You can turn it on or off anytime in Settings ⚙️</p>`,
+    cta: null,
+    fx: () => fx.confetti({ count: 90, colors: ['#ff9a5a', '#ff6f91', '#ffc75f', '#ffffff'], emojis: ['💪', '🏋️‍♀️'] }),
+  });
 }
 
 function renderCatchup() {
@@ -1469,6 +1584,7 @@ function renderCalendar() {
     html += `<button class="${cls}" data-day="${key}" ${future ? 'disabled' : ''} aria-label="${esc(label)}">
       <span class="num">${day}</span>
       <span class="mark">${d ? STATUS_INFO[d.status].emoji : ''}</span>
+      ${workoutsOn() && state.workouts[key] === true ? '<span class="wo-mark">💪</span>' : ''}
     </button>`;
   }
   $('#cal-grid').innerHTML = html;
@@ -1780,6 +1896,7 @@ function openDaySheet(key) {
       ${btn('skip')}
       ${btn('missed')}
     </div>
+    ${workoutsOn() ? `<div class="center wo-sheet">${workoutChip(key)}</div>` : ''}
     <p class="muted small center">${
       canSkip
         ? `You have ${skips.available} skip day${skips.available === 1 ? '' : 's'} 🎟️`
@@ -1807,6 +1924,7 @@ function openSettings() {
     <hr />
     ${sunSettingsHtml()}
     ${healthSettingsHtml()}
+    ${workoutSettingsHtml()}
     <hr />
     ${themePickerHtml()}
     <hr />
@@ -2137,6 +2255,13 @@ document.addEventListener('click', (e) => {
   if (t.dataset.day) return openDaySheet(t.dataset.day);
   if (t.dataset.openDay) return openDaySheet(t.dataset.openDay);
   if ('pasteSteps' in t.dataset) return pasteSteps();
+  if (t.dataset.workout) return toggleWorkout(t.dataset.workout, t);
+  if (t.dataset.workouts) return setWorkouts(t.dataset.workouts === 'on');
+  if ('workoutsStart' in t.dataset) {
+    closeModal();
+    setWorkouts(true);
+    return toast('Workouts are on! Look for 💪 on the Today card');
+  }
   if ('clearDay' in t.dataset) return setDay(t.dataset.clearDay, null);
   if ('openSettings' in t.dataset || t.id === 'settings-btn') return openSettings();
   if ('closeModal' in t.dataset) return closeModal();

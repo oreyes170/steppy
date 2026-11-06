@@ -44,7 +44,7 @@ test('milestones', () => {
 });
 
 test('skip days: starter skip, big days count double, used skips subtract', () => {
-  assert.deepEqual(L.skipInfo({}), { earned: 1, extra: 0, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
+  assert.deepEqual(L.skipInfo({}), { earned: 1, fromWorkouts: 0, extra: 0, used: 0, spent: 0, available: 1, progress: 0, pointsPerSkip: 10 });
   const s = L.skipInfo(days('rrrrrrrrbb')); // 8 + 4 = 12 points
   assert.equal(s.earned, 2);
   assert.equal(s.progress, 2);
@@ -470,4 +470,24 @@ test('first spin is always a Taylor era (not the Black Parade); VisionQuest is h
   const later = new Set(Array.from({ length: 50 }, (_, i) => G.spin(['ts-red'], null, () => i / 50).split('-')[0]));
   assert.ok(later.size > 1);
   assert.ok(!G.GUMBALLS.some((g) => g.id === 'tv-visionquest'));
+});
+
+test('workouts: Sunday weeks, 5 earn a ticket, extras do nothing', () => {
+  assert.equal(L.weekStart('2026-11-08'), '2026-11-08'); // a Sunday
+  assert.equal(L.weekStart('2026-11-14'), '2026-11-08'); // Saturday, same week
+  assert.equal(L.weekStart('2026-11-15'), '2026-11-15');
+  const w = { '2026-11-08': true, '2026-11-09': true, '2026-11-10': true, '2026-11-11': true, '2026-11-12': false };
+  assert.equal(L.workoutsInWeek(w, '2026-11-12'), 4);
+  assert.equal(L.workoutTickets(w), 0);
+  w['2026-11-12'] = true;
+  assert.equal(L.workoutTickets(w), 1);
+  w['2026-11-13'] = true; w['2026-11-14'] = true; // 7 that week: still one ticket
+  assert.equal(L.workoutTickets(w), 1);
+  w['2026-11-07'] = true; // the Saturday before belongs to the previous week
+  assert.equal(L.workoutsInWeek(w, '2026-11-14'), 7);
+  assert.equal(L.skipInfo({}, 0, w).earned, 2); // starter + one workout week
+  assert.equal(L.skipInfo({}, 0, w).fromWorkouts, 1);
+  // backups merge workouts, and the phone's un-tick wins
+  const m = L.mergeBackup({ days: { a: { status: 'regular' } }, workouts: { '2026-11-08': false } }, { days: {}, workouts: { '2026-11-08': true, '2026-11-09': true } });
+  assert.deepEqual(m.workouts, { '2026-11-08': false, '2026-11-09': true });
 });

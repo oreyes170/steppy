@@ -95,7 +95,35 @@ export function nextMilestone(streak) {
 
 // ---------- skip days ----------
 
-export function skipInfo(days, spent = 0) {
+// ---------- workouts ----------
+// A separate yes/no per day ({ 'YYYY-MM-DD': true|false }). 5 workouts in a week (Sunday to
+// Saturday) earn one skip ticket; extra workouts that week don't add more.
+export const WORKOUTS_PER_TICKET = 5;
+
+/** The Sunday that starts the week containing `key`. */
+export function weekStart(key) {
+  return addDays(key, -parseKey(key).getDay());
+}
+
+export function workoutsInWeek(workouts, key) {
+  const start = weekStart(key);
+  let n = 0;
+  for (let i = 0; i < 7; i++) if (workouts?.[addDays(start, i)] === true) n++;
+  return n;
+}
+
+/** Tickets earned from workouts: one per week with 5 or more. */
+export function workoutTickets(workouts) {
+  const weeks = {};
+  for (const [k, v] of Object.entries(workouts || {})) {
+    if (v !== true) continue;
+    const w = weekStart(k);
+    weeks[w] = (weeks[w] || 0) + 1;
+  }
+  return Object.values(weeks).filter((n) => n >= WORKOUTS_PER_TICKET).length;
+}
+
+export function skipInfo(days, spent = 0, workouts = {}) {
   let points = 0;
   let used = 0;
   let extra = 0;
@@ -107,9 +135,11 @@ export function skipInfo(days, spent = 0) {
     }
   }
   points += extra;
-  const earned = STARTER_SKIPS + Math.floor(points / POINTS_PER_SKIP);
+  const fromWorkouts = workoutTickets(workouts);
+  const earned = STARTER_SKIPS + Math.floor(points / POINTS_PER_SKIP) + fromWorkouts;
   return {
     earned,
+    fromWorkouts,
     extra,
     used,
     spent,
@@ -285,6 +315,8 @@ export function mergeBackup(local, remote) {
       themesAnnounced: [...new Set([...(remote?.meta?.themesAnnounced || []), ...(local?.meta?.themesAnnounced || [])])],
     },
     days: { ...remoteDays, ...localDays },
+    // phone wins per day (false = she un-ticked it, so that sticks too)
+    workouts: { ...(remote?.workouts || {}), ...(local?.workouts || {}) },
   };
 }
 
