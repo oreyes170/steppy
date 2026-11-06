@@ -602,6 +602,10 @@ h1 {
 /* streak chain: connect adjacent streak days */
 .cell.chain-left::before { left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .cell.chain-right::before { right: -1px; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+/* inside a streak the strip reads as one piece: big days show by their colour and 🌟, not a ring
+   (a ring would break at every regular day and double up between big days) */
+.cell.big.chain-left::before,
+.cell.big.chain-right::before { box-shadow: none; }
 .cell.is-today::after {
   content: '';
   position: absolute;
