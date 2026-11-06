@@ -573,11 +573,12 @@ const ALL_GUMBALLS = [
     pitch: 'The first Chunk: a glittery night-sky shell with gold stars, and a gold-framed LCD screen.',
   },
   {
-    id: 'rand-animalcrossing', set: 'animals', name: 'Animal Crossing', emoji: '🍃',
-    colors: { bg: '#f6f4e4', primary: '#3f9a52', accent: '#7cc6e8', ink: '#4a3420', blend: '#8fd06a' },
-    confetti: ['#3f9a52', '#7cc6e8', '#f2c94c', '#e8655a', '#8fd06a'],
-    emojis: ['🍃', '🍎', '🐟', '🦝', '🔔'], cheer: 'Ka-ching, bells! 🔔', note: 'Welcome to your island! 🏝️',
-    pitch: 'Leafy green, island sky blue and cozy cream, with warm brown text.',
+    id: 'rand-animalcrossing', set: 'animals', name: 'Animal Crossing', emoji: '🍃', head: 'rounded', style: 'island', ball: '#6cbf4a', iconTint: '#8a5a2b',
+    colors: { bg: '#bfe8f6', primary: '#4fa83a', accent: '#f6c945', ink: '#4a3420', blend: '#7cc65a', wash: '#6ec4e6',
+      status: { regular: '#5cbf4a', big: '#f6c945', skip: '#6ec4e6' } },
+    confetti: ['#4fa83a', '#f6c945', '#6ec4e6', '#e8655a', '#f3e2b8'],
+    emojis: ['🍃', '🦝', '🎣', '🐟', '🍑', '🏝️'], cheer: 'Ka-ching, bells! 🔔', note: 'Welcome to your island! 🏝️',
+    pitch: 'Island sky, sea and sand, cozy cream cards and a wooden-sign title.',
   },
   {
     id: 'rand-stitch', set: 'animals', name: 'Stitch', emoji: '🌺',

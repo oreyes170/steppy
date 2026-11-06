@@ -1272,6 +1272,37 @@ html[data-head='transit'] h1 {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+/* 🍃 Animal Crossing: chunky rounded letters, sunny yellow with a thick wood-brown outline,
+   like the wooden welcome sign */
+html[data-head='rounded'] { --head-font: 'Arial Rounded MT Bold', 'Nunito', 'Varela Round', 'Trebuchet MS', sans-serif; --head-weight: 700; }
+html[data-head='rounded'] h1 {
+  background: none;
+  -webkit-text-fill-color: #f8d65c;
+  color: #f8d65c;
+  font-size: min(36px, 9.5vw);
+  letter-spacing: 0.01em;
+  text-shadow:
+    -2px -2px 0 #7a4a1e, 2px -2px 0 #7a4a1e, -2px 2px 0 #7a4a1e, 2px 2px 0 #7a4a1e,
+    0 -2px 0 #7a4a1e, 0 2px 0 #7a4a1e, -2px 0 0 #7a4a1e, 2px 0 0 #7a4a1e,
+    0 5px 0 #4e2d10;
+}
+/* 🏝️ island: sky fading to sea and sand behind cozy cream cards with wooden edges */
+html[data-style='island'] body {
+  background-color: #bfe8f6;
+  background-image: linear-gradient(180deg, #8fd5f2 0%, #c4ecfa 38%, #7fd3d8 62%, #f3e2b8 80%, #e9d39a 100%);
+  background-attachment: fixed;
+}
+html[data-style='island'] .card { background: #fff9ea; border: 3px solid #d9b07a; box-shadow: 0 4px 0 #b88a52, 0 10px 24px rgba(74, 52, 32, 0.12); }
+html[data-style='island'] .greeting { color: #3d5a6a; }
+html[data-style='island'] {
+  --big-soft: #fbe6a2 !important;
+  --regular-soft: #cfeec0 !important;
+  --skip-soft: #cdeaf7 !important;
+  --missed-soft: #f1e7d2 !important;
+  --bg-2: #f4ead2 !important;
+  --line: #e2cfa8 !important;
+}
+html[data-style='island'] .version { background: rgba(255, 255, 255, 0.6); }
 /* Sunset Blvd.: bold all-caps red Helvetica, flat (no gradient) */
 html[data-head='helvetica'] { --head-font: 'Helvetica Neue', Helvetica, Arial, sans-serif; --head-weight: 700; --head-spacing: -0.01em; }
 html[data-head='helvetica'] h1 {

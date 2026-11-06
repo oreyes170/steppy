@@ -360,7 +360,7 @@ test('heading fonts are assigned to the right themes', async () => {
   assert.equal(heads['ts-reputation'], 'blackletter');
   assert.equal(heads['rand-chunk'], 'pixel');
   assert.equal(heads['halloween'], 'chalk');
-  assert.equal(Object.keys(heads).length, 40);
+  assert.equal(Object.keys(heads).length, 41);
 });
 
 test('sunrise and sunset for New York match published times (±3 min)', () => {
