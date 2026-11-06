@@ -731,7 +731,7 @@ const ALL_GUMBALLS = [
     pitch: 'A cozy Stars Hollow autumn: warm cream, coffee brown and pumpkin orange.',
   },
   {
-    id: 'tv-jeopardy', set: 'tv', name: 'Pop Culture Jeopardy!', emoji: '❓', head: 'gameboard', ball: '#0a1fc8', iconTint: '#0a1fc8',
+    id: 'tv-jeopardy', set: 'tv', name: 'Pop Culture Jeopardy!', emoji: '❓', head: 'gameboard', title: 'Steppy!', ball: '#0a1fc8', iconTint: '#0a1fc8',
     colors: { bg: '#081478', primary: '#f2b62a', accent: '#ffffff', ink: '#f4f6ff', blend: '#ffd970',
       status: { regular: '#3a5cff', big: '#f2b62a', skip: '#8a96d8' } }, dark: true,
     confetti: ['#f2b62a', '#0a1fc8', '#ffffff', '#ffd970', '#3a5cff'],
