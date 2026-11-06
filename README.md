@@ -45,6 +45,7 @@ The date rules are in `themes.js` (unit tested).
 ## The Theme Machine 🍬
 
 - **Unlocks** as soon as she earns her next skip ticket (or holds 3 at once), then stays unlocked. A "New unlocked!" card appears on the home screen, and tapping the 🎟️ counter opens the machine.
+- **First spin is free** 🎁: until she owns a theme, a spin costs nothing, so she sees what tickets are for. A "🎁 A little gift" card stays on the home screen until she uses it.
 - **1 ticket**: a random new theme from any collection. **2 tickets**: a random new theme from a collection she's already discovered (this option only appears once she's discovered at least two collections). No repeats. Tickets spent here come off her skip days.
 - **Collections stay secret** until she wins something from them. Then the set appears in Settings with `?` spots for the rest.
 - **It looks Eras-only at first.** Her first gumball is always a Taylor era (never The Black Parade), and nothing mentions other collections. The second collection arrives as a surprise ("Surprise! There's more in here…"). After that, a "🔒 More collections are hiding…" note shows while undiscovered sets remain.

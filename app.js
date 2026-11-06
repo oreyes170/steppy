@@ -86,6 +86,8 @@ const TestMode = {
 const ownedIds = () =>
   Cheat.on() ? Gumballs.GUMBALLS.map((g) => g.id) : TestMode.on() ? TestMode.get().owned : state.meta.gumballs.owned;
 const machineUnlocked = () => Cheat.on() || TestMode.on() || state.meta.gumballs.unlocked;
+/** Her very first spin is free (so she sees what tickets are for instead of hoarding them). */
+const freeSpin = () => machineUnlocked() && !Cheat.on() && ownedIds().length === 0;
 /** Tickets for the Theme Machine: real skip tickets, or test-mode tickets. */
 const machineTickets = () => (TestMode.on() ? TestMode.get().tickets : snapshot().skips.available);
 
@@ -497,7 +499,9 @@ function checkMachineUnlock() {
 function renderMachineCard() {
   const el = $('#machine-card');
   const gb = state.meta.gumballs;
-  if (!gb.unlocked || gb.introSeen || Cheat.on() || TestMode.on()) {
+  // stays on the home screen until she's seen the machine, and until she's used her free spin
+  const free = freeSpin();
+  if (!gb.unlocked || (gb.introSeen && !free) || Cheat.on() || TestMode.on()) {
     el.innerHTML = '';
     return;
   }
@@ -505,10 +509,14 @@ function renderMachineCard() {
   el.innerHTML = `
     <div class="card unlock-card">
       <div class="unlock-text">
-        <p class="eyebrow">✨ New unlocked!</p>
+        <p class="eyebrow">${gb.introSeen ? '🎁 A little gift' : '✨ New unlocked!'}</p>
         <h3>The Theme Machine</h3>
-        <p class="small muted">You’ve got ${n} skip ticket${n === 1 ? '' : 's'}! Trade 1 for a gumball, and every gumball is a brand-new theme to collect. 🍬</p>
-        <button class="btn primary" data-open-machine>Take me there 🍬</button>
+        <p class="small muted">${
+          free
+            ? 'Your first spin is <b>free</b>! Every gumball is a brand-new theme to collect. After that, each spin is 1 skip ticket. 🍬'
+            : `You’ve got ${n} skip ticket${n === 1 ? '' : 's'}! Trade 1 for a gumball, and every gumball is a brand-new theme to collect. 🍬`
+        }</p>
+        <button class="btn primary" data-open-machine>${free ? 'Spin for free 🎁' : 'Take me there 🍬'}</button>
       </div>
       <div class="unlock-art">${machineSvg()}</div>
     </div>`;
@@ -560,6 +568,7 @@ function openMachine() {
   const available = machineTickets();
   const owned = ownedIds();
   const left = Gumballs.pool(owned).length;
+  const free = freeSpin();
   // Picking a collection (2 tickets) only appears once she's discovered more than one.
   const found = Gumballs.revealedSets(owned);
   const sets = found.length >= 2 ? found.filter((st) => Gumballs.pool(owned, st.id).length) : [];
@@ -570,8 +579,9 @@ function openMachine() {
       ? `<button class="btn ghost set-spin" data-spin="${setId}" ${can ? '' : 'disabled'}>${label}</button>`
       : `<button class="btn primary spin-btn" data-spin="any" ${can ? '' : 'disabled'}>${label} · ${cost} 🎟️</button>`;
   };
-  const warn =
-    left && available === Gumballs.SPIN_COST
+  const warn = free
+    ? '<p class="small muted center">This one’s on us, so you keep all your tickets. After this, each spin is 1 skip ticket.</p>'
+    : left && available === Gumballs.SPIN_COST
       ? '<p class="small muted center">This uses your last skip ticket, so your streak won’t have a backup for a bit.</p>'
       : left && available < Gumballs.SPIN_COST
         ? '<p class="small muted center">You need a skip ticket to spin. Keep stepping! 👟</p>'
@@ -583,7 +593,13 @@ function openMachine() {
       <div class="ticket-pill">${TestMode.on() ? '🧪 ' : '🎟️ '}${available} ${TestMode.on() ? 'test ' : 'skip '}ticket${available === 1 ? '' : 's'}</div>
     </div>
     <div class="machine-wrap" id="machine-wrap">${machineSvg()}</div>
-    ${left ? spinBtn(Gumballs.SPIN_COST, 'Turn the knob') : '<p class="center muted">New gumballs get added over time. Check back soon! ✨</p>'}
+    ${
+      free
+        ? '<button class="btn primary spin-btn" data-spin="any">🎁 Your first spin is free!</button>'
+        : left
+          ? spinBtn(Gumballs.SPIN_COST, 'Turn the knob')
+          : '<p class="center muted">New gumballs get added over time. Check back soon! ✨</p>'
+    }
     ${warn}
     ${
       sets.length
@@ -601,7 +617,7 @@ let spinning = false;
 async function doSpin(setId) {
   if (spinning) return;
   const gb = state.meta.gumballs;
-  const cost = setId ? Gumballs.SET_SPIN_COST : Gumballs.SPIN_COST;
+  const cost = freeSpin() ? 0 : setId ? Gumballs.SET_SPIN_COST : Gumballs.SPIN_COST;
   if (machineTickets() < cost) return toast('Not enough skip tickets yet. Keep stepping! 👟');
   if (Cheat.on()) return toast('Cheat mode is on, so you already have everything! 🔓');
   const owned = ownedIds();
@@ -622,6 +638,7 @@ async function doSpin(setId) {
     save();
   }
   renderStats();
+  renderMachineCard(); // the free-spin nudge goes away once it's used
   const t = Themes.byId(id);
 
   // make sure she can see the machine: grey out the buttons and scroll back up to it first
@@ -1604,10 +1621,10 @@ async function celebrateDay({ key, status, steps, old, before, after, improved, 
       await showModal({
         emoji: '🍬',
         title: 'New skip day, and a surprise!',
-        body: `${extraLine ? `${extraLine} ⭐ ` : ''}You earned a skip day <b>and unlocked the Theme Machine!</b> Trade a ticket for a gumball. Every one is a brand-new theme. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
+        body: `${extraLine ? `${extraLine} ⭐ ` : ''}You earned a skip day <b>and unlocked the Theme Machine!</b> Every gumball is a brand-new theme, and <b>your first spin is free</b> 🎁 After that, a spin is 1 ticket. You have <b>${after.skips.available}</b> ticket${after.skips.available === 1 ? '' : 's'}.`,
         cta: null,
         html: `<div class="row modal-row">
-            <button class="btn primary" data-open-machine type="button">Take me there 🍬</button>
+            <button class="btn primary" data-open-machine type="button">Spin for free 🎁</button>
             <button class="btn ghost" data-close-modal type="button">Later</button>
           </div>`,
         fx: () => fx.confetti({ count: 110, colors: ['#a78bfa', '#ff6f91', '#ffc75f', '#4ecdc4', '#ffffff'] }),
