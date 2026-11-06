@@ -57,6 +57,8 @@ export const THEMES = [
     confettiEmoji: ['🍂', '🍁', '🦃', '🥧', '🌽'],
     ambient: { emojis: ['🍂', '🍁', '🍂', '🍁'], motion: 'fall', count: 14 },
     greetingEmoji: '🍂',
+    // a personal line in the one-time "New theme" popup ({name} = her name)
+    announceNote: 'I’m so thankful for you, {name}. 🧡 Love, Oliver',
     bigSub: 'Gobble gobble! 🦃',
     holiday: true,
     pitch: 'Warm harvest colors, falling leaves, and gobble-gobble big goal days.',

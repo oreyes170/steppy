@@ -913,6 +913,7 @@ async function maybeAnnounceHoliday() {
     emoji: t.emoji,
     title: `New theme: ${t.name}!`,
     html: `
+      ${t.announceNote ? `<p class="reveal-note">${esc(t.announceNote.replace('{name}', state.settings.name.trim() || 'you'))}</p>` : ''}
       <p>${t.pitch} Want to try it?</p>
       <div class="row modal-row">
         <button class="btn primary" data-try-theme="${t.id}" ${t.vars ? `style="background:linear-gradient(135deg, ${t.vars.primary}, ${t.vars['primary-2']});color:${t.vars['primary-ink']}"` : ''}>Try it! ${t.emoji}</button>
